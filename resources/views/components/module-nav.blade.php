@@ -8,10 +8,10 @@
         <span>Parties</span>
     </a>
 
-    <!-- 2 Medical Reps -->
-    <a href="{{ route('medical_reps.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'medical_reps' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shadow-sm shadow-indigo-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+    <!-- 2 Products (Barcode) -->
+    <a href="{{ route('products.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'products' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shadow-sm shadow-indigo-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
         <span class="w-4 h-4 rounded bg-indigo-500/20 text-indigo-400 text-[10px] font-mono flex items-center justify-center font-bold">2</span>
-        <span>Medical Reps</span>
+        <span>Products (Barcode)</span>
     </a>
 
     <!-- 3 Companies -->
@@ -36,18 +36,6 @@
     <a href="{{ route('expenses.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'expenses' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm shadow-rose-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
         <span class="w-4 h-4 rounded bg-rose-500/20 text-rose-400 text-[10px] font-mono flex items-center justify-center font-bold">6</span>
         <span>Expenses</span>
-    </a>
-
-    <!-- 7 Amanats -->
-    <a href="{{ route('amanats.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'amanats' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm shadow-amber-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-amber-500/20 text-amber-400 text-[10px] font-mono flex items-center justify-center font-bold">7</span>
-        <span>Amanats</span>
-    </a>
-
-    <!-- 8 Lotteries -->
-    <a href="{{ route('lotteries.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'lotteries' ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm shadow-sky-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-sky-500/20 text-sky-400 text-[10px] font-mono flex items-center justify-center font-bold">8</span>
-        <span>Lotteries</span>
     </a>
 
     <div class="h-4 w-px bg-slate-800 mx-1"></div>
@@ -79,7 +67,7 @@
     <div class="h-4 w-px bg-slate-800 mx-1"></div>
 
     <!-- Reports -->
-    <a href="{{ route('reports.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'reports' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-sm shadow-purple-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
+    <a href="{{ route('reports.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'reports' ? 'bg-purple-500/20 text-purple-300 border-purple-400/40 shadow-sm shadow-purple-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
         <svg class="w-3.5 h-3.5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         <span>Reports</span>
     </a>

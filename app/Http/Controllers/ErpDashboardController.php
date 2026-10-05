@@ -10,9 +10,7 @@ use App\Models\Voucher;
 use App\Models\Bank;
 use App\Models\Salesman;
 use App\Models\Company;
-use App\Models\MedicalRep;
-use App\Models\Amanat;
-use App\Models\Lottery;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ErpDashboardController extends Controller
@@ -20,6 +18,10 @@ class ErpDashboardController extends Controller
     public function index()
     {
         $partiesCount = Party::count();
+        $productsCount = Product::count();
+        $companiesCount = Company::count();
+        $salesmenCount = Salesman::count();
+        $banksCount = Bank::count();
         $salesCount = Sale::count();
         $purchasesCount = Purchase::count();
         $expensesTotal = Expense::sum('amount');
@@ -34,6 +36,10 @@ class ErpDashboardController extends Controller
 
         return view('dashboard', compact(
             'partiesCount',
+            'productsCount',
+            'companiesCount',
+            'salesmenCount',
+            'banksCount',
             'salesCount',
             'purchasesCount',
             'expensesTotal',

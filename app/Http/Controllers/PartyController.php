@@ -8,9 +8,7 @@ use App\Models\Voucher;
 use App\Models\Bank;
 use App\Models\Salesman;
 use App\Models\Company;
-use App\Models\MedicalRep;
-use App\Models\Amanat;
-use App\Models\Lottery;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class PartyController extends Controller
@@ -45,18 +43,45 @@ class PartyController extends Controller
         return redirect()->back()->with('success', 'Party created successfully!');
     }
 
-    // Medical Reps Management
-    public function medicalRepsIndex()
+    // Products Management with Barcode
+    public function productsIndex()
     {
-        $medicalReps = MedicalRep::latest()->get();
-        return view('modules.medical_reps', compact('medicalReps'));
+        $products = Product::with('company')->latest()->get();
+        $companies = Company::orderBy('name')->get();
+        return view('modules.products', compact('products', 'companies'));
     }
 
-    public function medicalRepsStore(Request $request)
+    public function productsStore(Request $request)
     {
-        $request->validate(['name' => 'required|string']);
-        MedicalRep::create($request->only(['name', 'phone', 'company_name']));
-        return redirect()->back()->with('success', 'Medical Rep created successfully!');
+        $request->validate([
+            'barcode' => 'required|string|unique:products,barcode',
+            'name' => 'required|string|max:255',
+            'company_id' => 'nullable|exists:companies,id',
+            'purchase_price' => 'nullable|numeric|min:0',
+            'sale_price' => 'nullable|numeric|min:0',
+            'stock_quantity' => 'nullable|integer|min:0',
+        ]);
+
+        Product::create([
+            'barcode' => $request->barcode,
+            'name' => $request->name,
+            'company_id' => $request->company_id,
+            'category' => $request->category ?? 'General',
+            'unit' => $request->unit ?? 'Pcs',
+            'purchase_price' => $request->purchase_price ?? 0,
+            'sale_price' => $request->sale_price ?? 0,
+            'stock_quantity' => $request->stock_quantity ?? 0,
+            'description' => $request->description,
+        ]);
+
+        return redirect()->back()->with('success', 'Product added successfully with barcode!');
+    }
+
+    public function productsDestroy($id)
+    {
+        $product = Product::findOrFail($id);
+        $product->delete();
+        return redirect()->back()->with('success', 'Product deleted successfully!');
     }
 
     // Companies Management
@@ -99,35 +124,6 @@ class PartyController extends Controller
         $request->validate(['bank_name' => 'required|string', 'account_number' => 'required|string']);
         Bank::create($request->only(['bank_name', 'account_title', 'account_number', 'balance']));
         return redirect()->back()->with('success', 'Bank account created successfully!');
-    }
-
-    // Amanats Management
-    public function amanatsIndex()
-    {
-        $amanats = Amanat::with('party')->latest()->get();
-        $parties = Party::orderBy('name')->get();
-        return view('modules.amanats', compact('amanats', 'parties'));
-    }
-
-    public function amanatsStore(Request $request)
-    {
-        $request->validate(['amount' => 'required|numeric|min:0', 'date' => 'required|date']);
-        Amanat::create($request->only(['party_id', 'depositor_name', 'amount', 'date', 'details']));
-        return redirect()->back()->with('success', 'Amanat deposit recorded successfully!');
-    }
-
-    // Lotteries Management
-    public function lotteriesIndex()
-    {
-        $lotteries = Lottery::latest()->get();
-        return view('modules.lotteries', compact('lotteries'));
-    }
-
-    public function lotteriesStore(Request $request)
-    {
-        $request->validate(['scheme_name' => 'required|string', 'amount' => 'required|numeric|min:0']);
-        Lottery::create($request->only(['scheme_name', 'amount', 'date', 'status', 'remarks']));
-        return redirect()->back()->with('success', 'Lottery scheme recorded successfully!');
     }
 
     // Expenses Management
@@ -274,21 +270,17 @@ class PartyController extends Controller
             $ledgerEntries = $ledgerEntries->sortBy('date')->values();
         }
 
-        $medicalReps = MedicalRep::latest()->get();
+        $products = Product::with('company')->latest()->get();
         $companies = Company::latest()->get();
         $salesmen = Salesman::latest()->get();
         $banks = Bank::latest()->get();
-        $amanats = Amanat::with('party')->latest()->get();
-        $lotteries = Lottery::latest()->get();
 
         return view('modules.reports', compact(
             'parties',
-            'medicalReps',
+            'products',
             'companies',
             'salesmen',
             'banks',
-            'amanats',
-            'lotteries',
             'fromDate',
             'toDate',
             'selectedPartyId',

@@ -4,13 +4,11 @@
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             const key = e.key.toLowerCase();
             if (key === '1') window.location.href = '{{ route('parties.index') }}';
-            if (key === '2') window.location.href = '{{ route('medical_reps.index') }}';
+            if (key === '2') window.location.href = '{{ route('products.index') }}';
             if (key === '3') window.location.href = '{{ route('companies.index') }}';
             if (key === '4') window.location.href = '{{ route('salesmen.index') }}';
             if (key === '5') window.location.href = '{{ route('banks.index') }}';
             if (key === '6') window.location.href = '{{ route('expenses.index') }}';
-            if (key === '7') window.location.href = '{{ route('amanats.index') }}';
-            if (key === '8') window.location.href = '{{ route('lotteries.index') }}';
             if (key === '9') window.location.href = '{{ route('sales.index') }}';
             if (key === '0') window.location.href = '{{ route('purchases.index') }}';
             if (key === 'a') window.location.href = '{{ route('vouchers.index', 'receipt') }}';
@@ -25,15 +23,15 @@
             <div class="flex items-center justify-between text-xs text-slate-400 bg-slate-900/60 py-2.5 px-4 rounded-xl border border-slate-800 shadow-sm">
                 <div class="flex items-center gap-2">
                     <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-mono font-bold text-[10px]">KEYBOARD SHORTCUTS</span>
-                    <span>Press key <kbd class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded font-mono">1</kbd>-<kbd class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded font-mono">8</kbd> for Masters, <kbd class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded font-mono">9</kbd> for Sales, <kbd class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded font-mono">0</kbd> for Purchases, <kbd class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded font-mono">A</kbd> Receipts, <kbd class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded font-mono">B</kbd> Payments</span>
+                    <span>Press key <kbd class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded font-mono">1</kbd>-<kbd class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded font-mono">6</kbd> for Masters/Products, <kbd class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded font-mono">9</kbd> for Sales, <kbd class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded font-mono">0</kbd> for Purchases, <kbd class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded font-mono">A</kbd> Receipts, <kbd class="px-1.5 py-0.5 bg-slate-800 text-cyan-300 rounded font-mono">B</kbd> Payments</span>
                 </div>
                 <span class="text-cyan-400 font-semibold hidden sm:inline">Press shortcut key on keyboard anytime</span>
             </div>
 
-            <!-- Main ERP Grid Menu matching Image 1 layout -->
+            <!-- Main ERP Grid Menu -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
                 
-                <!-- Left 3 Columns: 12 Tile Items Grid -->
+                <!-- Left 3 Columns: Grid Menu -->
                 <div class="md:col-span-3 grid grid-cols-2 sm:grid-cols-4 gap-4">
                     
                     <!-- 1 Parties -->
@@ -47,14 +45,14 @@
                         </div>
                     </a>
 
-                    <!-- 2 Medical Reps -->
-                    <a href="{{ route('medical_reps.index') }}" class="prowave-glass-card rounded-2xl p-5 border border-slate-800 hover:border-cyan-400 text-center flex flex-col items-center justify-center gap-3 group">
-                        <div class="w-13 h-13 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <!-- 2 Products (With Barcode) -->
+                    <a href="{{ route('products.index') }}" class="prowave-glass-card rounded-2xl p-5 border border-indigo-500/40 bg-indigo-950/10 hover:border-cyan-400 text-center flex flex-col items-center justify-center gap-3 group">
+                        <div class="w-13 h-13 rounded-2xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-300 group-hover:scale-110 transition-transform">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                         </div>
                         <div>
-                            <div class="text-base font-extrabold text-white font-['Outfit']">2 Medical Reps</div>
-                            <div class="text-[11px] text-slate-400 font-mono mt-0.5">Field Reps</div>
+                            <div class="text-base font-extrabold text-indigo-200 font-['Outfit']">2 Products</div>
+                            <div class="text-[11px] text-cyan-400 font-mono mt-0.5 font-bold">{{ $productsCount }} Barcode Items</div>
                         </div>
                     </a>
 
@@ -102,29 +100,7 @@
                         </div>
                     </a>
 
-                    <!-- 7 Amanats -->
-                    <a href="{{ route('amanats.index') }}" class="prowave-glass-card rounded-2xl p-5 border border-slate-800 hover:border-cyan-400 text-center flex flex-col items-center justify-center gap-3 group">
-                        <div class="w-13 h-13 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </div>
-                        <div>
-                            <div class="text-base font-extrabold text-white font-['Outfit']">7 Amanats</div>
-                            <div class="text-[11px] text-slate-400 font-mono mt-0.5">Trust Funds</div>
-                        </div>
-                    </a>
-
-                    <!-- 8 Lotteries -->
-                    <a href="{{ route('lotteries.index') }}" class="prowave-glass-card rounded-2xl p-5 border border-slate-800 hover:border-cyan-400 text-center flex flex-col items-center justify-center gap-3 group">
-                        <div class="w-13 h-13 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 group-hover:scale-110 transition-transform">
-                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5z"/></svg>
-                        </div>
-                        <div>
-                            <div class="text-base font-extrabold text-white font-['Outfit']">8 Lotteries</div>
-                            <div class="text-[11px] text-slate-400 font-mono mt-0.5">Schemes</div>
-                        </div>
-                    </a>
-
-                    <!-- 9 Sales (HIGHLIGHTED KEY MODULE) -->
+                    <!-- 9 Sales -->
                     <a href="{{ route('sales.index') }}" class="prowave-glass-card rounded-2xl p-5 border-2 border-cyan-400 bg-cyan-950/20 text-center flex flex-col items-center justify-center gap-3 group shadow-lg shadow-cyan-500/20">
                         <div class="w-13 h-13 rounded-2xl bg-cyan-500/20 border border-cyan-400 flex items-center justify-center text-cyan-300 group-hover:scale-110 transition-transform">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 100 4 2 2 0 000-4z"/></svg>
@@ -135,7 +111,7 @@
                         </div>
                     </a>
 
-                    <!-- 0 Purchases (HIGHLIGHTED KEY MODULE) -->
+                    <!-- 0 Purchases -->
                     <a href="{{ route('purchases.index') }}" class="prowave-glass-card rounded-2xl p-5 border-2 border-indigo-400 bg-indigo-950/20 text-center flex flex-col items-center justify-center gap-3 group shadow-lg shadow-indigo-500/20">
                         <div class="w-13 h-13 rounded-2xl bg-indigo-500/20 border border-indigo-400 flex items-center justify-center text-indigo-300 group-hover:scale-110 transition-transform">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
@@ -147,7 +123,7 @@
                     </a>
 
                     <!-- A Receipts -->
-                    <a href="{{ route('vouchers.index', 'receipt') }}" class="prowave-glass-card rounded-2xl p-5 border border-slate-800 hover:border-cyan-400 text-center flex flex-col items-center justify-center gap-3 group">
+                    <a href="{{ route('vouchers.index', 'receipt') }}" class="prowave-glass-card rounded-2xl p-5 border border-slate-800 hover:border-cyan-400 text-center flex flex-col items-center justify-center gap-3 group sm:col-span-2">
                         <div class="w-13 h-13 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         </div>
@@ -158,7 +134,7 @@
                     </a>
 
                     <!-- B Payments -->
-                    <a href="{{ route('vouchers.index', 'payment') }}" class="prowave-glass-card rounded-2xl p-5 border border-slate-800 hover:border-cyan-400 text-center flex flex-col items-center justify-center gap-3 group">
+                    <a href="{{ route('vouchers.index', 'payment') }}" class="prowave-glass-card rounded-2xl p-5 border border-slate-800 hover:border-cyan-400 text-center flex flex-col items-center justify-center gap-3 group sm:col-span-2">
                         <div class="w-13 h-13 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform">
                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
@@ -170,7 +146,7 @@
 
                 </div>
 
-                <!-- Right Sidebar Column matching Image 1 -->
+                <!-- Right Sidebar Column -->
                 <div class="space-y-4">
                     
                     <!-- Reports Tile -->
@@ -180,11 +156,11 @@
                         </div>
                         <div>
                             <div class="text-base font-bold text-white font-['Outfit']">Reports</div>
-                            <div class="text-xs text-slate-400">Financial Ledgers</div>
+                            <div class="text-xs text-slate-400">Financial Ledgers & Stock</div>
                         </div>
                     </a>
 
-                    <!-- Settings & Others (ORANGE HIGHLIGHTED match Image 1!) -->
+                    <!-- Settings & Others -->
                     <a href="{{ route('profile.edit') }}" class="prowave-glass-card rounded-2xl p-5 border-2 border-amber-500 bg-amber-500/20 flex items-center gap-4 group shadow-lg shadow-amber-500/20">
                         <div class="w-12 h-12 rounded-xl bg-amber-500/30 border border-amber-400 flex items-center justify-center text-amber-200 group-hover:scale-110 transition-transform">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>

@@ -29,8 +29,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/parties', [PartyController::class, 'partiesIndex'])->name('parties.index');
     Route::post('/parties', [PartyController::class, 'partiesStore'])->name('parties.store');
 
-    Route::get('/medical-reps', [PartyController::class, 'medicalRepsIndex'])->name('medical_reps.index');
-    Route::post('/medical-reps', [PartyController::class, 'medicalRepsStore'])->name('medical_reps.store');
+    Route::get('/products', [PartyController::class, 'productsIndex'])->name('products.index');
+    Route::post('/products', [PartyController::class, 'productsStore'])->name('products.store');
+    Route::delete('/products/{id}', [PartyController::class, 'productsDestroy'])->name('products.destroy');
 
     Route::get('/companies', [PartyController::class, 'companiesIndex'])->name('companies.index');
     Route::post('/companies', [PartyController::class, 'companiesStore'])->name('companies.store');
@@ -40,12 +41,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/banks', [PartyController::class, 'banksIndex'])->name('banks.index');
     Route::post('/banks', [PartyController::class, 'banksStore'])->name('banks.store');
-
-    Route::get('/amanats', [PartyController::class, 'amanatsIndex'])->name('amanats.index');
-    Route::post('/amanats', [PartyController::class, 'amanatsStore'])->name('amanats.store');
-
-    Route::get('/lotteries', [PartyController::class, 'lotteriesIndex'])->name('lotteries.index');
-    Route::post('/lotteries', [PartyController::class, 'lotteriesStore'])->name('lotteries.store');
 
     Route::get('/expenses', [PartyController::class, 'expensesIndex'])->name('expenses.index');
     Route::post('/expenses', [PartyController::class, 'expensesStore'])->name('expenses.store');

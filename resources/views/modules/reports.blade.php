@@ -170,8 +170,8 @@
                         <button type="button" @click="activeTab = 'parties'" :class="activeTab === 'parties' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
                             1 Parties Ledgers ({{ count($parties) }})
                         </button>
-                        <button type="button" @click="activeTab = 'medical_reps'" :class="activeTab === 'medical_reps' ? 'bg-indigo-500/20 text-indigo-300 border-indigo-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
-                            2 Medical Reps ({{ count($medicalReps) }})
+                        <button type="button" @click="activeTab = 'products'" :class="activeTab === 'products' ? 'bg-indigo-500/20 text-indigo-300 border-indigo-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
+                            2 Products Inventory ({{ count($products) }})
                         </button>
                         <button type="button" @click="activeTab = 'companies'" :class="activeTab === 'companies' ? 'bg-purple-500/20 text-purple-300 border-purple-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
                             3 Companies ({{ count($companies) }})
@@ -181,12 +181,6 @@
                         </button>
                         <button type="button" @click="activeTab = 'banks'" :class="activeTab === 'banks' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
                             5 Banks ({{ count($banks) }})
-                        </button>
-                        <button type="button" @click="activeTab = 'amanats'" :class="activeTab === 'amanats' ? 'bg-amber-500/20 text-amber-300 border-amber-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
-                            7 Amanats ({{ count($amanats) }})
-                        </button>
-                        <button type="button" @click="activeTab = 'lotteries'" :class="activeTab === 'lotteries' ? 'bg-sky-500/20 text-sky-300 border-sky-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
-                            8 Lotteries ({{ count($lotteries) }})
                         </button>
                     </div>
 
@@ -225,29 +219,33 @@
                         </div>
                     </div>
 
-                    <!-- 2 MEDICAL REPS TAB -->
-                    <div x-show="activeTab === 'medical_reps'" style="display: none;" class="prowave-glass-card rounded-2xl border border-slate-800 p-6 shadow-2xl">
-                        <h3 class="text-base font-bold text-white mb-4 font-['Outfit']">2 Medical Representatives Report</h3>
+                    <!-- 2 PRODUCTS TAB -->
+                    <div x-show="activeTab === 'products'" style="display: none;" class="prowave-glass-card rounded-2xl border border-slate-800 p-6 shadow-2xl">
+                        <h3 class="text-base font-bold text-white mb-4 font-['Outfit']">2 Products Stock & Barcode Report</h3>
                         <div class="overflow-x-auto rounded-xl border border-slate-800">
                             <table class="w-full text-left text-xs text-slate-300">
                                 <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
                                     <tr>
                                         <th class="p-3.5">#</th>
-                                        <th class="p-3.5">Representative Name</th>
-                                        <th class="p-3.5">Phone Number</th>
-                                        <th class="p-3.5">Assigned Company</th>
+                                        <th class="p-3.5">Barcode</th>
+                                        <th class="p-3.5">Product Name</th>
+                                        <th class="p-3.5">Company</th>
+                                        <th class="p-3.5 text-right">Sale Price</th>
+                                        <th class="p-3.5 text-center">Stock Quantity</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-800/80">
-                                    @forelse($medicalReps as $index => $rep)
+                                    @forelse($products as $index => $prod)
                                         <tr class="hover:bg-slate-900/40">
                                             <td class="p-3.5 font-mono text-slate-500">{{ $index + 1 }}</td>
-                                            <td class="p-3.5 font-bold text-white">{{ $rep->name }}</td>
-                                            <td class="p-3.5 font-mono text-cyan-300">{{ $rep->phone ?? 'N/A' }}</td>
-                                            <td class="p-3.5 font-semibold text-indigo-300">{{ $rep->company_name ?? 'N/A' }}</td>
+                                            <td class="p-3.5 font-mono font-bold text-cyan-400">{{ $prod->barcode }}</td>
+                                            <td class="p-3.5 font-bold text-white">{{ $prod->name }}</td>
+                                            <td class="p-3.5 text-indigo-300 font-semibold">{{ $prod->company->name ?? 'N/A' }}</td>
+                                            <td class="p-3.5 text-right font-mono text-emerald-400">Rs. {{ number_format($prod->sale_price, 2) }}</td>
+                                            <td class="p-3.5 text-center font-mono font-bold text-white">{{ $prod->stock_quantity }} {{ $prod->unit }}</td>
                                         </tr>
                                     @empty
-                                        <tr><td colspan="4" class="p-6 text-center text-slate-500">No medical reps found.</td></tr>
+                                        <tr><td colspan="6" class="p-6 text-center text-slate-500">No products found in inventory.</td></tr>
                                     @endforelse
                                 </tbody>
                             </table>
@@ -256,7 +254,7 @@
 
                     <!-- 3 COMPANIES TAB -->
                     <div x-show="activeTab === 'companies'" style="display: none;" class="prowave-glass-card rounded-2xl border border-slate-800 p-6 shadow-2xl">
-                        <h3 class="text-base font-bold text-white mb-4 font-['Outfit']">3 Pharmaceutical Companies Report</h3>
+                        <h3 class="text-base font-bold text-white mb-4 font-['Outfit']">3 Companies Report</h3>
                         <div class="overflow-x-auto rounded-xl border border-slate-800">
                             <table class="w-full text-left text-xs text-slate-300">
                                 <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
@@ -337,66 +335,6 @@
                                         </tr>
                                     @empty
                                         <tr><td colspan="5" class="p-6 text-center text-slate-500">No banks found.</td></tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- 7 AMANATS TAB -->
-                    <div x-show="activeTab === 'amanats'" style="display: none;" class="prowave-glass-card rounded-2xl border border-slate-800 p-6 shadow-2xl">
-                        <h3 class="text-base font-bold text-white mb-4 font-['Outfit']">7 Amanats / Trust Deposits Report</h3>
-                        <div class="overflow-x-auto rounded-xl border border-slate-800">
-                            <table class="w-full text-left text-xs text-slate-300">
-                                <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
-                                    <tr>
-                                        <th class="p-3.5">Date</th>
-                                        <th class="p-3.5">Depositor / Party</th>
-                                        <th class="p-3.5">Details</th>
-                                        <th class="p-3.5 text-right">Amanat Amount (Rs.)</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-800/80">
-                                    @forelse($amanats as $a)
-                                        <tr class="hover:bg-slate-900/40">
-                                            <td class="p-3.5 font-mono text-slate-400">{{ $a->date }}</td>
-                                            <td class="p-3.5 font-bold text-white">{{ $a->party->name ?? $a->depositor_name }}</td>
-                                            <td class="p-3.5 text-slate-300">{{ $a->details ?? 'N/A' }}</td>
-                                            <td class="p-3.5 text-right font-mono font-bold text-amber-400">Rs. {{ number_format($a->amount, 2) }}</td>
-                                        </tr>
-                                    @empty
-                                        <tr><td colspan="4" class="p-6 text-center text-slate-500">No amanats recorded.</td></tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- 8 LOTTERIES TAB -->
-                    <div x-show="activeTab === 'lotteries'" style="display: none;" class="prowave-glass-card rounded-2xl border border-slate-800 p-6 shadow-2xl">
-                        <h3 class="text-base font-bold text-white mb-4 font-['Outfit']">8 Lotteries & Schemes Report</h3>
-                        <div class="overflow-x-auto rounded-xl border border-slate-800">
-                            <table class="w-full text-left text-xs text-slate-300">
-                                <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
-                                    <tr>
-                                        <th class="p-3.5">#</th>
-                                        <th class="p-3.5">Scheme Name</th>
-                                        <th class="p-3.5">Date</th>
-                                        <th class="p-3.5">Status</th>
-                                        <th class="p-3.5 text-right">Amount (Rs.)</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-800/80">
-                                    @forelse($lotteries as $index => $lot)
-                                        <tr class="hover:bg-slate-900/40">
-                                            <td class="p-3.5 font-mono text-slate-500">{{ $index + 1 }}</td>
-                                            <td class="p-3.5 font-bold text-white">{{ $lot->scheme_name }}</td>
-                                            <td class="p-3.5 font-mono text-slate-400">{{ $lot->date ?? 'N/A' }}</td>
-                                            <td class="p-3.5"><span class="px-2 py-0.5 rounded-full text-[10px] bg-sky-500/10 text-sky-400 uppercase font-bold">{{ $lot->status ?? 'Active' }}</span></td>
-                                            <td class="p-3.5 text-right font-mono font-bold text-emerald-400">Rs. {{ number_format($lot->amount, 2) }}</td>
-                                        </tr>
-                                    @empty
-                                        <tr><td colspan="5" class="p-6 text-center text-slate-500">No lotteries recorded.</td></tr>
                                     @endforelse
                                 </tbody>
                             </table>
