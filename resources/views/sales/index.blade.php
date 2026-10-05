@@ -7,7 +7,7 @@
                 invoiceAmount: {{ $currentSale ? (float)$currentSale->amount : 0 }},
                 invoiceDiscount: {{ $currentSale ? (float)$currentSale->discount : 0 }},
                 productsList: @json($products),
-                items: @json(old('items') ?? ($currentSale && count($currentSale->items) > 0 ? $currentSale->items->map(fn($i) => ['name' => $i->item_name, 'qty' => (int)$i->qty, 'rate' => (float)$i->rate, 'product_id' => ''])->toArray() : [['name' => '', 'qty' => 1, 'rate' => 0, 'product_id' => '']])),
+                items: @json($initialItems),
                 
                 addItem() {
                     this.items.push({ name: '', qty: 1, rate: 0, product_id: '' });

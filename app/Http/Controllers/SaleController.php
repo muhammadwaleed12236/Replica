@@ -27,7 +27,25 @@ class SaleController extends Controller
         $allSales = Sale::with('party')->latest()->get();
         $nextInvoiceNo = 'INV-' . str_pad((Sale::max('id') + 1), 5, '0', STR_PAD_LEFT);
 
-        return view('sales.index', compact('parties', 'salesmen', 'products', 'currentSale', 'allSales', 'nextInvoiceNo'));
+        $initialItems = old('items');
+        if (!$initialItems) {
+            if ($currentSale && $currentSale->items->count() > 0) {
+                $initialItems = $currentSale->items->map(function ($i) {
+                    return [
+                        'name' => $i->item_name,
+                        'qty' => (int) $i->qty,
+                        'rate' => (float) $i->rate,
+                        'product_id' => '',
+                    ];
+                })->values()->toArray();
+            } else {
+                $initialItems = [
+                    ['name' => '', 'qty' => 1, 'rate' => 0, 'product_id' => '']
+                ];
+            }
+        }
+
+        return view('sales.index', compact('parties', 'salesmen', 'products', 'currentSale', 'allSales', 'nextInvoiceNo', 'initialItems'));
     }
 
     public function store(Request $request)
