@@ -215,6 +215,9 @@ class PartyController extends Controller
         $totalReceipts = $filteredVouchers->where('type', 'receipt')->sum('amount');
         $totalPayments = $filteredVouchers->where('type', 'payment')->sum('amount');
 
+        $grossProfit = $totalSales - $totalPurchases;
+        $netProfit = $grossProfit - $totalExpenses;
+
         // Detailed Party Ledger Statement if a Party is selected
         $ledgerEntries = collect();
         $selectedParty = null;
@@ -277,6 +280,18 @@ class PartyController extends Controller
         $salesmen = Salesman::latest()->get();
         $banks = Bank::latest()->get();
 
+        // Stock Valuation Calculations
+        $totalStockQty = $products->sum('stock_quantity');
+        $stockPurchaseValue = $products->sum(function ($p) {
+            return ($p->purchase_price ?? 0) * ($p->stock_quantity ?? 0);
+        });
+        $stockRetailValue = $products->sum(function ($p) {
+            return ($p->sale_price ?? 0) * ($p->stock_quantity ?? 0);
+        });
+        $stockWholesaleValue = $products->sum(function ($p) {
+            return ($p->wholesale_price ?? 0) * ($p->stock_quantity ?? 0);
+        });
+
         return view('modules.reports', compact(
             'parties',
             'products',
@@ -292,11 +307,17 @@ class PartyController extends Controller
             'totalExpenses',
             'totalReceipts',
             'totalPayments',
+            'grossProfit',
+            'netProfit',
             'filteredSales',
             'filteredPurchases',
             'filteredExpenses',
             'filteredVouchers',
-            'ledgerEntries'
+            'ledgerEntries',
+            'totalStockQty',
+            'stockPurchaseValue',
+            'stockRetailValue',
+            'stockWholesaleValue'
         ));
     }
 }

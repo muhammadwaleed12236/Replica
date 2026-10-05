@@ -68,25 +68,98 @@
 
             <!-- Executive Financial Summary Cards -->
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                <div class="prowave-glass-card rounded-2xl p-4 text-center">
-                    <span class="text-xs font-bold text-slate-400 uppercase">Period Sales</span>
+                <div class="prowave-glass-card rounded-2xl p-4 text-center border border-slate-800">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Period Sales</span>
                     <div class="text-xl font-extrabold text-cyan-400 font-mono mt-1">Rs. {{ number_format($totalSales, 2) }}</div>
                 </div>
-                <div class="prowave-glass-card rounded-2xl p-4 text-center">
-                    <span class="text-xs font-bold text-slate-400 uppercase">Period Purchases</span>
+                <div class="prowave-glass-card rounded-2xl p-4 text-center border border-slate-800">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Period Purchases</span>
                     <div class="text-xl font-extrabold text-indigo-400 font-mono mt-1">Rs. {{ number_format($totalPurchases, 2) }}</div>
                 </div>
-                <div class="prowave-glass-card rounded-2xl p-4 text-center">
-                    <span class="text-xs font-bold text-slate-400 uppercase">Total Receipts</span>
+                <div class="prowave-glass-card rounded-2xl p-4 text-center border border-slate-800">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Expenses</span>
+                    <div class="text-xl font-extrabold text-amber-400 font-mono mt-1">Rs. {{ number_format($totalExpenses, 2) }}</div>
+                </div>
+                <div class="prowave-glass-card rounded-2xl p-4 text-center border border-slate-800">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Receipts</span>
                     <div class="text-xl font-extrabold text-emerald-400 font-mono mt-1">Rs. {{ number_format($totalReceipts, 2) }}</div>
                 </div>
-                <div class="prowave-glass-card rounded-2xl p-4 text-center">
-                    <span class="text-xs font-bold text-slate-400 uppercase">Total Payments</span>
+                <div class="prowave-glass-card rounded-2xl p-4 text-center border border-slate-800">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Payments</span>
                     <div class="text-xl font-extrabold text-rose-400 font-mono mt-1">Rs. {{ number_format($totalPayments, 2) }}</div>
                 </div>
-                <div class="prowave-glass-card rounded-2xl p-4 text-center">
-                    <span class="text-xs font-bold text-slate-400 uppercase">Total Expenses</span>
-                    <div class="text-xl font-extrabold text-amber-400 font-mono mt-1">Rs. {{ number_format($totalExpenses, 2) }}</div>
+            </div>
+
+            <!-- PROFIT & LOSS & STOCK VALUATION EXECUTIVE SUMMARY -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- PROFIT & LOSS STATEMENT CARD -->
+                <div class="prowave-glass-card rounded-2xl border border-slate-800 p-5 shadow-xl relative overflow-hidden">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center text-emerald-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <h2 class="text-sm font-extrabold text-white font-['Outfit'] uppercase tracking-wider">Profit & Loss Statement</h2>
+                        </div>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">{{ $fromDate }} to {{ $toDate }}</span>
+                    </div>
+
+                    <div class="mt-4 space-y-2.5 text-xs font-mono">
+                        <div class="flex justify-between items-center text-slate-300">
+                            <span>Total Sales Revenue (+)</span>
+                            <span class="font-bold text-cyan-400">Rs. {{ number_format($totalSales, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center text-slate-300">
+                            <span>Cost of Purchases (-)</span>
+                            <span class="font-bold text-indigo-400">Rs. {{ number_format($totalPurchases, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-800 text-slate-200 font-bold">
+                            <span>Gross Margin / Profit</span>
+                            <span class="{{ $grossProfit >= 0 ? 'text-emerald-400' : 'text-rose-400' }}">Rs. {{ number_format($grossProfit, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center text-slate-300">
+                            <span>Operating Expenses (-)</span>
+                            <span class="font-bold text-amber-400">Rs. {{ number_format($totalExpenses, 2) }}</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-3 border-t-2 border-slate-700/80 text-sm font-extrabold">
+                            <span class="text-white">NET PROFIT / (LOSS)</span>
+                            <span class="px-3 py-1 rounded-xl {{ $netProfit >= 0 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-300 border border-rose-500/40' }}">
+                                Rs. {{ number_format($netProfit, 2) }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STOCK VALUATION SUMMARY CARD -->
+                <div class="prowave-glass-card rounded-2xl border border-slate-800 p-5 shadow-xl relative overflow-hidden">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-300">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            </div>
+                            <h2 class="text-sm font-extrabold text-white font-['Outfit'] uppercase tracking-wider">Inventory Stock Valuation</h2>
+                        </div>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">{{ count($products) }} Products</span>
+                    </div>
+
+                    <div class="mt-4 grid grid-cols-2 gap-3 text-xs font-mono">
+                        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 uppercase font-sans font-bold block">Total Items Qty</span>
+                            <span class="text-base font-extrabold text-white mt-0.5 block">{{ number_format($totalStockQty) }}</span>
+                        </div>
+                        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 uppercase font-sans font-bold block">Purchase Value</span>
+                            <span class="text-base font-extrabold text-indigo-400 mt-0.5 block">Rs. {{ number_format($stockPurchaseValue, 2) }}</span>
+                        </div>
+                        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 uppercase font-sans font-bold block">Retail Value [R]</span>
+                            <span class="text-base font-extrabold text-emerald-400 mt-0.5 block">Rs. {{ number_format($stockRetailValue, 2) }}</span>
+                        </div>
+                        <div class="p-3 bg-slate-900/60 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 uppercase font-sans font-bold block">Wholesale Value [W]</span>
+                            <span class="text-base font-extrabold text-amber-400 mt-0.5 block">Rs. {{ number_format($stockWholesaleValue, 2) }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -171,7 +244,7 @@
                             1 Parties Ledgers ({{ count($parties) }})
                         </button>
                         <button type="button" @click="activeTab = 'products'" :class="activeTab === 'products' ? 'bg-indigo-500/20 text-indigo-300 border-indigo-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
-                            2 Products Inventory ({{ count($products) }})
+                            2 Products Stock & Valuation ({{ count($products) }})
                         </button>
                         <button type="button" @click="activeTab = 'companies'" :class="activeTab === 'companies' ? 'bg-purple-500/20 text-purple-300 border-purple-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
                             3 Companies ({{ count($companies) }})
@@ -219,33 +292,56 @@
                         </div>
                     </div>
 
-                    <!-- 2 PRODUCTS TAB -->
+                    <!-- 2 PRODUCTS & STOCK VALUATION TAB -->
                     <div x-show="activeTab === 'products'" style="display: none;" class="prowave-glass-card rounded-2xl border border-slate-800 p-6 shadow-2xl">
-                        <h3 class="text-base font-bold text-white mb-4 font-['Outfit']">2 Products Stock & Barcode Report</h3>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                            <h3 class="text-base font-bold text-white font-['Outfit']">2 Products Detailed Stock & Inventory Valuation Report</h3>
+                            <div class="text-xs text-slate-400 font-mono">
+                                Total Items: <span class="font-bold text-white">{{ number_format($totalStockQty) }}</span> | 
+                                Purchase Value: <span class="font-bold text-indigo-400">Rs. {{ number_format($stockPurchaseValue, 2) }}</span>
+                            </div>
+                        </div>
+
                         <div class="overflow-x-auto rounded-xl border border-slate-800">
                             <table class="w-full text-left text-xs text-slate-300">
                                 <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
                                     <tr>
-                                        <th class="p-3.5">#</th>
-                                        <th class="p-3.5">Barcode</th>
-                                        <th class="p-3.5">Product Name</th>
-                                        <th class="p-3.5">Company</th>
-                                        <th class="p-3.5 text-right">Sale Price</th>
-                                        <th class="p-3.5 text-center">Stock Quantity</th>
+                                        <th class="p-3">#</th>
+                                        <th class="p-3">Barcode</th>
+                                        <th class="p-3">Product Name</th>
+                                        <th class="p-3">Company</th>
+                                        <th class="p-3 text-right">Purchase Price</th>
+                                        <th class="p-3 text-right">Retail [R]</th>
+                                        <th class="p-3 text-right">Wholesale [W]</th>
+                                        <th class="p-3 text-center">Stock Qty</th>
+                                        <th class="p-3 text-right">Stock Pur Value</th>
+                                        <th class="p-3 text-right">Stock Retail Value</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-800/80">
                                     @forelse($products as $index => $prod)
+                                        @php
+                                            $rowPurValue = ($prod->purchase_price ?? 0) * ($prod->stock_quantity ?? 0);
+                                            $rowRetailValue = ($prod->sale_price ?? 0) * ($prod->stock_quantity ?? 0);
+                                        @endphp
                                         <tr class="hover:bg-slate-900/40">
-                                            <td class="p-3.5 font-mono text-slate-500">{{ $index + 1 }}</td>
-                                            <td class="p-3.5 font-mono font-bold text-cyan-400">{{ $prod->barcode }}</td>
-                                            <td class="p-3.5 font-bold text-white">{{ $prod->name }}</td>
-                                            <td class="p-3.5 text-indigo-300 font-semibold">{{ $prod->company->name ?? 'N/A' }}</td>
-                                            <td class="p-3.5 text-right font-mono text-emerald-400">Rs. {{ number_format($prod->sale_price, 2) }}</td>
-                                            <td class="p-3.5 text-center font-mono font-bold text-white">{{ $prod->stock_quantity }} {{ $prod->unit }}</td>
+                                            <td class="p-3 font-mono text-slate-500">{{ $index + 1 }}</td>
+                                            <td class="p-3 font-mono font-bold text-cyan-400">{{ $prod->barcode }}</td>
+                                            <td class="p-3 font-bold text-white">{{ $prod->name }}</td>
+                                            <td class="p-3 text-indigo-300 font-semibold">{{ $prod->company->name ?? 'N/A' }}</td>
+                                            <td class="p-3 text-right font-mono text-slate-300">Rs. {{ number_format($prod->purchase_price, 2) }}</td>
+                                            <td class="p-3 text-right font-mono text-emerald-400 font-bold">Rs. {{ number_format($prod->sale_price, 2) }}</td>
+                                            <td class="p-3 text-right font-mono text-amber-400 font-bold">Rs. {{ number_format($prod->wholesale_price ?? 0, 2) }}</td>
+                                            <td class="p-3 text-center font-mono font-bold">
+                                                <span class="px-2 py-0.5 rounded-md {{ ($prod->stock_quantity ?? 0) <= 5 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'bg-slate-800 text-white' }}">
+                                                    {{ $prod->stock_quantity }} {{ $prod->unit }}
+                                                </span>
+                                            </td>
+                                            <td class="p-3 text-right font-mono font-bold text-indigo-300">Rs. {{ number_format($rowPurValue, 2) }}</td>
+                                            <td class="p-3 text-right font-mono font-bold text-emerald-300">Rs. {{ number_format($rowRetailValue, 2) }}</td>
                                         </tr>
                                     @empty
-                                        <tr><td colspan="6" class="p-6 text-center text-slate-500">No products found in inventory.</td></tr>
+                                        <tr><td colspan="10" class="p-6 text-center text-slate-500">No products found in inventory.</td></tr>
                                     @endforelse
                                 </tbody>
                             </table>
