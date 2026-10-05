@@ -6,6 +6,7 @@ use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Party;
 use App\Models\Salesman;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -15,6 +16,7 @@ class SaleController extends Controller
     {
         $parties = Party::orderBy('name')->get();
         $salesmen = Salesman::orderBy('name')->get();
+        $products = Product::with('company')->orderBy('name')->get();
         
         // Load target sale if ID provided or load latest
         $currentSale = null;
@@ -25,7 +27,7 @@ class SaleController extends Controller
         $allSales = Sale::with('party')->latest()->get();
         $nextInvoiceNo = 'INV-' . str_pad((Sale::max('id') + 1), 5, '0', STR_PAD_LEFT);
 
-        return view('sales.index', compact('parties', 'salesmen', 'currentSale', 'allSales', 'nextInvoiceNo'));
+        return view('sales.index', compact('parties', 'salesmen', 'products', 'currentSale', 'allSales', 'nextInvoiceNo'));
     }
 
     public function store(Request $request)
