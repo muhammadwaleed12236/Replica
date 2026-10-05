@@ -508,11 +508,11 @@
                                                     <input type="number" 
                                                            step="0.01" 
                                                            min="0" 
+                                                           readonly
                                                            x-model.number="item.rate" 
                                                            :name="`items[${index}][rate]`" 
-                                                           @input="recalc()" 
-                                                           class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 font-bold text-xs font-mono transition-colors" 
-                                                           :class="(item.mode || priceMode) === 'wholesale' ? 'text-amber-400 focus:border-amber-400' : 'text-emerald-400 focus:border-emerald-400'" />
+                                                           class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 font-bold text-xs font-mono transition-colors cursor-not-allowed select-none" 
+                                                           :class="(item.mode || priceMode) === 'wholesale' ? 'text-amber-400' : 'text-emerald-400'" />
                                                 </div>
                                             </td>
 
