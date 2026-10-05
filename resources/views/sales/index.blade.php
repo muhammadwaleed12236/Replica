@@ -10,30 +10,51 @@
                 invoiceAmount: {{ $currentSale ? (float)$currentSale->amount : 0 }},
                 invoiceDiscount: {{ $currentSale ? (float)$currentSale->discount : 0 }},
                 productsList: @json($products),
-                items: @json($initialItems),
+                items: @json($initialItems).map(i => ({ ...i, mode: 'retail' })),
                 
                 setPriceMode(mode) {
                     this.priceMode = mode;
                     // Recalculate rate for all catalog-linked item rows based on active price mode
                     this.items.forEach(item => {
+                        item.mode = mode;
                         if (item.product_id) {
                             const p = this.productsList.find(x => x.id == item.product_id);
                             if (p) {
-                                item.rate = this.getProductPrice(p);
+                                item.rate = this.getProductPriceForMode(p, mode);
                             }
                         }
                     });
                     this.recalc();
                 },
 
-                getProductPrice(product) {
+                toggleItemMode(index) {
+                    const item = this.items[index];
+                    if (!item) return;
+                    const currentMode = item.mode || this.priceMode;
+                    const newMode = currentMode === 'retail' ? 'wholesale' : 'retail';
+                    item.mode = newMode;
+                    
+                    if (item.product_id) {
+                        const p = this.productsList.find(x => x.id == item.product_id);
+                        if (p) {
+                            item.rate = this.getProductPriceForMode(p, newMode);
+                        }
+                    }
+                    this.recalc();
+                },
+
+                getProductPriceForMode(product, mode) {
                     if (!product) return 0;
-                    if (this.priceMode === 'wholesale') {
+                    if (mode === 'wholesale') {
                         return (parseFloat(product.wholesale_price) > 0) 
                             ? parseFloat(product.wholesale_price) 
                             : (parseFloat(product.sale_price) || 0);
                     }
                     return parseFloat(product.sale_price) || 0;
+                },
+
+                getProductPrice(product) {
+                    return this.getProductPriceForMode(product, this.priceMode);
                 },
 
                 filteredProducts() {
@@ -48,7 +69,8 @@
 
                 selectSearchProduct(product) {
                     if (!product) return;
-                    const rate = this.getProductPrice(product);
+                    const mode = this.priceMode;
+                    const rate = this.getProductPriceForMode(product, mode);
                     let lastItem = this.items[this.items.length - 1];
                     
                     if (lastItem && !lastItem.name) {
@@ -56,12 +78,14 @@
                         lastItem.rate = rate;
                         lastItem.qty = 1;
                         lastItem.product_id = product.id;
+                        lastItem.mode = mode;
                     } else {
                         this.items.push({
                             name: product.name,
                             qty: 1,
                             rate: rate,
-                            product_id: product.id
+                            product_id: product.id,
+                            mode: mode
                         });
                     }
                     this.productSearchQuery = '';
@@ -70,7 +94,7 @@
                 },
                 
                 addItem() {
-                    this.items.push({ name: '', qty: 1, rate: 0, product_id: '' });
+                    this.items.push({ name: '', qty: 1, rate: 0, product_id: '', mode: this.priceMode });
                 },
                 
                 removeItem(index) {
@@ -84,8 +108,10 @@
                     if (!productId) return;
                     const p = this.productsList.find(item => item.id == productId);
                     if (p) {
-                        this.items[index].name = p.name;
-                        this.items[index].rate = this.getProductPrice(p);
+                        const item = this.items[index];
+                        const mode = item.mode || this.priceMode;
+                        item.name = p.name;
+                        item.rate = this.getProductPriceForMode(p, mode);
                         this.recalc();
                     }
                 },
@@ -96,19 +122,22 @@
                     const p = this.productsList.find(item => item.barcode == code || (item.barcode && item.barcode.toLowerCase() == code.toLowerCase()));
                     
                     if (p) {
-                        const rate = this.getProductPrice(p);
+                        const mode = this.priceMode;
+                        const rate = this.getProductPriceForMode(p, mode);
                         let lastItem = this.items[this.items.length - 1];
                         if (lastItem && !lastItem.name) {
                             lastItem.name = p.name;
                             lastItem.rate = rate;
                             lastItem.qty = 1;
                             lastItem.product_id = p.id;
+                            lastItem.mode = mode;
                         } else {
                             this.items.push({
                                 name: p.name,
                                 qty: 1,
                                 rate: rate,
-                                product_id: p.id
+                                product_id: p.id,
+                                mode: mode
                             });
                         }
                         this.barcodeScan = '';
@@ -423,7 +452,18 @@
                                         <th class="p-2.5 w-72">Select Product from Catalog</th>
                                         <th class="p-2.5">Item Name / Description</th>
                                         <th class="p-2.5 w-24">Qty</th>
-                                        <th class="p-2.5 w-32">Rate (Rs.)</th>
+                                        <th class="p-2.5 w-44">
+                                            <div class="flex items-center justify-between gap-1">
+                                                <span>Rate (Rs.)</span>
+                                                <button type="button" 
+                                                        @click="setPriceMode(priceMode === 'retail' ? 'wholesale' : 'retail')" 
+                                                        title="Click to toggle all items rate mode [R / W]"
+                                                        :class="priceMode === 'wholesale' ? 'bg-amber-400 text-slate-950 font-black' : 'bg-emerald-400 text-slate-950 font-black'"
+                                                        class="px-1.5 py-0.5 rounded text-[10px] font-mono shadow transition-all cursor-pointer">
+                                                    <span x-text="priceMode === 'wholesale' ? 'W' : 'R'"></span>
+                                                </button>
+                                            </div>
+                                        </th>
                                         <th class="p-2.5 w-36">Line Total</th>
                                         <th class="p-2.5 w-16 text-center">Action</th>
                                     </tr>
@@ -453,9 +493,27 @@
                                                 <input type="number" min="1" x-model.number="item.qty" :name="`items[${index}][qty]`" @input="recalc()" class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-mono" />
                                             </td>
 
-                                            <!-- Rate -->
+                                            <!-- Rate with row-level R / W toggle badge button -->
                                             <td class="p-2.5">
-                                                <input type="number" step="0.01" min="0" x-model.number="item.rate" :name="`items[${index}][rate]`" @input="recalc()" class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-emerald-400 font-bold text-xs font-mono" />
+                                                <div class="flex items-center gap-1.5">
+                                                    <!-- R / W row toggle badge button -->
+                                                    <button type="button" 
+                                                            @click="toggleItemMode(index)" 
+                                                            :title="`Click to switch to ${ (item.mode || priceMode) === 'retail' ? 'Wholesale [W]' : 'Retail [R]' }`"
+                                                            :class="(item.mode || priceMode) === 'wholesale' ? 'bg-amber-400/20 text-amber-300 border-amber-400/50 hover:bg-amber-400/40' : 'bg-emerald-400/20 text-emerald-300 border-emerald-400/50 hover:bg-emerald-400/40'"
+                                                            class="px-2 py-1 rounded-lg border text-xs font-black font-mono shadow-sm transition-all flex items-center justify-center shrink-0 cursor-pointer">
+                                                        <span x-text="(item.mode || priceMode) === 'wholesale' ? 'W' : 'R'"></span>
+                                                    </button>
+
+                                                    <input type="number" 
+                                                           step="0.01" 
+                                                           min="0" 
+                                                           x-model.number="item.rate" 
+                                                           :name="`items[${index}][rate]`" 
+                                                           @input="recalc()" 
+                                                           class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 font-bold text-xs font-mono transition-colors" 
+                                                           :class="(item.mode || priceMode) === 'wholesale' ? 'text-amber-400 focus:border-amber-400' : 'text-emerald-400 focus:border-emerald-400'" />
+                                                </div>
                                             </td>
 
                                             <!-- Total -->
