@@ -59,6 +59,7 @@ class PartyController extends Controller
             'company_id' => 'nullable|exists:companies,id',
             'purchase_price' => 'nullable|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
+            'wholesale_price' => 'nullable|numeric|min:0',
             'stock_quantity' => 'nullable|integer|min:0',
         ]);
 
@@ -70,6 +71,7 @@ class PartyController extends Controller
             'unit' => $request->unit ?? 'Pcs',
             'purchase_price' => $request->purchase_price ?? 0,
             'sale_price' => $request->sale_price ?? 0,
+            'wholesale_price' => $request->wholesale_price ?? 0,
             'stock_quantity' => $request->stock_quantity ?? 0,
             'description' => $request->description,
         ]);

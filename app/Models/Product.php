@@ -17,6 +17,7 @@ class Product extends Model
         'unit',
         'purchase_price',
         'sale_price',
+        'wholesale_price',
         'stock_quantity',
         'description',
     ];

@@ -3,11 +3,71 @@
         function salesFormData() {
             return {
                 showFindModal: false,
+                priceMode: 'retail', // 'retail' or 'wholesale'
                 barcodeScan: '',
+                productSearchQuery: '',
+                showSearchResults: false,
                 invoiceAmount: {{ $currentSale ? (float)$currentSale->amount : 0 }},
                 invoiceDiscount: {{ $currentSale ? (float)$currentSale->discount : 0 }},
                 productsList: @json($products),
                 items: @json($initialItems),
+                
+                setPriceMode(mode) {
+                    this.priceMode = mode;
+                    // Recalculate rate for all catalog-linked item rows based on active price mode
+                    this.items.forEach(item => {
+                        if (item.product_id) {
+                            const p = this.productsList.find(x => x.id == item.product_id);
+                            if (p) {
+                                item.rate = this.getProductPrice(p);
+                            }
+                        }
+                    });
+                    this.recalc();
+                },
+
+                getProductPrice(product) {
+                    if (!product) return 0;
+                    if (this.priceMode === 'wholesale') {
+                        return (parseFloat(product.wholesale_price) > 0) 
+                            ? parseFloat(product.wholesale_price) 
+                            : (parseFloat(product.sale_price) || 0);
+                    }
+                    return parseFloat(product.sale_price) || 0;
+                },
+
+                filteredProducts() {
+                    if (!this.productSearchQuery || !this.productSearchQuery.trim()) return [];
+                    const q = this.productSearchQuery.trim().toLowerCase();
+                    return this.productsList.filter(p => 
+                        (p.name && p.name.toLowerCase().includes(q)) || 
+                        (p.barcode && p.barcode.toLowerCase().includes(q)) ||
+                        (p.category && p.category.toLowerCase().includes(q))
+                    ).slice(0, 10);
+                },
+
+                selectSearchProduct(product) {
+                    if (!product) return;
+                    const rate = this.getProductPrice(product);
+                    let lastItem = this.items[this.items.length - 1];
+                    
+                    if (lastItem && !lastItem.name) {
+                        lastItem.name = product.name;
+                        lastItem.rate = rate;
+                        lastItem.qty = 1;
+                        lastItem.product_id = product.id;
+                    } else {
+                        this.items.push({
+                            name: product.name,
+                            qty: 1,
+                            rate: rate,
+                            product_id: product.id
+                        });
+                    }
+                    this.productSearchQuery = '';
+                    this.showSearchResults = false;
+                    this.recalc();
+                },
                 
                 addItem() {
                     this.items.push({ name: '', qty: 1, rate: 0, product_id: '' });
@@ -25,7 +85,7 @@
                     const p = this.productsList.find(item => item.id == productId);
                     if (p) {
                         this.items[index].name = p.name;
-                        this.items[index].rate = parseFloat(p.sale_price) || 0;
+                        this.items[index].rate = this.getProductPrice(p);
                         this.recalc();
                     }
                 },
@@ -36,17 +96,18 @@
                     const p = this.productsList.find(item => item.barcode == code || (item.barcode && item.barcode.toLowerCase() == code.toLowerCase()));
                     
                     if (p) {
+                        const rate = this.getProductPrice(p);
                         let lastItem = this.items[this.items.length - 1];
                         if (lastItem && !lastItem.name) {
                             lastItem.name = p.name;
-                            lastItem.rate = parseFloat(p.sale_price) || 0;
+                            lastItem.rate = rate;
                             lastItem.qty = 1;
                             lastItem.product_id = p.id;
                         } else {
                             this.items.push({
                                 name: p.name,
                                 qty: 1,
-                                rate: parseFloat(p.sale_price) || 0,
+                                rate: rate,
                                 product_id: p.id
                             });
                         }
@@ -102,7 +163,7 @@
             <!-- Main Form Card -->
             <div class="prowave-glass-card rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
                 
-                <!-- TOP ACTION TOOLBAR (+ New, Find, Edit, Save, Delete, Refresh, Exit) -->
+                <!-- TOP ACTION TOOLBAR (+ New, Find, Save, Price Mode Toggle R/W, Exit) -->
                 <div class="bg-gradient-to-r from-sky-900/90 via-slate-900 to-indigo-950/90 border-b border-slate-800 p-2.5 flex flex-wrap items-center gap-2">
                     <!-- Section Badge -->
                     <div class="flex items-center gap-2 pr-3 border-r border-slate-800">
@@ -110,6 +171,25 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 100 4 2 2 0 000-4z"/></svg>
                         </div>
                         <span class="text-base font-extrabold text-white font-['Outfit']">Sales Invoice</span>
+                    </div>
+
+                    <!-- Price Mode Toggle: Retail [R] / Wholesale [W] -->
+                    <div class="flex items-center gap-1 bg-slate-950/90 p-1 rounded-xl border border-slate-700 shadow-inner">
+                        <span class="text-[10px] font-extrabold uppercase text-slate-400 px-2 font-mono tracking-wider">Rate Mode:</span>
+                        <button type="button" 
+                                @click="setPriceMode('retail')" 
+                                :class="priceMode === 'retail' ? 'bg-emerald-500 text-slate-950 shadow-md font-black' : 'bg-transparent text-slate-400 hover:text-white font-semibold'" 
+                                class="px-3 py-1 rounded-lg text-xs font-mono transition-all flex items-center gap-1">
+                            <span>[R]</span>
+                            <span>Retail</span>
+                        </button>
+                        <button type="button" 
+                                @click="setPriceMode('wholesale')" 
+                                :class="priceMode === 'wholesale' ? 'bg-amber-400 text-slate-950 shadow-md font-black' : 'bg-transparent text-slate-400 hover:text-white font-semibold'" 
+                                class="px-3 py-1 rounded-lg text-xs font-mono transition-all flex items-center gap-1">
+                            <span>[W]</span>
+                            <span>Wholesale</span>
+                        </button>
                     </div>
 
                     <!-- + New Button -->
@@ -267,25 +347,69 @@
                         </div>
                     </div>
 
-                    <!-- Quick Barcode Scanner Bar -->
-                    <div class="p-3 rounded-xl bg-indigo-950/30 border border-indigo-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
-                        <div class="flex items-center gap-2 text-indigo-300 text-xs font-bold font-['Outfit']">
-                            <span class="p-1 rounded bg-indigo-500/20">⚡</span>
-                            <span>BARCODE SCANNER QUICK ADD:</span>
+                    <!-- DUAL QUICK PRODUCT SEARCH & BARCODE SCANNER TOOLBAR -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-3.5 rounded-xl bg-slate-900/90 border border-cyan-500/30">
+                        
+                        <!-- 1. LIVE PRODUCT SEARCH WITH AUTOCOMPLETE DROPDOWN -->
+                        <div class="relative space-y-1">
+                            <label class="flex items-center justify-between text-[11px] font-bold text-cyan-300 font-['Outfit']">
+                                <span class="flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                    <span>LIVE PRODUCT SEARCH:</span>
+                                </span>
+                                <span class="text-[10px] text-slate-400 font-normal">Type product name or code</span>
+                            </label>
+                            <div class="relative">
+                                <input type="text" 
+                                       x-model="productSearchQuery" 
+                                       @focus="showSearchResults = true"
+                                       @input="showSearchResults = true"
+                                       placeholder="🔍 Type Product Name, Code or Category..." 
+                                       class="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-cyan-500/40 text-white font-medium text-xs focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400" />
+                                
+                                <!-- Search Results Dropdown -->
+                                <div x-show="showSearchResults && filteredProducts().length > 0" 
+                                     @click.away="showSearchResults = false"
+                                     style="display: none;" 
+                                     class="absolute left-0 right-0 top-full mt-1.5 z-40 bg-slate-900 border border-cyan-500/40 rounded-xl shadow-2xl max-h-60 overflow-y-auto divide-y divide-slate-800">
+                                    <template x-for="p in filteredProducts()" :key="p.id">
+                                        <div @click="selectSearchProduct(p)" 
+                                             class="p-2.5 hover:bg-cyan-950/60 cursor-pointer flex items-center justify-between transition-colors">
+                                            <div>
+                                                <span class="font-extrabold text-white text-xs block font-['Outfit']" x-text="p.name"></span>
+                                                <span class="text-[10px] text-slate-400 font-mono" x-text="`Barcode: ${p.barcode} • Stock: ${p.stock_quantity} ${p.unit || ''}`"></span>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="text-xs font-mono font-bold text-emerald-400" x-text="`R: Rs. ${parseFloat(p.sale_price || 0).toFixed(2)}`"></div>
+                                                <div class="text-[10px] font-mono font-bold text-amber-400" x-text="`W: Rs. ${parseFloat(p.wholesale_price || p.sale_price || 0).toFixed(2)}`"></div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
                         </div>
-                        <div class="relative w-full sm:w-80">
+
+                        <!-- 2. QUICK BARCODE SCANNER -->
+                        <div class="space-y-1">
+                            <label class="flex items-center gap-1.5 text-[11px] font-bold text-indigo-300 font-['Outfit']">
+                                <span>⚡ BARCODE SCANNER:</span>
+                            </label>
                             <input type="text" 
                                    x-model="barcodeScan" 
                                    @keydown.enter.prevent="handleBarcodeScan()" 
-                                   placeholder="Scan item barcode & press enter..." 
-                                   class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-indigo-500/50 text-white font-mono text-xs focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400" />
+                                   placeholder="Scan barcode & press enter..." 
+                                   class="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-indigo-500/50 text-white font-mono text-xs focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400" />
                         </div>
+
                     </div>
 
                     <!-- Itemized Sales Products Grid -->
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
-                            <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-400 font-['Outfit']">Sales Items Grid (Select Product Catalog or Type Custom Item)</h3>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-400 font-['Outfit'] flex items-center gap-2">
+                                <span>Sales Items Grid</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-mono uppercase" :class="priceMode === 'wholesale' ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40' : 'bg-emerald-400/20 text-emerald-300 border border-emerald-400/40'" x-text="`Active Mode: ${priceMode.toUpperCase()}`"></span>
+                            </h3>
                             <button type="button" @click="addItem()" class="px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs font-bold flex items-center gap-1 border border-cyan-500/30">
                                 + Add Row
                             </button>
@@ -296,7 +420,7 @@
                                 <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
                                     <tr>
                                         <th class="p-2.5">#</th>
-                                        <th class="p-2.5 w-64">Select Product from Catalog</th>
+                                        <th class="p-2.5 w-72">Select Product from Catalog</th>
                                         <th class="p-2.5">Item Name / Description</th>
                                         <th class="p-2.5 w-24">Qty</th>
                                         <th class="p-2.5 w-32">Rate (Rs.)</th>
@@ -311,10 +435,10 @@
                                             
                                             <!-- Select fetched product -->
                                             <td class="p-2.5">
-                                                <select x-model="item.product_id" @change="onProductSelect(index, $event.target.value)" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-cyan-300 text-xs">
+                                                <select x-model="item.product_id" @change="onProductSelect(index, $event.target.value)" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-cyan-300 text-xs font-medium">
                                                     <option value="">-- Choose Product --</option>
                                                     <template x-for="p in productsList" :key="p.id">
-                                                        <option :value="p.id" x-text="`${p.name} (Rs. ${p.sale_price}) [${p.barcode}]`"></option>
+                                                        <option :value="p.id" x-text="`${p.name} [R: Rs.${p.sale_price} | W: Rs.${p.wholesale_price || p.sale_price}]`"></option>
                                                     </template>
                                                 </select>
                                             </td>

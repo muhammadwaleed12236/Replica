@@ -83,7 +83,8 @@
                                 <th class="p-3.5">Product Details</th>
                                 <th class="p-3.5">Company</th>
                                 <th class="p-3.5 text-right">Purchase Price</th>
-                                <th class="p-3.5 text-right">Sale Price</th>
+                                <th class="p-3.5 text-right">Retail Price [R]</th>
+                                <th class="p-3.5 text-right">Wholesale Price [W]</th>
                                 <th class="p-3.5 text-center">Stock Qty</th>
                                 <th class="p-3.5 text-center">Action</th>
                             </tr>
@@ -120,6 +121,9 @@
                                     <td class="p-3.5 text-right font-mono font-bold text-emerald-400 text-sm">
                                         Rs. {{ number_format($product->sale_price, 2) }}
                                     </td>
+                                    <td class="p-3.5 text-right font-mono font-bold text-amber-400 text-sm">
+                                        Rs. {{ number_format($product->wholesale_price, 2) }}
+                                    </td>
                                     <td class="p-3.5 text-center font-mono">
                                         <span class="px-2.5 py-1 rounded-full text-xs font-bold {{ $product->stock_quantity <= 5 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' }}">
                                             {{ $product->stock_quantity }} {{ $product->unit }}
@@ -137,7 +141,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="p-8 text-center text-slate-500">
+                                    <td colspan="8" class="p-8 text-center text-slate-500">
                                         No products found in catalog. Click "Add New Product" to create your first item with barcode!
                                     </td>
                                 </tr>
@@ -198,23 +202,29 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-3">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         <!-- Purchase Price -->
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Purchase Price</label>
-                            <input type="number" step="0.01" name="purchase_price" value="0" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs" />
+                            <input type="number" step="0.01" name="purchase_price" value="0" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 font-mono text-xs" />
                         </div>
 
-                        <!-- Sale Price -->
+                        <!-- Retail Sale Price -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Sale Price</label>
-                            <input type="number" step="0.01" name="sale_price" value="0" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs" />
+                            <label class="block text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1">Retail Price [R]</label>
+                            <input type="number" step="0.01" name="sale_price" value="0" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-emerald-400 font-bold font-mono text-xs" />
+                        </div>
+
+                        <!-- Wholesale Sale Price -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">Wholesale Price [W]</label>
+                            <input type="number" step="0.01" name="wholesale_price" value="0" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-amber-400 font-bold font-mono text-xs" />
                         </div>
 
                         <!-- Opening Stock -->
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Initial Stock Qty</label>
-                            <input type="number" name="stock_quantity" value="0" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs" />
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Initial Stock</label>
+                            <input type="number" name="stock_quantity" value="0" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs" />
                         </div>
                     </div>
 
