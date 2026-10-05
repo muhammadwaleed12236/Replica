@@ -52,7 +52,7 @@ class SaleController extends Controller
             [
                 'date' => $request->date,
                 'party_id' => $request->party_id,
-                'salesman_id' => $request->salesman_id,
+                'salesman_id' => $request->salesman_id ?: null,
                 'amount' => $subtotal,
                 'discount' => $discount,
                 'net_amount' => $netAmount,

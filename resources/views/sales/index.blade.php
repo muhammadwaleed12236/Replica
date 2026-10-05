@@ -1,78 +1,82 @@
 <x-app-layout>
-    <div class="py-6" x-data="{
-        showFindModal: false,
-        barcodeScan: '',
-        invoiceAmount: {{ $currentSale ? $currentSale->amount : 0 }},
-        invoiceDiscount: {{ $currentSale ? $currentSale->discount : 0 }},
-        productsList: {{ json_encode($products) }},
-        items: @json($currentSale && count($currentSale->items) > 0 ? $currentSale->items->map(fn($i) => ['name' => $i->item_name, 'qty' => $i->qty, 'rate' => (float)$i->rate, 'product_id' => ''])->toArray() : [['name' => '', 'qty' => 1, 'rate' => 0, 'product_id' => '']]),
-        
-        addItem() {
-            this.items.push({ name: '', qty: 1, rate: 0, product_id: '' });
-        },
-        
-        removeItem(index) {
-            if (this.items.length > 1) {
-                this.items.splice(index, 1);
-                this.recalc();
-            }
-        },
-        
-        onProductSelect(index, productId) {
-            if (!productId) return;
-            const p = this.productsList.find(item => item.id == productId);
-            if (p) {
-                this.items[index].name = p.name;
-                this.items[index].rate = parseFloat(p.sale_price) || 0;
-                this.recalc();
-            }
-        },
+    <script>
+        function salesFormData() {
+            return {
+                showFindModal: false,
+                barcodeScan: '',
+                invoiceAmount: {{ $currentSale ? (float)$currentSale->amount : 0 }},
+                invoiceDiscount: {{ $currentSale ? (float)$currentSale->discount : 0 }},
+                productsList: @json($products),
+                items: @json(old('items') ?? ($currentSale && count($currentSale->items) > 0 ? $currentSale->items->map(fn($i) => ['name' => $i->item_name, 'qty' => (int)$i->qty, 'rate' => (float)$i->rate, 'product_id' => ''])->toArray() : [['name' => '', 'qty' => 1, 'rate' => 0, 'product_id' => '']])),
+                
+                addItem() {
+                    this.items.push({ name: '', qty: 1, rate: 0, product_id: '' });
+                },
+                
+                removeItem(index) {
+                    if (this.items.length > 1) {
+                        this.items.splice(index, 1);
+                        this.recalc();
+                    }
+                },
+                
+                onProductSelect(index, productId) {
+                    if (!productId) return;
+                    const p = this.productsList.find(item => item.id == productId);
+                    if (p) {
+                        this.items[index].name = p.name;
+                        this.items[index].rate = parseFloat(p.sale_price) || 0;
+                        this.recalc();
+                    }
+                },
 
-        handleBarcodeScan() {
-            if (!this.barcodeScan) return;
-            const code = this.barcodeScan.trim();
-            const p = this.productsList.find(item => item.barcode == code || item.barcode.toLowerCase() == code.toLowerCase());
-            
-            if (p) {
-                let lastItem = this.items[this.items.length - 1];
-                if (lastItem && !lastItem.name) {
-                    lastItem.name = p.name;
-                    lastItem.rate = parseFloat(p.sale_price) || 0;
-                    lastItem.qty = 1;
-                    lastItem.product_id = p.id;
-                } else {
-                    this.items.push({
-                        name: p.name,
-                        qty: 1,
-                        rate: parseFloat(p.sale_price) || 0,
-                        product_id: p.id
+                handleBarcodeScan() {
+                    if (!this.barcodeScan) return;
+                    const code = this.barcodeScan.trim();
+                    const p = this.productsList.find(item => item.barcode == code || (item.barcode && item.barcode.toLowerCase() == code.toLowerCase()));
+                    
+                    if (p) {
+                        let lastItem = this.items[this.items.length - 1];
+                        if (lastItem && !lastItem.name) {
+                            lastItem.name = p.name;
+                            lastItem.rate = parseFloat(p.sale_price) || 0;
+                            lastItem.qty = 1;
+                            lastItem.product_id = p.id;
+                        } else {
+                            this.items.push({
+                                name: p.name,
+                                qty: 1,
+                                rate: parseFloat(p.sale_price) || 0,
+                                product_id: p.id
+                            });
+                        }
+                        this.barcodeScan = '';
+                        this.recalc();
+                    } else {
+                        alert('No product found with barcode: ' + code);
+                    }
+                },
+
+                recalc() {
+                    let sum = 0;
+                    this.items.forEach(i => {
+                        sum += (parseFloat(i.qty) || 0) * (parseFloat(i.rate) || 0);
                     });
+                    this.invoiceAmount = sum;
+                },
+
+                calculateTotal() {
+                    let sum = 0;
+                    this.items.forEach(i => {
+                        sum += (parseFloat(i.qty) || 0) * (parseFloat(i.rate) || 0);
+                    });
+                    return sum;
                 }
-                this.barcodeScan = '';
-                this.recalc();
-            } else {
-                alert('No product found with barcode: ' + code);
-            }
-        },
-
-        recalc() {
-            let sum = 0;
-            this.items.forEach(i => {
-                sum += (parseFloat(i.qty) || 0) * (parseFloat(i.rate) || 0);
-            });
-            this.invoiceAmount = sum;
-        },
-
-        calculateTotal() {
-            let sum = 0;
-            this.items.forEach(i => {
-                sum += (parseFloat(i.qty) || 0) * (parseFloat(i.rate) || 0);
-            });
-            return sum;
+            };
         }
-    }"
-    x-effect="invoiceAmount = calculateTotal()"
-    >
+    </script>
+
+    <div class="py-6" x-data="salesFormData()" x-effect="invoiceAmount = calculateTotal()">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
 
             @if(session('success'))
@@ -176,7 +180,7 @@
                             <select name="party_id" required class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 text-xs">
                                 <option value="">-- Select Customer / Party --</option>
                                 @foreach($parties as $party)
-                                    <option value="{{ $party->id }}" {{ ($currentSale && $currentSale->party_id == $party->id) ? 'selected' : '' }}>
+                                    <option value="{{ $party->id }}" {{ old('party_id', $currentSale ? $currentSale->party_id : '') == $party->id ? 'selected' : '' }}>
                                         {{ $party->name }} ({{ ucfirst($party->type) }})
                                     </option>
                                 @endforeach
@@ -203,7 +207,7 @@
                             <select name="salesman_id" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 text-xs">
                                 <option value="">-- Select Salesman --</option>
                                 @foreach($salesmen as $sm)
-                                    <option value="{{ $sm->id }}" {{ ($currentSale && $currentSale->salesman_id == $sm->id) ? 'selected' : '' }}>
+                                    <option value="{{ $sm->id }}" {{ old('salesman_id', $currentSale ? $currentSale->salesman_id : '') == $sm->id ? 'selected' : '' }}>
                                         {{ $sm->name }}
                                     </option>
                                 @endforeach
