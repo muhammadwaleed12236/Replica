@@ -193,8 +193,8 @@ class PartyController extends Controller
         $parties = Party::orderBy('name')->get();
 
         // Base Queries with Date Range Filters
-        $salesQuery = \App\Models\Sale::with('party')->whereBetween('date', [$fromDate, $toDate]);
-        $purchasesQuery = \App\Models\Purchase::with('party')->whereBetween('date', [$fromDate, $toDate]);
+        $salesQuery = \App\Models\Sale::with(['party', 'items', 'salesman'])->whereBetween('date', [$fromDate, $toDate]);
+        $purchasesQuery = \App\Models\Purchase::with(['party', 'company'])->whereBetween('date', [$fromDate, $toDate]);
         $expensesQuery = Expense::whereBetween('date', [$fromDate, $toDate]);
         $vouchersQuery = Voucher::with('party')->whereBetween('date', [$fromDate, $toDate]);
 
@@ -217,6 +217,49 @@ class PartyController extends Controller
 
         $grossProfit = $totalSales - $totalPurchases;
         $netProfit = $grossProfit - $totalExpenses;
+
+        // Customer-Wise Sales Summary
+        $customerSalesSummary = $filteredSales->groupBy('party_id')->map(function ($sales) {
+            $party = $sales->first()->party;
+            return [
+                'party_name' => $party->name ?? 'Walk-in Customer',
+                'party_code' => $party->code ?? 'N/A',
+                'party_type' => $party->type ?? 'customer',
+                'invoice_count' => $sales->count(),
+                'total_amount' => $sales->sum('net_amount'),
+            ];
+        })->sortByDesc('total_amount')->values();
+
+        // Product-Wise Sales Summary
+        $productSalesSummary = collect();
+        foreach ($filteredSales as $sale) {
+            foreach ($sale->items as $item) {
+                $name = $item->item_name;
+                if (!$productSalesSummary->has($name)) {
+                    $productSalesSummary->put($name, [
+                        'item_name' => $name,
+                        'total_qty' => 0,
+                        'total_revenue' => 0,
+                    ]);
+                }
+                $curr = $productSalesSummary->get($name);
+                $curr['total_qty'] += $item->qty;
+                $curr['total_revenue'] += $item->total;
+                $productSalesSummary->put($name, $curr);
+            }
+        }
+        $productSalesSummary = $productSalesSummary->sortByDesc('total_revenue')->values();
+
+        // Supplier-Wise Purchase Summary
+        $supplierPurchaseSummary = $filteredPurchases->groupBy('party_id')->map(function ($purchases) {
+            $party = $purchases->first()->party;
+            return [
+                'party_name' => $party->name ?? 'Direct Purchase',
+                'party_code' => $party->code ?? 'N/A',
+                'bill_count' => $purchases->count(),
+                'total_amount' => $purchases->sum('net_amount'),
+            ];
+        })->sortByDesc('total_amount')->values();
 
         // Detailed Party Ledger Statement if a Party is selected
         $ledgerEntries = collect();
@@ -280,6 +323,26 @@ class PartyController extends Controller
         $salesmen = Salesman::latest()->get();
         $banks = Bank::latest()->get();
 
+        // Category-Wise Stock Summary
+        $categoryStockSummary = $products->groupBy(function ($p) {
+            return $p->category ?: 'General';
+        })->map(function ($prods, $catName) {
+            return [
+                'category' => $catName,
+                'product_count' => $prods->count(),
+                'total_qty' => $prods->sum('stock_quantity'),
+                'purchase_val' => $prods->sum(function ($p) {
+                    return ($p->purchase_price ?? 0) * ($p->stock_quantity ?? 0);
+                }),
+                'retail_val' => $prods->sum(function ($p) {
+                    return ($p->sale_price ?? 0) * ($p->stock_quantity ?? 0);
+                }),
+                'wholesale_val' => $prods->sum(function ($p) {
+                    return ($p->wholesale_price ?? 0) * ($p->stock_quantity ?? 0);
+                }),
+            ];
+        })->sortByDesc('retail_val')->values();
+
         // Stock Valuation Calculations
         $totalStockQty = $products->sum('stock_quantity');
         $stockPurchaseValue = $products->sum(function ($p) {
@@ -317,7 +380,11 @@ class PartyController extends Controller
             'totalStockQty',
             'stockPurchaseValue',
             'stockRetailValue',
-            'stockWholesaleValue'
+            'stockWholesaleValue',
+            'customerSalesSummary',
+            'productSalesSummary',
+            'supplierPurchaseSummary',
+            'categoryStockSummary'
         ));
     }
 }
