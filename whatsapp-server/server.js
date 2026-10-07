@@ -15,8 +15,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const AUTH_DIR = path.join(__dirname, 'auth_info_baileys');
+
+if (typeof(PhusionPassenger) !== 'undefined') {
+    PhusionPassenger.configure({ autoInstall: false });
+}
 
 let sock = null;
 let currentQr = null;
@@ -151,7 +155,14 @@ app.post('/logout', async (req, res) => {
 });
 
 // Start WhatsApp socket & Express server
-app.listen(PORT, () => {
-    console.log(`🚀 WhatsApp Node.js API Service running on http://127.0.0.1:${PORT}`);
-    connectToWhatsApp();
-});
+if (typeof(PhusionPassenger) !== 'undefined') {
+    app.listen('passenger', () => {
+        console.log('🚀 WhatsApp API running under Phusion Passenger');
+        connectToWhatsApp();
+    });
+} else {
+    app.listen(PORT, () => {
+        console.log(`🚀 WhatsApp Node.js API Service running on http://127.0.0.1:${PORT}`);
+        connectToWhatsApp();
+    });
+}
