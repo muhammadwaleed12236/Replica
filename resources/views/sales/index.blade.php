@@ -153,8 +153,12 @@
                             <input type="date" 
                                    name="date" 
                                    value="{{ old('date', $currentSale ? $currentSale->date : date('Y-m-d')) }}" 
+                                   @if(isset($minDate) && $minDate) min="{{ $minDate }}" @endif
                                    required 
                                    class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 text-xs font-mono" />
+                            @if(isset($dateLockDate) && $dateLockDate)
+                                <span class="text-[10px] text-amber-400 block mt-1">🔒 Locked on/before {{ $dateLockDate }}</span>
+                            @endif
                         </div>
 
                         <!-- Party -->

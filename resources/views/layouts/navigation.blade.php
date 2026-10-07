@@ -42,6 +42,10 @@
                     Node Online
                 </div>
 
+                <a href="{{ route('settings.index') }}" class="px-2.5 py-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center gap-1 transition-all">
+                    ⚙️ Settings
+                </a>
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-1.5 border border-slate-700/60 text-xs leading-4 font-semibold rounded-xl text-slate-200 bg-slate-900/80 hover:bg-slate-800 hover:border-slate-600 focus:outline-none transition duration-150">
@@ -62,6 +66,10 @@
                             <div class="px-4 py-3 border-b border-slate-800 text-xs text-slate-400">
                                 Logged in as <span class="font-bold text-white block truncate">{{ Auth::user()->email }}</span>
                             </div>
+                            <x-dropdown-link :href="route('settings.index')" class="text-amber-300 hover:bg-slate-800 hover:text-amber-200 font-bold">
+                                ⚙️ {{ __('System Security & Settings') }}
+                            </x-dropdown-link>
+
                             <x-dropdown-link :href="route('profile.edit')" class="text-slate-300 hover:bg-slate-800 hover:text-cyan-400">
                                 {{ __('Profile Settings') }}
                             </x-dropdown-link>

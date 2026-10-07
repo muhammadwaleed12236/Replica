@@ -25,7 +25,10 @@ class SaleController extends Controller
         $allSales = Sale::with('party')->latest()->get();
         $nextInvoiceNo = 'INV-' . str_pad((Sale::max('id') + 1), 5, '0', STR_PAD_LEFT);
 
-        return view('sales.index', compact('parties', 'salesmen', 'currentSale', 'allSales', 'nextInvoiceNo'));
+        $dateLockDate = \App\Models\Setting::get('date_lock_date');
+        $minDate = $dateLockDate ? \Carbon\Carbon::parse($dateLockDate)->addDay()->format('Y-m-d') : null;
+
+        return view('sales.index', compact('parties', 'salesmen', 'currentSale', 'allSales', 'nextInvoiceNo', 'dateLockDate', 'minDate'));
     }
 
     public function store(Request $request)
