@@ -295,11 +295,12 @@
                                                 [$s->party->name ?? 'Customer', $s->invoice_no, number_format($s->net_amount, 2), $s->date],
                                                 $pTmpl
                                             );
-                                            $pWaUrl = "https://wa.me/" . ($pPhone ?: '923000000000') . "?text=" . urlencode($pMsg);
                                         @endphp
-                                        <a href="{{ $pWaUrl }}" target="_blank" class="px-2 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-[11px] font-bold border border-emerald-500/30">
-                                            💬 WA
-                                        </a>
+                                        <button type="button" 
+                                                onclick="sendDirectWA('{{ $pPhone }}', '{{ addslashes($pMsg) }}', this)" 
+                                                class="px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-[11px] font-bold border border-emerald-500/30">
+                                            💬 WA Direct
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
