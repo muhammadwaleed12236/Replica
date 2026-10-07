@@ -352,6 +352,9 @@
         btnEl.innerText = 'Sending...';
         btnEl.disabled = true;
 
+        const cleanPhone = phone.replace(/[^0-9]/g, '');
+        const waWebUrl = `https://api.whatsapp.com/send/?phone=${cleanPhone}&text=${encodeURIComponent(message)}`;
+
         fetch('{{ route("settings.send_whatsapp") }}', {
             method: 'POST',
             headers: {
@@ -367,14 +370,18 @@
                 btnEl.innerHTML = '✅ Sent WA Direct!';
                 setTimeout(() => { btnEl.innerHTML = origText; }, 3000);
             } else {
-                alert('Failed to send WhatsApp message: ' + (data.error || 'Please connect WhatsApp QR code in Settings'));
                 btnEl.innerHTML = origText;
+                if (confirm('Direct WhatsApp Bot is offline. Would you like to send via WhatsApp Web/App link instead?')) {
+                    window.open(waWebUrl, '_blank');
+                }
             }
         })
         .catch(err => {
             btnEl.disabled = false;
             btnEl.innerHTML = origText;
-            alert('WhatsApp API Service offline. Please connect QR Code in Settings page.');
+            if (confirm('WhatsApp Bot is offline on server. Would you like to send via WhatsApp Web/App link instead?')) {
+                window.open(waWebUrl, '_blank');
+            }
         });
     }
     </script>

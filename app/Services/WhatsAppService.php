@@ -7,12 +7,15 @@ use Illuminate\Support\Facades\Log;
 
 class WhatsAppService
 {
-    protected static $nodeUrl = 'http://127.0.0.1:3000';
+    protected static function getNodeUrl()
+    {
+        return env('WHATSAPP_SERVER_URL', 'http://127.0.0.1:3000');
+    }
 
     public static function getStatus()
     {
         try {
-            $response = Http::timeout(3)->get(self::$nodeUrl . '/status');
+            $response = Http::timeout(3)->get(self::getNodeUrl() . '/status');
             if ($response->successful()) {
                 return $response->json();
             }
@@ -31,7 +34,7 @@ class WhatsAppService
     public static function sendDirectMessage($phone, $message)
     {
         try {
-            $response = Http::timeout(10)->post(self::$nodeUrl . '/send-message', [
+            $response = Http::timeout(10)->post(self::getNodeUrl() . '/send-message', [
                 'phone' => $phone,
                 'message' => $message,
             ]);
@@ -57,7 +60,7 @@ class WhatsAppService
     public static function logout()
     {
         try {
-            $response = Http::timeout(5)->post(self::$nodeUrl . '/logout');
+            $response = Http::timeout(5)->post(self::getNodeUrl() . '/logout');
             return $response->json();
         } catch (\Exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
