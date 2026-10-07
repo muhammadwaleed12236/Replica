@@ -32,13 +32,20 @@ async function connectToWhatsApp() {
     currentQr = null;
 
     const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
-    const { version } = await fetchLatestBaileysVersion();
+    let version;
+    try {
+        const v = await fetchLatestBaileysVersion();
+        version = v.version;
+    } catch (e) {
+        console.log('Using default Baileys version fallback');
+        version = [2, 3000, 1015901307];
+    }
 
     sock = makeWASocket({
         version,
         logger: pino({ level: 'silent' }),
         auth: state,
-        browser: ['DrDeepak-ERP', 'Chrome', '1.0.0'],
+        browser: ['Ubuntu', 'Chrome', '20.0.04'],
     });
 
     sock.ev.on('creds.update', saveCreds);
