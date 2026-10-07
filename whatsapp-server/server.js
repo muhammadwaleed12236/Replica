@@ -33,7 +33,6 @@ async function connectToWhatsApp() {
     sock = makeWASocket({
         version,
         logger: pino({ level: 'silent' }),
-        printQRInTerminal: true,
         auth: state,
         browser: ['DrDeepak-ERP', 'Chrome', '1.0.0'],
     });
@@ -100,14 +99,31 @@ app.post('/send-message', async (req, res) => {
             cleanPhone = '92' + cleanPhone.substring(1);
         }
 
-        const jid = cleanPhone.includes('@s.whatsapp.net') ? cleanPhone : `${cleanPhone}@s.whatsapp.net`;
+        // Check if number exists on WhatsApp using Baileys onWhatsApp
+        console.log(`🔍 Checking WhatsApp registration for number: +${cleanPhone}`);
+        const results = await sock.onWhatsApp(cleanPhone);
+        const onWa = Array.isArray(results) && results.length > 0 ? results[0] : null;
+
+        if (!onWa || !onWa.exists) {
+            console.log(`❌ Number +${cleanPhone} is NOT registered on WhatsApp.`);
+            return res.status(400).json({
+                success: false,
+                error: `Phone number +${cleanPhone} is NOT registered on WhatsApp!`
+            });
+        }
+
+        const jid = onWa.jid;
+        console.log(`📤 Sending WhatsApp message to JID: ${jid}...`);
 
         const result = await sock.sendMessage(jid, { text: message });
+
+        console.log(`✅ WhatsApp Message Sent Successfully! ID: ${result.key.id}`);
 
         return res.json({
             success: true,
             messageId: result.key.id,
             to: cleanPhone,
+            jid: jid,
         });
     } catch (err) {
         console.error('Error sending WhatsApp message:', err);

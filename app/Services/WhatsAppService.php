@@ -36,13 +36,14 @@ class WhatsAppService
                 'message' => $message,
             ]);
 
-            if ($response->successful()) {
-                return $response->json();
+            $json = $response->json();
+            if ($response->successful() && isset($json['success']) && $json['success'] === true) {
+                return $json;
             }
 
             return [
                 'success' => false,
-                'error' => $response->json('error') ?? 'HTTP Error ' . $response->status(),
+                'error' => $json['error'] ?? 'HTTP Error ' . $response->status(),
             ];
         } catch (\Exception $e) {
             Log::error('Failed to send WhatsApp message via API: ' . $e->getMessage());
