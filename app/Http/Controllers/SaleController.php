@@ -41,9 +41,23 @@ class SaleController extends Controller
             'items' => 'nullable|array',
         ]);
 
+        // Check Date Lock
+        $dateLockDate = \App\Models\Setting::get('date_lock_date');
+        if ($dateLockDate && $request->date <= $dateLockDate && !$request->has('admin_override')) {
+            return redirect()->back()->withErrors(['date' => 'Date Lock is active for dates on or before ' . $dateLockDate . '. Entry blocked!']);
+        }
+
         $subtotal = (float) $request->amount;
         $discount = (float) ($request->discount ?? 0);
         $netAmount = max(0, $subtotal - $discount);
+
+        // Check Party Credit Limit
+        $party = Party::find($request->party_id);
+        if ($party && $party->credit_limit > 0 && !$request->has('admin_override')) {
+            if (($party->current_balance + $netAmount) > $party->credit_limit) {
+                return redirect()->back()->with('credit_warning', 'Customer ' . $party->name . ' credit limit of Rs. ' . number_format($party->credit_limit, 2) . ' exceeded! Current balance: Rs. ' . number_format($party->current_balance, 2));
+            }
+        }
 
         $sale = Sale::updateOrCreate(
             ['invoice_no' => $request->invoice_no],
@@ -87,6 +101,13 @@ class SaleController extends Controller
     public function destroy($id)
     {
         $sale = Sale::findOrFail($id);
+
+        // Check Date Lock
+        $dateLockDate = \App\Models\Setting::get('date_lock_date');
+        if ($dateLockDate && $sale->date <= $dateLockDate && !request()->has('admin_override')) {
+            return redirect()->back()->withErrors(['date' => 'Date Lock is active for dates on or before ' . $dateLockDate . '. Deletion blocked!']);
+        }
+
         $invoiceNo = $sale->invoice_no;
         $party = $sale->party;
         $sale->delete();

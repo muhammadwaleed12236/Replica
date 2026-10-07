@@ -41,9 +41,10 @@
                             <th class="p-3.5">Party Code</th>
                             <th class="p-3.5">Party Name</th>
                             <th class="p-3.5">Type</th>
-                            <th class="p-3.5">Phone</th>
-                            <th class="p-3.5">City</th>
-                            <th class="p-3.5 text-right">Balance (Rs.)</th>
+                            <th class="p-3.5">Phone / City</th>
+                            <th class="p-3.5 text-right">Credit Limit</th>
+                            <th class="p-3.5 text-center">Time Limit</th>
+                            <th class="p-3.5 text-right">Current Balance (Rs.)</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-800/80">
@@ -56,12 +57,20 @@
                                         {{ $party->type }}
                                     </span>
                                 </td>
-                                <td class="p-3.5 font-mono">{{ $party->phone ?? 'N/A' }}</td>
-                                <td class="p-3.5">{{ $party->city ?? 'N/A' }}</td>
+                                <td class="p-3.5">
+                                    <span class="font-mono block text-slate-300">{{ $party->phone ?? 'N/A' }}</span>
+                                    <span class="text-[10px] text-slate-400">{{ $party->city ?? 'N/A' }}</span>
+                                </td>
+                                <td class="p-3.5 text-right font-mono text-amber-400 font-bold">
+                                    {{ $party->credit_limit > 0 ? 'Rs. ' . number_format($party->credit_limit, 2) : 'No Limit' }}
+                                </td>
+                                <td class="p-3.5 text-center font-mono text-cyan-300">
+                                    {{ $party->credit_days_limit ?? 30 }} Days
+                                </td>
                                 <td class="p-3.5 text-right font-mono font-bold text-emerald-400">Rs. {{ number_format($party->current_balance, 2) }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="p-8 text-center text-slate-500">No parties registered yet.</td></tr>
+                            <tr><td colspan="7" class="p-8 text-center text-slate-500">No parties registered yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -101,9 +110,19 @@
                             <input type="text" name="city" placeholder="Lahore" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs" />
                         </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Opening Balance (Rs.)</label>
-                        <input type="number" step="0.01" name="opening_balance" value="0" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-mono text-emerald-400 font-bold" />
+                    <div class="grid grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-300 mb-1">Opening Bal (Rs.)</label>
+                            <input type="number" step="0.01" name="opening_balance" value="0" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-mono text-emerald-400 font-bold" />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-300 mb-1">Credit Limit (Rs.)</label>
+                            <input type="number" step="0.01" name="credit_limit" value="0" placeholder="0 = Unlimited" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-mono text-amber-400 font-bold" />
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase text-slate-300 mb-1">Time Limit (Days)</label>
+                            <input type="number" name="credit_days_limit" value="30" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-mono text-cyan-300 font-bold" />
+                        </div>
                     </div>
                     <div class="pt-3 flex justify-end gap-3">
                         <button type="button" @click="showModal = false" class="prowave-btn-secondary px-4 py-2 rounded-xl text-xs font-bold">Cancel</button>

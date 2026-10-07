@@ -29,6 +29,35 @@
                 </div>
             @endif
 
+            @if(session('credit_warning'))
+                <div class="p-4 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+                    <div class="flex items-center gap-2">
+                        <span class="text-base">⚠️</span>
+                        <span>{{ session('credit_warning') }}</span>
+                    </div>
+                    <form method="POST" action="{{ route('sales.store') }}" class="inline">
+                        @csrf
+                        <input type="hidden" name="admin_override" value="1" />
+                        <input type="hidden" name="date" value="{{ old('date', date('Y-m-d')) }}" />
+                        <input type="hidden" name="party_id" value="{{ old('party_id') }}" />
+                        <input type="hidden" name="invoice_no" value="{{ old('invoice_no') }}" />
+                        <input type="hidden" name="amount" value="{{ old('amount') }}" />
+                        <input type="hidden" name="discount" value="{{ old('discount') }}" />
+                        <input type="hidden" name="remarks" value="{{ old('remarks') }}" />
+                        <button type="submit" class="px-3.5 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-extrabold hover:bg-amber-400 transition-all text-xs">
+                            Override & Force Save
+                        </button>
+                    </form>
+                </div>
+            @endif
+
+            @if($errors->has('date'))
+                <div class="p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-bold flex items-center gap-2">
+                    <span class="text-base">🔒</span>
+                    <span>{{ $errors->first('date') }}</span>
+                </div>
+            @endif
+
             <!-- Module Navigation Bar -->
             <x-module-nav active="sales" />
 
@@ -79,6 +108,23 @@
                                 <span>Delete</span>
                             </button>
                         </form>
+                    @endif
+
+                    <!-- WhatsApp Button -->
+                    @if(isset($currentSale) && $currentSale->party)
+                        @php
+                            $phone = preg_replace('/[^0-9]/', '', $currentSale->party->phone ?? '');
+                            $tmpl = \App\Models\Setting::get('whatsapp_template', 'Invoice #{invoice_no} amount Rs. {amount}');
+                            $msg = str_replace(
+                                ['{customer_name}', '{invoice_no}', '{amount}', '{date}'],
+                                [$currentSale->party->name, $currentSale->invoice_no, number_format($currentSale->net_amount, 2), $currentSale->date],
+                                $tmpl
+                            );
+                            $waUrl = "https://wa.me/" . ($phone ?: '923000000000') . "?text=" . urlencode($msg);
+                        @endphp
+                        <a href="{{ $waUrl }}" target="_blank" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5 transition-all">
+                            <span>💬 WhatsApp</span>
+                        </a>
                     @endif
 
                     <!-- Refresh Button -->

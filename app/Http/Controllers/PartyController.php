@@ -30,6 +30,8 @@ class PartyController extends Controller
             'phone' => 'nullable|string',
             'city' => 'nullable|string',
             'opening_balance' => 'nullable|numeric',
+            'credit_limit' => 'nullable|numeric',
+            'credit_days_limit' => 'nullable|integer',
         ]);
 
         Party::create([
@@ -40,6 +42,8 @@ class PartyController extends Controller
             'city' => $request->city,
             'opening_balance' => $request->opening_balance ?? 0,
             'current_balance' => $request->opening_balance ?? 0,
+            'credit_limit' => $request->credit_limit ?? 0,
+            'credit_days_limit' => $request->credit_days_limit ?? 30,
         ]);
 
         return redirect()->back()->with('success', 'Party created successfully!');
@@ -274,6 +278,66 @@ class PartyController extends Controller
             $ledgerEntries = $ledgerEntries->sortBy('date')->values();
         }
 
+        // Cash Book Day-By-Day Matrix
+        $cashBookDays = collect();
+        $currentDate = \Carbon\Carbon::parse($fromDate);
+        $endDate = \Carbon\Carbon::parse($toDate);
+
+        // Precalculate opening cash prior to fromDate
+        $priorSales = \App\Models\Sale::where('date', '<', $fromDate)->sum('net_amount');
+        $priorReceipts = Voucher::where('type', 'receipt')->where('date', '<', $fromDate)->sum('amount');
+        $priorPurchases = \App\Models\Purchase::where('date', '<', $fromDate)->sum('net_amount');
+        $priorExpenses = Expense::where('date', '<', $fromDate)->sum('amount');
+        $priorPayments = Voucher::where('type', 'payment')->where('date', '<', $fromDate)->sum('amount');
+
+        $runningCash = ($priorSales + $priorReceipts) - ($priorPurchases + $priorExpenses + $priorPayments);
+
+        while ($currentDate->lte($endDate)) {
+            $dStr = $currentDate->format('Y-m-d');
+
+            $daySales = $filteredSales->where('date', $dStr)->sum('net_amount');
+            $dayReceipts = $filteredVouchers->where('type', 'receipt')->where('date', $dStr)->sum('amount');
+            $dayCashIn = $daySales + $dayReceipts;
+
+            $dayPurchases = $filteredPurchases->where('date', $dStr)->sum('net_amount');
+            $dayExpenses = $filteredExpenses->where('date', $dStr)->sum('amount');
+            $dayPayments = $filteredVouchers->where('type', 'payment')->where('date', $dStr)->sum('amount');
+            $dayCashOut = $dayPurchases + $dayExpenses + $dayPayments;
+
+            $closingCash = $runningCash + $dayCashIn - $dayCashOut;
+
+            $cashBookDays->push([
+                'date' => $dStr,
+                'opening_cash' => $runningCash,
+                'cash_in_sales' => $daySales,
+                'cash_in_receipts' => $dayReceipts,
+                'total_cash_in' => $dayCashIn,
+                'cash_out_purchases' => $dayPurchases,
+                'cash_out_expenses' => $dayExpenses,
+                'cash_out_payments' => $dayPayments,
+                'total_cash_out' => $dayCashOut,
+                'closing_cash' => $closingCash,
+            ]);
+
+            $runningCash = $closingCash;
+            $currentDate->addDay();
+        }
+
+        // Credit Limit & Overdue Report
+        $creditLimitReport = $parties->map(function ($p) {
+            return [
+                'party_id' => $p->id,
+                'code' => $p->code,
+                'name' => $p->name,
+                'phone' => $p->phone,
+                'type' => $p->type,
+                'credit_limit' => $p->credit_limit,
+                'credit_days_limit' => $p->credit_days_limit,
+                'current_balance' => $p->current_balance,
+                'is_over_limit' => $p->credit_limit > 0 && $p->current_balance > $p->credit_limit,
+            ];
+        });
+
         $medicalReps = MedicalRep::latest()->get();
         $companies = Company::latest()->get();
         $salesmen = Salesman::latest()->get();
@@ -302,7 +366,9 @@ class PartyController extends Controller
             'filteredPurchases',
             'filteredExpenses',
             'filteredVouchers',
-            'ledgerEntries'
+            'ledgerEntries',
+            'cashBookDays',
+            'creditLimitReport'
         ));
     }
 }

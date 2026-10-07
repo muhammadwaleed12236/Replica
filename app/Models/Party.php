@@ -17,6 +17,8 @@ class Party extends Model
         'city',
         'opening_balance',
         'current_balance',
+        'credit_limit',
+        'credit_days_limit',
     ];
 
     public function sales()

@@ -11,6 +11,8 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
+use App\Http\Controllers\SettingController;
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Main ERP Dashboard Grid
     Route::get('/dashboard', [ErpDashboardController::class, 'index'])->name('dashboard');
@@ -54,6 +56,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/vouchers', [PartyController::class, 'vouchersStore'])->name('vouchers.store');
 
     Route::get('/reports', [PartyController::class, 'reportsIndex'])->name('reports.index');
+
+    // Security & Settings Routes
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::post('/settings/verify-admin', [SettingController::class, 'verifyAdminPassword'])->name('settings.verify_admin');
+    Route::get('/settings/backup', [SettingController::class, 'downloadBackup'])->name('settings.backup');
 
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

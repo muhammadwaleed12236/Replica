@@ -39,6 +39,12 @@ class PurchaseController extends Controller
             'items' => 'nullable|array',
         ]);
 
+        // Check Date Lock
+        $dateLockDate = \App\Models\Setting::get('date_lock_date');
+        if ($dateLockDate && $request->date <= $dateLockDate && !$request->has('admin_override')) {
+            return redirect()->back()->withErrors(['date' => 'Date Lock is active for dates on or before ' . $dateLockDate . '. Entry blocked!']);
+        }
+
         $subtotal = (float) $request->amount;
         $discount = (float) ($request->discount ?? 0);
         $netAmount = max(0, $subtotal - $discount);

@@ -167,6 +167,12 @@
                     
                     <!-- Report Category Selector Tabs -->
                     <div class="flex items-center gap-2 overflow-x-auto border-b border-slate-800 pb-3 font-['Outfit']">
+                        <button type="button" @click="activeTab = 'cash_book'" :class="activeTab === 'cash_book' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
+                            💵 Cash Book (Day-By-Day Grid)
+                        </button>
+                        <button type="button" @click="activeTab = 'credit_limits'" :class="activeTab === 'credit_limits' ? 'bg-amber-500/20 text-amber-300 border-amber-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
+                            ⏱️ Credit Limits & Time Limit Report
+                        </button>
                         <button type="button" @click="activeTab = 'parties'" :class="activeTab === 'parties' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
                             1 Parties Ledgers ({{ count($parties) }})
                         </button>
@@ -188,6 +194,107 @@
                         <button type="button" @click="activeTab = 'lotteries'" :class="activeTab === 'lotteries' ? 'bg-sky-500/20 text-sky-300 border-sky-400/40' : 'text-slate-400 hover:text-white bg-slate-900/40 border-slate-800'" class="px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap">
                             8 Lotteries ({{ count($lotteries) }})
                         </button>
+                    </div>
+
+                    <!-- CASH BOOK DAY-BY-DAY GRID MATRIX TAB -->
+                    <div x-show="activeTab === 'cash_book'" class="prowave-glass-card rounded-2xl border border-emerald-500/30 p-6 shadow-2xl space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                            <div>
+                                <h3 class="text-base font-extrabold text-white font-['Outfit']">💵 Cash Book (Day-By-Day Grid Matrix)</h3>
+                                <p class="text-xs text-slate-400">Daily Cash In (Sales/Receipts) vs Cash Out (Purchases/Expenses/Payments)</p>
+                            </div>
+                            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-xl font-bold">{{ $fromDate }} to {{ $toDate }}</span>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-800">
+                            <table class="w-full text-left text-xs text-slate-300">
+                                <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
+                                    <tr>
+                                        <th class="p-3">Date</th>
+                                        <th class="p-3 text-right">Opening Cash</th>
+                                        <th class="p-3 text-right">Cash In (Sales)</th>
+                                        <th class="p-3 text-right">Cash In (Receipts)</th>
+                                        <th class="p-3 text-right font-bold text-emerald-400">Total Cash In</th>
+                                        <th class="p-3 text-right">Cash Out (Pur)</th>
+                                        <th class="p-3 text-right">Cash Out (Exp)</th>
+                                        <th class="p-3 text-right">Cash Out (Pay)</th>
+                                        <th class="p-3 text-right font-bold text-rose-400">Total Cash Out</th>
+                                        <th class="p-3 text-right font-extrabold text-cyan-300">Closing Cash</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/80">
+                                    @forelse($cashBookDays as $day)
+                                        <tr class="hover:bg-slate-900/40 font-mono">
+                                            <td class="p-3 font-bold text-white">{{ $day['date'] }}</td>
+                                            <td class="p-3 text-right text-slate-400">Rs. {{ number_format($day['opening_cash'], 2) }}</td>
+                                            <td class="p-3 text-right text-cyan-300">Rs. {{ number_format($day['cash_in_sales'], 2) }}</td>
+                                            <td class="p-3 text-right text-emerald-300">Rs. {{ number_format($day['cash_in_receipts'], 2) }}</td>
+                                            <td class="p-3 text-right font-bold text-emerald-400 bg-emerald-500/5">Rs. {{ number_format($day['total_cash_in'], 2) }}</td>
+                                            <td class="p-3 text-right text-indigo-300">Rs. {{ number_format($day['cash_out_purchases'], 2) }}</td>
+                                            <td class="p-3 text-right text-amber-300">Rs. {{ number_format($day['cash_out_expenses'], 2) }}</td>
+                                            <td class="p-3 text-right text-rose-300">Rs. {{ number_format($day['cash_out_payments'], 2) }}</td>
+                                            <td class="p-3 text-right font-bold text-rose-400 bg-rose-500/5">Rs. {{ number_format($day['total_cash_out'], 2) }}</td>
+                                            <td class="p-3 text-right font-extrabold text-cyan-300 text-sm bg-cyan-500/5">Rs. {{ number_format($day['closing_cash'], 2) }}</td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="10" class="p-6 text-center text-slate-500">No transactions recorded in selected date range.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- CREDIT LIMITS & TIME LIMIT AGING REPORT TAB -->
+                    <div x-show="activeTab === 'credit_limits'" style="display: none;" class="prowave-glass-card rounded-2xl border border-amber-500/30 p-6 shadow-2xl space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                            <div>
+                                <h3 class="text-base font-extrabold text-white font-['Outfit']">⏱️ Party Credit Limit & Time Limit Report</h3>
+                                <p class="text-xs text-slate-400">Overdue Days & Credit Limit Exceeded Alerts (Yellow Highlights)</p>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-800">
+                            <table class="w-full text-left text-xs text-slate-300">
+                                <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
+                                    <tr>
+                                        <th class="p-3.5">Code</th>
+                                        <th class="p-3.5">Party Name</th>
+                                        <th class="p-3.5">Type</th>
+                                        <th class="p-3.5 text-right">Credit Limit (Rs.)</th>
+                                        <th class="p-3.5 text-center">Time Limit</th>
+                                        <th class="p-3.5 text-right">Current Balance (Rs.)</th>
+                                        <th class="p-3.5 text-center">Credit Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/80">
+                                    @forelse($creditLimitReport as $p)
+                                        <tr class="{{ $p['is_over_limit'] ? 'bg-amber-500/10 text-amber-200' : 'hover:bg-slate-900/40' }}">
+                                            <td class="p-3.5 font-mono font-bold text-cyan-400">{{ $p['code'] }}</td>
+                                            <td class="p-3.5 font-bold text-white">{{ $p['name'] }}</td>
+                                            <td class="p-3.5"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase bg-slate-800 text-slate-300">{{ $p['type'] }}</span></td>
+                                            <td class="p-3.5 text-right font-mono text-amber-400 font-bold">
+                                                {{ $p['credit_limit'] > 0 ? 'Rs. ' . number_format($p['credit_limit'], 2) : 'Unlimited' }}
+                                            </td>
+                                            <td class="p-3.5 text-center font-mono text-cyan-300">{{ $p['credit_days_limit'] }} Days</td>
+                                            <td class="p-3.5 text-right font-mono font-bold text-emerald-400">Rs. {{ number_format($p['current_balance'], 2) }}</td>
+                                            <td class="p-3.5 text-center">
+                                                @if($p['is_over_limit'])
+                                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                                                        ⚠️ OVER LIMIT
+                                                    </span>
+                                                @else
+                                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                                                        ✅ OK / CLEAR
+                                                    </span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr><td colspan="7" class="p-6 text-center text-slate-500">No parties registered.</td></tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <!-- 1 PARTIES TAB -->
