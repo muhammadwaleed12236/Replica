@@ -78,8 +78,116 @@
                         <span>Save All Security & System Settings</span>
                     </button>
                 </div>
-            </form>
+            <!-- WHATSAPP AUTOMATED BOT & QR CODE CONNECTION CARD -->
+            <div x-data="{
+                status: 'connecting',
+                qr: null,
+                phone: null,
+                error: null,
+                fetchStatus() {
+                    fetch('{{ route('settings.whatsapp_status') }}')
+                        .then(res => res.json())
+                        .then(data => {
+                            this.status = data.status;
+                            this.qr = data.qr;
+                            this.phone = data.phone;
+                            this.error = data.error || null;
+                        })
+                        .catch(err => {
+                            this.status = 'offline';
+                            this.error = 'WhatsApp Node.js Service Offline';
+                        });
+                },
+                logout() {
+                    if (!confirm('Disconnect WhatsApp Number?')) return;
+                    fetch('{{ route('settings.whatsapp_logout') }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } })
+                        .then(() => this.fetchStatus());
+                }
+            }" x-init="fetchStatus(); setInterval(() => fetchStatus(), 3000)" class="prowave-glass-card rounded-2xl border border-emerald-500/30 p-6 shadow-2xl space-y-4">
+                
+                <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 flex items-center justify-center font-bold text-lg">💬</div>
+                        <div>
+                            <h2 class="text-sm font-extrabold text-white font-['Outfit'] uppercase">Automated Direct WhatsApp API Bot</h2>
+                            <p class="text-[11px] text-slate-400">Background Messaging (No WhatsApp Web tabs required)</p>
+                        </div>
+                    </div>
 
-        </div>
+                    <!-- Connection Status Badge -->
+                    <template x-if="status === 'connected'">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            🟢 Connected: +<span x-text="phone"></span>
+                        </span>
+                    </template>
+                    <template x-if="status === 'qr_required'">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                            🟡 Scan QR Code Below
+                        </span>
+                    </template>
+                    <template x-if="status === 'offline'">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                            🔴 API Offline
+                        </span>
+                    </template>
+                </div>
+
+                <!-- QR CODE & CONNECTION INSTRUCTIONS -->
+                <div class="flex flex-col sm:flex-row items-center gap-6 p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                    
+                    <!-- QR Image View -->
+                    <div class="w-44 h-44 bg-white p-2 rounded-xl shadow-lg flex items-center justify-center border border-slate-700">
+                        <template x-if="status === 'connected'">
+                            <div class="text-center p-3">
+                                <span class="text-4xl block mb-1">✅</span>
+                                <span class="text-xs font-extrabold text-slate-900 block">WhatsApp Paired!</span>
+                                <span class="text-[10px] text-slate-600 block mt-0.5">Ready for Direct Messaging</span>
+                            </div>
+                        </template>
+
+                        <template x-if="status === 'qr_required' && qr">
+                            <img :src="qr" alt="WhatsApp QR Code" class="w-full h-full object-contain" />
+                        </template>
+
+                        <template x-if="status === 'connecting' || (status === 'qr_required' && !qr)">
+                            <div class="text-center text-slate-500 text-xs">
+                                <span class="animate-spin text-lg block mb-1">⏳</span>
+                                Generating QR...
+                            </div>
+                        </template>
+
+                        <template x-if="status === 'offline'">
+                            <div class="text-center text-rose-600 text-xs">
+                                <span class="text-2xl block mb-1">⚠️</span>
+                                Node.js Offline
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Instructions Text -->
+                    <div class="space-y-2 text-xs text-slate-300 flex-grow">
+                        <h3 class="font-extrabold text-white text-sm font-['Outfit']">How to Connect Your WhatsApp Number:</h3>
+                        <ol class="list-decimal list-inside space-y-1 text-slate-400 text-[11px]">
+                            <li>Open **WhatsApp** on your phone.</li>
+                            <li>Tap **Menu / Settings** (3 dots on Android or Settings on iPhone).</li>
+                            <li>Select **Linked Devices** ➔ Tap **Link a Device**.</li>
+                            <li>Point your phone camera at the **QR Code** on the left.</li>
+                        </ol>
+
+                        <p class="text-[11px] text-cyan-300 pt-1 font-semibold">
+                            ✨ Once scanned, all Sales Invoices & Vouchers will be sent directly in the background without opening WhatsApp Web tabs!
+                        </p>
+
+                        <template x-if="status === 'connected'">
+                            <button type="button" @click="logout()" class="mt-3 px-3.5 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 font-bold border border-rose-500/40 text-xs">
+                                🔌 Disconnect / Pair New Number
+                            </button>
+                        </template>
+                    </div>
+                </div>
+
+            </div>
     </div>
 </x-app-layout>

@@ -95,6 +95,17 @@ class SaleController extends Controller
         // Recalculate Party Balance
         if ($sale->party) {
             $sale->party->recalculateBalance();
+
+            // Auto-send Direct Background WhatsApp Message if phone exists
+            if (!empty($sale->party->phone)) {
+                $tmpl = \App\Models\Setting::get('whatsapp_template', 'Dear {customer_name}, Invoice #{invoice_no} total amount is Rs. {amount}. Date: {date}.');
+                $msg = str_replace(
+                    ['{customer_name}', '{invoice_no}', '{amount}', '{date}'],
+                    [$sale->party->name, $sale->invoice_no, number_format($sale->net_amount, 2), $sale->date],
+                    $tmpl
+                );
+                \App\Services\WhatsAppService::sendDirectMessage($sale->party->phone, $msg);
+            }
         }
 
         return redirect()->route('sales.index', ['id' => $sale->id])

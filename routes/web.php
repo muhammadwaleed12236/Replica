@@ -63,6 +63,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/settings/verify-admin', [SettingController::class, 'verifyAdminPassword'])->name('settings.verify_admin');
     Route::get('/settings/backup', [SettingController::class, 'downloadBackup'])->name('settings.backup');
 
+    // Automated Direct WhatsApp API Routes
+    Route::get('/settings/whatsapp-status', [SettingController::class, 'whatsappStatus'])->name('settings.whatsapp_status');
+    Route::post('/settings/whatsapp-logout', [SettingController::class, 'whatsappLogout'])->name('settings.whatsapp_logout');
+    Route::post('/settings/send-whatsapp', [SettingController::class, 'sendDirectWhatsapp'])->name('settings.send_whatsapp');
+
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

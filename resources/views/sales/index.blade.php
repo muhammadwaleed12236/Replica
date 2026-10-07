@@ -110,7 +110,7 @@
                         </form>
                     @endif
 
-                    <!-- WhatsApp Button -->
+                    <!-- Direct WhatsApp API Button -->
                     @if(isset($currentSale) && $currentSale->party)
                         @php
                             $phone = preg_replace('/[^0-9]/', '', $currentSale->party->phone ?? '');
@@ -120,11 +120,12 @@
                                 [$currentSale->party->name, $currentSale->invoice_no, number_format($currentSale->net_amount, 2), $currentSale->date],
                                 $tmpl
                             );
-                            $waUrl = "https://wa.me/" . ($phone ?: '923000000000') . "?text=" . urlencode($msg);
                         @endphp
-                        <a href="{{ $waUrl }}" target="_blank" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5 transition-all">
-                            <span>💬 WhatsApp</span>
-                        </a>
+                        <button type="button" 
+                                onclick="sendDirectWA('{{ $phone }}', '{{ addslashes($msg) }}', this)" 
+                                class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5 transition-all">
+                            <span>💬 Send WA Direct</span>
+                        </button>
                     @endif
 
                     <!-- Refresh Button -->
@@ -339,4 +340,41 @@
         </div>
 
     </div>
+
+    <script>
+    function sendDirectWA(phone, message, btnEl) {
+        if (!phone) {
+            alert('Customer has no phone number entered!');
+            return;
+        }
+        const origText = btnEl.innerHTML;
+        btnEl.innerText = 'Sending...';
+        btnEl.disabled = true;
+
+        fetch('{{ route("settings.send_whatsapp") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ phone: phone, message: message })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btnEl.disabled = false;
+            if (data.success) {
+                btnEl.innerHTML = '✅ Sent WA Direct!';
+                setTimeout(() => { btnEl.innerHTML = origText; }, 3000);
+            } else {
+                alert('Failed to send WhatsApp message: ' + (data.error || 'Please connect WhatsApp QR code in Settings'));
+                btnEl.innerHTML = origText;
+            }
+        })
+        .catch(err => {
+            btnEl.disabled = false;
+            btnEl.innerHTML = origText;
+            alert('WhatsApp API Service offline. Please connect QR Code in Settings page.');
+        });
+    }
+    </script>
 </x-app-layout>

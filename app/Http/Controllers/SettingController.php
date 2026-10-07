@@ -72,4 +72,29 @@ class SettingController extends Controller
             'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
         ]);
     }
+
+    public function whatsappStatus()
+    {
+        $status = \App\Services\WhatsAppService::getStatus();
+        return response()->json($status);
+    }
+
+    public function whatsappLogout()
+    {
+        $result = \App\Services\WhatsAppService::logout();
+        return response()->json($result);
+    }
+
+    public function sendDirectWhatsapp(Request $request)
+    {
+        $phone = $request->input('phone');
+        $message = $request->input('message');
+
+        if (!$phone || !$message) {
+            return response()->json(['success' => false, 'error' => 'Phone number and message are required.'], 400);
+        }
+
+        $result = \App\Services\WhatsAppService::sendDirectMessage($phone, $message);
+        return response()->json($result);
+    }
 }
