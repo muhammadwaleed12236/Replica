@@ -246,8 +246,67 @@
                             </table>
                         </div>
                     </div>
-                </form>
+            </div>
 
+            <!-- RECENT SALES INVOICES HISTORY TABLE -->
+            <div class="prowave-glass-card rounded-2xl border border-slate-800 p-5 shadow-2xl space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 flex items-center justify-center font-bold">📋</div>
+                        <h2 class="text-sm font-extrabold text-white font-['Outfit'] uppercase tracking-wider">All Recent Sales Invoices ({{ count($allSales) }})</h2>
+                    </div>
+                    <span class="text-xs text-slate-400 font-mono">Click any invoice row to load/edit</span>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-800">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">#</th>
+                                <th class="p-3">Invoice No</th>
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Customer Party</th>
+                                <th class="p-3 text-right">Subtotal</th>
+                                <th class="p-3 text-right">Discount</th>
+                                <th class="p-3 text-right">Net Amount</th>
+                                <th class="p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/80">
+                            @forelse($allSales as $index => $s)
+                                <tr class="hover:bg-slate-900/60 transition-colors {{ isset($currentSale) && $currentSale->id == $s->id ? 'bg-cyan-500/10 border-l-4 border-l-cyan-400' : '' }}">
+                                    <td class="p-3 font-mono text-slate-500">{{ $index + 1 }}</td>
+                                    <td class="p-3 font-mono font-bold text-cyan-400">{{ $s->invoice_no }}</td>
+                                    <td class="p-3 font-mono text-slate-400">{{ $s->date }}</td>
+                                    <td class="p-3 font-bold text-white">{{ $s->party->name ?? 'Walk-in Customer' }}</td>
+                                    <td class="p-3 text-right font-mono text-slate-300">Rs. {{ number_format($s->amount, 2) }}</td>
+                                    <td class="p-3 text-right font-mono text-rose-400">Rs. {{ number_format($s->discount, 2) }}</td>
+                                    <td class="p-3 text-right font-mono font-extrabold text-emerald-400 text-sm">Rs. {{ number_format($s->net_amount, 2) }}</td>
+                                    <td class="p-3 text-center flex items-center justify-center gap-2">
+                                        <a href="{{ route('sales.index', ['id' => $s->id]) }}" class="px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-[11px] font-bold border border-cyan-500/30">
+                                            ✏️ Load / Edit
+                                        </a>
+                                        @php
+                                            $pPhone = preg_replace('/[^0-9]/', '', $s->party->phone ?? '');
+                                            $pTmpl = \App\Models\Setting::get('whatsapp_template', 'Invoice #{invoice_no} amount Rs. {amount}');
+                                            $pMsg = str_replace(
+                                                ['{customer_name}', '{invoice_no}', '{amount}', '{date}'],
+                                                [$s->party->name ?? 'Customer', $s->invoice_no, number_format($s->net_amount, 2), $s->date],
+                                                $pTmpl
+                                            );
+                                            $pWaUrl = "https://wa.me/" . ($pPhone ?: '923000000000') . "?text=" . urlencode($pMsg);
+                                        @endphp
+                                        <a href="{{ $pWaUrl }}" target="_blank" class="px-2 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-[11px] font-bold border border-emerald-500/30">
+                                            💬 WA
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="8" class="p-8 text-center text-slate-500">No sales invoices recorded yet.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
