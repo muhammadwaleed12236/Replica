@@ -46,7 +46,7 @@ class PartyController extends Controller
     // Products Management with Barcode
     public function productsIndex()
     {
-        $products = Product::with('company')->latest()->get();
+        $products = Product::with(['company', 'units'])->latest()->get();
         $companies = Company::orderBy('name')->get();
         return view('modules.products', compact('products', 'companies'));
     }
@@ -61,22 +61,82 @@ class PartyController extends Controller
             'sale_price' => 'nullable|numeric|min:0',
             'wholesale_price' => 'nullable|numeric|min:0',
             'stock_quantity' => 'nullable|integer|min:0',
+            'units' => 'nullable|array',
+            'units.*.name' => 'required_with:units|string',
+            'units.*.factor' => 'required_with:units|numeric|min:1',
+            'units.*.purchase_price' => 'nullable|numeric|min:0',
+            'units.*.sale_price' => 'nullable|numeric|min:0',
         ]);
 
-        Product::create([
+        $units = $request->input('units', []);
+        $baseUnitCount = 0;
+        foreach ($units as $unit) {
+            if (isset($unit['is_base_unit']) && $unit['is_base_unit']) {
+                $baseUnitCount++;
+            }
+        }
+
+        if (count($units) > 0 && $baseUnitCount !== 1) {
+            return redirect()->back()->withErrors(['units' => 'Exactly one base unit must be selected.'])->withInput();
+        }
+
+        $stockQty = $request->stock_quantity ?? 0;
+        $stockUnitId = $request->stock_unit ?? null;
+        if ($stockUnitId && count($units) > 0) {
+            foreach ($units as $u) {
+                if (isset($u['temp_id']) && $u['temp_id'] == $stockUnitId) {
+                    $stockQty = $stockQty * ($u['factor'] ?? 1);
+                    break;
+                }
+            }
+        }
+
+        // Set the global unit and prices to the base unit's values
+        $baseUnitName = 'Pcs';
+        $basePurPrice = $request->purchase_price ?? 0;
+        $baseSalePrice = $request->sale_price ?? 0;
+        $baseWholePrice = $request->wholesale_price ?? 0;
+        
+        foreach ($units as $u) {
+            if (isset($u['is_base_unit']) && $u['is_base_unit']) {
+                $baseUnitName = $u['name'] ?? 'Pcs';
+                $basePurPrice = $u['purchase_price'] ?? 0;
+                $baseSalePrice = $u['sale_price'] ?? 0;
+                $baseWholePrice = $u['wholesale_price'] ?? 0;
+            }
+        }
+
+        $product = Product::create([
             'barcode' => $request->barcode,
             'name' => $request->name,
             'company_id' => $request->company_id,
             'category' => $request->category ?? 'General',
-            'unit' => $request->unit ?? 'Pcs',
-            'purchase_price' => $request->purchase_price ?? 0,
-            'sale_price' => $request->sale_price ?? 0,
-            'wholesale_price' => $request->wholesale_price ?? 0,
-            'stock_quantity' => $request->stock_quantity ?? 0,
+            'unit' => $baseUnitName,
+            'purchase_price' => $basePurPrice,
+            'sale_price' => $baseSalePrice,
+            'wholesale_price' => $baseWholePrice,
+            'stock_quantity' => $stockQty,
             'description' => $request->description,
         ]);
 
-        return redirect()->back()->with('success', 'Product added successfully with barcode!');
+        foreach ($units as $unitData) {
+            \App\Models\ProductUnit::create([
+                'product_id' => $product->id,
+                'name' => $unitData['name'],
+                'alias' => $unitData['alias'] ?? null,
+                'factor' => $unitData['factor'],
+                'is_base_unit' => !empty($unitData['is_base_unit']) && $unitData['is_base_unit'] != '0',
+                'is_default_purchase' => !empty($unitData['is_default_purchase']) && $unitData['is_default_purchase'] != '0',
+                'is_default_sale' => !empty($unitData['is_default_sale']) && $unitData['is_default_sale'] != '0',
+                'is_purchase_unit' => !empty($unitData['is_purchase_unit']) && $unitData['is_purchase_unit'] != '0',
+                'is_sale_unit' => !empty($unitData['is_sale_unit']) && $unitData['is_sale_unit'] != '0',
+                'purchase_price' => $unitData['purchase_price'] ?? null,
+                'sale_price' => $unitData['sale_price'] ?? null,
+                'wholesale_price' => $unitData['wholesale_price'] ?? null,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Product added successfully with units!');
     }
 
     public function productsDestroy($id)

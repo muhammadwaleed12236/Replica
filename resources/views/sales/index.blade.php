@@ -14,13 +14,12 @@
                 
                 setPriceMode(mode) {
                     this.priceMode = mode;
-                    // Recalculate rate for all catalog-linked item rows based on active price mode
                     this.items.forEach(item => {
                         item.mode = mode;
                         if (item.product_id) {
                             const p = this.productsList.find(x => x.id == item.product_id);
                             if (p) {
-                                item.rate = this.getProductPriceForMode(p, mode);
+                                item.rate = this.getProductPriceForMode(p, mode, item.unit_name);
                             }
                         }
                     });
@@ -37,24 +36,38 @@
                     if (item.product_id) {
                         const p = this.productsList.find(x => x.id == item.product_id);
                         if (p) {
-                            item.rate = this.getProductPriceForMode(p, newMode);
+                            item.rate = this.getProductPriceForMode(p, newMode, item.unit_name);
                         }
                     }
                     this.recalc();
                 },
 
-                getProductPriceForMode(product, mode) {
+                getProductPriceForMode(product, mode, unitName = null) {
                     if (!product) return 0;
+                    
+                    let targetUnit = null;
+                    if (unitName && product.units) {
+                        targetUnit = product.units.find(u => u.name === unitName);
+                    }
+                    if (!targetUnit && product.units && product.units.length > 0) {
+                        targetUnit = product.units.find(u => u.is_default_sale) || product.units[0];
+                    }
+                    
+                    if (targetUnit) {
+                        if (mode === 'wholesale' && parseFloat(targetUnit.wholesale_price || 0) > 0) {
+                            return parseFloat(targetUnit.wholesale_price);
+                        }
+                        if (parseFloat(targetUnit.sale_price || 0) > 0) {
+                            return parseFloat(targetUnit.sale_price);
+                        }
+                    }
+
                     if (mode === 'wholesale') {
                         return (parseFloat(product.wholesale_price) > 0) 
                             ? parseFloat(product.wholesale_price) 
                             : (parseFloat(product.sale_price) || 0);
                     }
                     return parseFloat(product.sale_price) || 0;
-                },
-
-                getProductPrice(product) {
-                    return this.getProductPriceForMode(product, this.priceMode);
                 },
 
                 filteredProducts() {
@@ -67,10 +80,19 @@
                     ).slice(0, 10);
                 },
 
+                getDefaultUnit(product) {
+                    if (!product || !product.units || product.units.length === 0) return 'Pcs';
+                    const defaultSale = product.units.find(u => u.is_default_sale);
+                    if (defaultSale) return defaultSale.name;
+                    const baseUnit = product.units.find(u => u.is_base_unit);
+                    return baseUnit ? baseUnit.name : product.units[0].name;
+                },
+
                 selectSearchProduct(product) {
                     if (!product) return;
                     const mode = this.priceMode;
                     const rate = this.getProductPriceForMode(product, mode);
+                    const defaultUnit = this.getDefaultUnit(product);
                     let lastItem = this.items[this.items.length - 1];
                     
                     if (lastItem && !lastItem.name) {
@@ -79,13 +101,15 @@
                         lastItem.qty = 1;
                         lastItem.product_id = product.id;
                         lastItem.mode = mode;
+                        lastItem.unit_name = defaultUnit;
                     } else {
                         this.items.push({
                             name: product.name,
                             qty: 1,
                             rate: rate,
                             product_id: product.id,
-                            mode: mode
+                            mode: mode,
+                            unit_name: defaultUnit
                         });
                     }
                     this.productSearchQuery = '';
@@ -94,12 +118,23 @@
                 },
                 
                 addItem() {
-                    this.items.push({ name: '', qty: 1, rate: 0, product_id: '', mode: this.priceMode });
+                    this.items.push({ name: '', qty: 1, rate: 0, product_id: '', mode: this.priceMode, unit_name: '' });
                 },
                 
                 removeItem(index) {
                     if (this.items.length > 1) {
                         this.items.splice(index, 1);
+                        this.recalc();
+                    }
+                },
+                
+                onUnitSelect(index) {
+                    const item = this.items[index];
+                    if (!item || !item.product_id) return;
+                    const p = this.productsList.find(x => x.id == item.product_id);
+                    if (p) {
+                        const mode = item.mode || this.priceMode;
+                        item.rate = this.getProductPriceForMode(p, mode, item.unit_name);
                         this.recalc();
                     }
                 },
@@ -111,7 +146,8 @@
                         const item = this.items[index];
                         const mode = item.mode || this.priceMode;
                         item.name = p.name;
-                        item.rate = this.getProductPriceForMode(p, mode);
+                        item.unit_name = this.getDefaultUnit(p);
+                        item.rate = this.getProductPriceForMode(p, mode, item.unit_name);
                         this.recalc();
                     }
                 },
@@ -124,6 +160,7 @@
                     if (p) {
                         const mode = this.priceMode;
                         const rate = this.getProductPriceForMode(p, mode);
+                        const defaultUnit = this.getDefaultUnit(p);
                         let lastItem = this.items[this.items.length - 1];
                         if (lastItem && !lastItem.name) {
                             lastItem.name = p.name;
@@ -131,13 +168,15 @@
                             lastItem.qty = 1;
                             lastItem.product_id = p.id;
                             lastItem.mode = mode;
+                            lastItem.unit_name = defaultUnit;
                         } else {
                             this.items.push({
                                 name: p.name,
                                 qty: 1,
                                 rate: rate,
                                 product_id: p.id,
-                                mode: mode
+                                mode: mode,
+                                unit_name: defaultUnit
                             });
                         }
                         this.barcodeScan = '';
@@ -145,6 +184,34 @@
                     } else {
                         alert('No product found with barcode: ' + code);
                     }
+                },
+
+                getProductUnits(productId) {
+                    if (!productId) return [];
+                    const p = this.productsList.find(x => x.id == productId);
+                    if (p && p.units) return p.units;
+                    return [];
+                },
+                
+                getStockDisplay(productId) {
+                    if (!productId) return '';
+                    const p = this.productsList.find(x => x.id == productId);
+                    if (!p) return '';
+                    let qty = parseFloat(p.stock_quantity) || 0;
+                    if (p.units && p.units.length > 0) {
+                        const cartonUnit = p.units.find(u => u.name.toLowerCase().includes('carton') || u.name.toLowerCase().includes('ctn') || u.factor > 1);
+                        if (cartonUnit) {
+                            let factor = parseFloat(cartonUnit.factor);
+                            let cartons = Math.floor(qty / factor);
+                            let pcs = qty % factor;
+                            let out = [];
+                            if (cartons > 0) out.push(`${cartons} ${cartonUnit.name}`);
+                            if (pcs > 0) out.push(`${pcs} Pcs`);
+                            if (out.length === 0) return `Stock: 0 Pcs`;
+                            return `Stock: ${out.join(' + ')}`;
+                        }
+                    }
+                    return `Stock: ${qty} Pcs`;
                 },
 
                 recalc() {
@@ -451,6 +518,7 @@
                                         <th class="p-2.5">#</th>
                                         <th class="p-2.5 w-72">Select Product from Catalog</th>
                                         <th class="p-2.5">Item Name / Description</th>
+                                        <th class="p-2.5 w-32">Unit</th>
                                         <th class="p-2.5 w-24">Qty</th>
                                         <th class="p-2.5 w-44">
                                             <div class="flex items-center justify-between gap-1">
@@ -481,6 +549,9 @@
                                                         <option :value="p.id" x-text="`${p.name} [R: Rs.${p.sale_price} | W: Rs.${p.wholesale_price || p.sale_price}]`"></option>
                                                     </template>
                                                 </select>
+                                                <!-- hidden input to send product_id in array properly -->
+                                                <input type="hidden" :name="`items[${index}][product_id]`" :value="item.product_id">
+                                                <div class="text-[10px] text-cyan-400 mt-1 font-bold" x-show="item.product_id" x-text="getStockDisplay(item.product_id)"></div>
                                             </td>
 
                                             <!-- Item name text input -->
@@ -488,9 +559,21 @@
                                                 <input type="text" x-model="item.name" :name="`items[${index}][name]`" placeholder="Product name" class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-semibold" />
                                             </td>
 
+                                            <!-- Unit Select -->
+                                            <td class="p-2.5">
+                                                <select x-model="item.unit_name" @change="onUnitSelect(index)" :name="`items[${index}][unit_name]`" class="w-full px-2 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-amber-300 text-xs font-mono">
+                                                    <template x-if="getProductUnits(item.product_id).length === 0">
+                                                        <option value="Pcs">Pcs</option>
+                                                    </template>
+                                                    <template x-for="u in getProductUnits(item.product_id)" :key="u.id">
+                                                        <option :value="u.name" x-text="`${u.name}${u.alias ? ' ('+u.alias+')' : ''}`"></option>
+                                                    </template>
+                                                </select>
+                                            </td>
+
                                             <!-- Qty -->
                                             <td class="p-2.5">
-                                                <input type="number" min="1" x-model.number="item.qty" :name="`items[${index}][qty]`" @input="recalc()" class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-mono" />
+                                                <input type="number" min="0.001" step="0.001" x-model.number="item.qty" :name="`items[${index}][qty]`" @input="recalc()" class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-mono" />
                                             </td>
 
                                             <!-- Rate with row-level R / W toggle badge button -->

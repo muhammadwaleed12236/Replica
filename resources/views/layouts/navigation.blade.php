@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="prowave-glass border-b border-slate-800 sticky top-0 z-50">
+<nav x-data="{ open: false }" class="prowave-glass border-b border-gray-200 dark:border-slate-800 sticky top-0 z-50 transition-colors">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
@@ -6,16 +6,16 @@
             <div class="flex items-center gap-4">
                 <!-- Logo -->
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 p-0.5 shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-500/40 transition-all duration-300">
-                        <div class="w-full h-full bg-[#0b0f19] rounded-[9px] flex items-center justify-center">
-                            <svg class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-9 h-9 rounded-xl bg-blue-600 p-0.5 shadow-lg group-hover:shadow-blue-500/40 transition-all duration-300">
+                        <div class="w-full h-full bg-white dark:bg-slate-900 rounded-[9px] flex items-center justify-center">
+                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                             </svg>
                         </div>
                     </div>
                     <div>
-                        <span class="text-base font-extrabold tracking-tight text-white font-['Outfit']">Pro<span class="prowave-gradient-text">Wave</span></span>
-                        <span class="block text-[8px] font-semibold tracking-widest text-cyan-400 uppercase">ERP Engine</span>
+                        <span class="text-base font-extrabold tracking-tight text-gray-900 dark:text-white font-['Outfit']">Pro<span class="text-blue-600 dark:text-blue-400">Wave</span></span>
+                        <span class="block text-[8px] font-semibold tracking-widest text-blue-600 dark:text-blue-400 uppercase">ERP Engine</span>
                     </div>
                 </a>
 
@@ -36,16 +36,22 @@
 
             <!-- Settings Dropdown & Node Indicator -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 gap-3">
+                <!-- Theme Toggle Button -->
+                <button @click="darkMode = !darkMode" class="p-2 rounded-full text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none transition-colors">
+                    <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <svg x-show="darkMode" x-cloak class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </button>
+
                 <!-- System Status Indicator Badge -->
-                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-semibold text-emerald-400">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     Node Online
                 </div>
 
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-1.5 border border-slate-700/60 text-xs leading-4 font-semibold rounded-xl text-slate-200 bg-slate-900/80 hover:bg-slate-800 hover:border-slate-600 focus:outline-none transition duration-150">
-                            <div class="w-5 h-5 rounded-full bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-[10px] font-bold text-white mr-1.5">
+                        <button class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-slate-700/60 text-xs leading-4 font-semibold rounded-xl text-gray-700 dark:text-slate-200 bg-white dark:bg-slate-900/80 hover:bg-gray-50 dark:hover:bg-slate-800 focus:outline-none transition duration-150">
+                            <div class="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-bold text-white mr-1.5">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                             </div>
                             <div>{{ Auth::user()->name }}</div>

@@ -1,25 +1,101 @@
 <x-app-layout>
-    <div class="py-6" x-data="{
-        showFindModal: false,
-        items: [
-            { name: '', qty: 1, rate: 0 }
-        ],
-        addItem() {
-            this.items.push({ name: '', qty: 1, rate: 0 });
-        },
-        removeItem(index) {
-            if (this.items.length > 1) {
-                this.items.splice(index, 1);
-            }
-        },
-        calculateTotal() {
-            let sum = 0;
-            this.items.forEach(i => {
-                sum += (parseFloat(i.qty) || 0) * (parseFloat(i.rate) || 0);
-            });
-            return sum;
+    <script>
+        function purchaseFormData() {
+            return {
+                showFindModal: false,
+                productsList: @json($products),
+                items: @json($initialItems).length ? @json($initialItems) : [{ name: '', product_id: '', qty: 1, rate: 0, unit_name: '' }],
+                
+                addItem() {
+                    this.items.push({ name: '', product_id: '', qty: 1, rate: 0, unit_name: '' });
+                },
+                removeItem(index) {
+                    if (this.items.length > 1) {
+                        this.items.splice(index, 1);
+                    }
+                },
+                
+                getProductUnits(productId) {
+                    if (!productId) return [];
+                    const p = this.productsList.find(x => x.id == productId);
+                    return p && p.units ? p.units : [];
+                },
+
+                getStockDisplay(productId) {
+                    if (!productId) return '';
+                    const p = this.productsList.find(x => x.id == productId);
+                    if (!p) return '';
+                    let qty = parseFloat(p.stock_quantity) || 0;
+                    if (p.units && p.units.length > 0) {
+                        const cartonUnit = p.units.find(u => u.name.toLowerCase().includes('carton') || u.name.toLowerCase().includes('ctn') || u.factor > 1);
+                        if (cartonUnit) {
+                            let factor = parseFloat(cartonUnit.factor);
+                            let cartons = Math.floor(qty / factor);
+                            let pcs = qty % factor;
+                            let out = [];
+                            if (cartons > 0) out.push(`${cartons} ${cartonUnit.name}`);
+                            if (pcs > 0) out.push(`${pcs} Pcs`);
+                            if (out.length === 0) return `Stock: 0 Pcs`;
+                            return `Stock: ${out.join(' + ')}`;
+                        }
+                    }
+                    return `Stock: ${qty} Pcs`;
+                },
+                
+                getDefaultPurchaseUnit(product) {
+                    if (!product || !product.units || product.units.length === 0) return 'Pcs';
+                    const defaultPur = product.units.find(u => u.is_default_purchase);
+                    if (defaultPur) return defaultPur.name;
+                    const baseUnit = product.units.find(u => u.is_base_unit);
+                    return baseUnit ? baseUnit.name : product.units[0].name;
+                },
+                
+                getPurchasePrice(product, unitName) {
+                    if (!product) return 0;
+                    if (product.units && product.units.length > 0) {
+                        if (unitName) {
+                            const u = product.units.find(x => 
+                                x.name.toLowerCase() === unitName.toLowerCase() || 
+                                (x.alias && x.alias.toLowerCase() === unitName.toLowerCase())
+                            );
+                            if (u && parseFloat(u.purchase_price) > 0) {
+                                return parseFloat(u.purchase_price);
+                            }
+                        }
+                    }
+                    return parseFloat(product.purchase_price) || 0;
+                },
+                
+                onProductSelect(index, productId) {
+                    if (!productId) return;
+                    const p = this.productsList.find(x => x.id == productId);
+                    if (p) {
+                        this.items[index].name = p.name;
+                        this.items[index].unit_name = this.getDefaultPurchaseUnit(p);
+                        this.items[index].rate = this.getPurchasePrice(p, this.items[index].unit_name);
+                    }
+                },
+
+                onUnitSelect(index) {
+                    const item = this.items[index];
+                    if (!item || !item.product_id) return;
+                    const p = this.productsList.find(x => x.id == item.product_id);
+                    if (p) {
+                        item.rate = this.getPurchasePrice(p, item.unit_name);
+                    }
+                },
+                
+                calculateTotal() {
+                    let sum = 0;
+                    this.items.forEach(i => {
+                        sum += (parseFloat(i.qty) || 0) * (parseFloat(i.rate) || 0);
+                    });
+                    return sum.toFixed(2);
+                }
+            };
         }
-    }">
+    </script>
+    <div class="py-6" x-data="purchaseFormData()">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
 
             @if(session('success'))
@@ -166,7 +242,9 @@
                                 <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
                                     <tr>
                                         <th class="p-2.5">#</th>
-                                        <th class="p-2.5">Item Description / Stock Items</th>
+                                        <th class="p-2.5 w-64">Select Product</th>
+                                        <th class="p-2.5">Item Description</th>
+                                        <th class="p-2.5 w-32">Unit</th>
                                         <th class="p-2.5 w-28">Qty</th>
                                         <th class="p-2.5 w-36">Purchase Rate (Rs.)</th>
                                         <th class="p-2.5 w-36">Line Total</th>
@@ -178,13 +256,33 @@
                                         <tr class="border-b border-slate-800/80 hover:bg-slate-900/40">
                                             <td class="p-2.5 text-slate-500 font-mono" x-text="index + 1"></td>
                                             <td class="p-2.5">
+                                                <select x-model="item.product_id" @change="onProductSelect(index, $event.target.value)" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-cyan-300 text-xs font-medium">
+                                                    <option value="">-- Choose Product --</option>
+                                                    <template x-for="p in productsList" :key="p.id">
+                                                        <option :value="p.id" x-text="`${p.name} [Pur: Rs.${parseFloat(p.purchase_price || 0).toFixed(2)}]`"></option>
+                                                    </template>
+                                                </select>
+                                                <input type="hidden" :name="`items[${index}][product_id]`" :value="item.product_id">
+                                                <div class="text-[10px] text-cyan-400 mt-1 font-bold" x-show="item.product_id" x-text="getStockDisplay(item.product_id)"></div>
+                                            </td>
+                                            <td class="p-2.5">
                                                 <input type="text" x-model="item.name" :name="`items[${index}][name]`" placeholder="e.g. Raw Material Batch A" class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs" />
                                             </td>
                                             <td class="p-2.5">
-                                                <input type="number" min="1" x-model="item.qty" :name="`items[${index}][qty]`" class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-mono" />
+                                                <select x-model="item.unit_name" @change="onUnitSelect(index)" :name="`items[${index}][unit_name]`" class="w-full px-2 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-amber-300 text-xs font-mono">
+                                                    <template x-if="getProductUnits(item.product_id).length === 0">
+                                                        <option value="Pcs">Pcs</option>
+                                                    </template>
+                                                    <template x-for="u in getProductUnits(item.product_id)" :key="u.id">
+                                                        <option :value="u.name" x-text="`${u.name}${u.alias ? ' ('+u.alias+')' : ''}`"></option>
+                                                    </template>
+                                                </select>
                                             </td>
                                             <td class="p-2.5">
-                                                <input type="number" step="0.01" min="0" x-model="item.rate" :name="`items[${index}][rate]`" class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-mono" />
+                                                <input type="number" step="0.001" min="0.001" x-model.number="item.qty" :name="`items[${index}][qty]`" class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-mono" />
+                                            </td>
+                                            <td class="p-2.5">
+                                                <input type="number" step="0.01" min="0" x-model.number="item.rate" :name="`items[${index}][rate]`" class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs font-mono" />
                                             </td>
                                             <td class="p-2.5 font-mono font-bold text-emerald-400" x-text="'Rs. ' + ((parseFloat(item.qty) || 0) * (parseFloat(item.rate) || 0)).toFixed(2)"></td>
                                             <td class="p-2.5 text-center">

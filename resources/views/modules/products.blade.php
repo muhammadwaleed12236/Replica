@@ -1,12 +1,5 @@
 <x-app-layout>
-    <div class="py-6" x-data="{
-        search: '',
-        showAddModal: false,
-        barcodeInput: '',
-        generateBarcode() {
-            this.barcodeInput = '890' + Math.floor(100000000 + Math.random() * 900000000);
-        }
-    }">
+    <div class="py-6" x-data="productManager()">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
             <!-- Module Navigation Bar -->
@@ -115,18 +108,53 @@
                                     <td class="p-3.5 font-semibold text-indigo-300">
                                         {{ $product->company->name ?? 'N/A' }}
                                     </td>
-                                    <td class="p-3.5 text-right font-mono text-slate-400">
-                                        Rs. {{ number_format($product->purchase_price, 2) }}
+                                    <td class="p-3.5 text-right font-mono text-slate-400 text-xs">
+                                        @if($product->units->count() > 0 && $product->purchase_price == 0)
+                                            @foreach($product->units as $u)
+                                                <div class="whitespace-nowrap">{{ $u->name }}: Rs. {{ number_format($u->purchase_price, 2) }}</div>
+                                            @endforeach
+                                        @else
+                                            Rs. {{ number_format($product->purchase_price, 2) }}
+                                        @endif
                                     </td>
-                                    <td class="p-3.5 text-right font-mono font-bold text-emerald-400 text-sm">
-                                        Rs. {{ number_format($product->sale_price, 2) }}
+                                    <td class="p-3.5 text-right font-mono font-bold text-emerald-400 text-xs">
+                                        @if($product->units->count() > 0 && $product->sale_price == 0)
+                                            @foreach($product->units as $u)
+                                                <div class="whitespace-nowrap">{{ $u->name }}: Rs. {{ number_format($u->sale_price, 2) }}</div>
+                                            @endforeach
+                                        @else
+                                            Rs. {{ number_format($product->sale_price, 2) }}
+                                        @endif
                                     </td>
                                     <td class="p-3.5 text-right font-mono font-bold text-amber-400 text-sm">
                                         Rs. {{ number_format($product->wholesale_price, 2) }}
                                     </td>
                                     <td class="p-3.5 text-center font-mono">
-                                        <span class="px-2.5 py-1 rounded-full text-xs font-bold {{ $product->stock_quantity <= 5 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' }}">
-                                            {{ $product->stock_quantity }} {{ $product->unit }}
+                                        @php
+                                            $qty = $product->stock_quantity;
+                                            $cartonUnit = $product->units->first(function($u) {
+                                                return stripos($u->name, 'carton') !== false || stripos($u->name, 'ctn') !== false || $u->factor > 1;
+                                            });
+                                            
+                                            $display = $qty . ' ' . $product->unit;
+                                            if ($cartonUnit && $cartonUnit->factor > 0) {
+                                                $factor = $cartonUnit->factor;
+                                                $cartons = floor($qty / $factor);
+                                                $pcs = $qty - ($cartons * $factor);
+                                                
+                                                $parts = [];
+                                                if ($cartons > 0) $parts[] = $cartons . ' ' . $cartonUnit->name;
+                                                if ($pcs > 0) $parts[] = $pcs . ' ' . $product->unit;
+                                                
+                                                if (count($parts) > 0) {
+                                                    $display = implode(' + ', $parts);
+                                                } else {
+                                                    $display = '0 ' . $product->unit;
+                                                }
+                                            }
+                                        @endphp
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-bold {{ $qty <= 5 ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' }}">
+                                            {{ $display }}
                                         </span>
                                     </td>
                                     <td class="p-3.5 text-center">
@@ -154,8 +182,9 @@
         </div>
 
         <!-- Add New Product Modal -->
-        <div x-show="showAddModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-            <div @click.away="showAddModal = false" class="w-full max-w-lg prowave-glass-card rounded-2xl border border-cyan-500/30 p-6 shadow-2xl space-y-5">
+        <div x-show="showAddModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-md">
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div @click.away="showAddModal = false" class="w-full max-w-lg prowave-glass-card rounded-2xl border border-cyan-500/30 p-6 shadow-2xl space-y-5">
                 
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                     <div class="flex items-center gap-2">
@@ -202,30 +231,130 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        <!-- Purchase Price -->
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Purchase Price</label>
-                            <input type="number" step="0.01" name="purchase_price" value="0" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 font-mono text-xs" />
+                    <div class="mt-4 p-4 rounded-xl bg-slate-900 border border-slate-700">
+                        <div class="mb-4 pb-4 border-b border-slate-800">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">Product Setup Mode</label>
+                            <select x-model="setupMode" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-cyan-300 font-bold text-sm">
+                                <option value="carton">CARTON + PCS (I buy/sell in both Cartons & Pieces)</option>
+                                <option value="pcs">PCS ONLY (I only deal in loose items)</option>
+                            </select>
                         </div>
 
-                        <!-- Retail Sale Price -->
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-emerald-400 mb-1">Retail Price [R]</label>
-                            <input type="number" step="0.01" name="sale_price" value="0" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-emerald-400 font-bold font-mono text-xs" />
-                        </div>
+                        <!-- CARTON MODE UI -->
+                        <template x-if="setupMode === 'carton'">
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-cyan-400 mb-1">Pack Size (Pieces per Carton)</label>
+                                        <input type="number" x-model.number="packSize" min="1" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-sm" />
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-1">Initial Stock (in Cartons)</label>
+                                        <input type="number" x-model.number="stockQtyCtn" min="0" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-sm" />
+                                        <div class="text-[10px] text-emerald-400/70 mt-1 font-mono">Base Stock: <span x-text="(stockQtyCtn || 0) * (packSize || 1)"></span> PCS</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-3 rounded-lg border border-slate-700/50 bg-slate-950/30">
+                                    <h4 class="text-xs font-bold text-slate-400 uppercase mb-3">Carton Pricing (Prices per 1 Carton)</h4>
+                                    <div class="flex gap-2">
+                                        <div class="flex-1">
+                                            <label class="block text-[10px] uppercase text-slate-400 mb-1">Pur. Price</label>
+                                            <input type="number" step="any" x-model.number="cartonPurPrice" class="w-full px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono text-xs" />
+                                        </div>
+                                        <div class="flex-1">
+                                            <label class="block text-[10px] uppercase text-emerald-400 mb-1">Retail Price</label>
+                                            <input type="number" step="any" x-model.number="cartonSalePrice" class="w-full px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-emerald-400 font-bold font-mono text-xs" />
+                                        </div>
+                                        <div class="flex-1">
+                                            <label class="block text-[10px] uppercase text-amber-400 mb-1">Whole. Price</label>
+                                            <input type="number" step="any" x-model.number="cartonWholePrice" class="w-full px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-amber-400 font-bold font-mono text-xs" />
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 text-[10px] text-cyan-400/80 font-mono font-bold">
+                                        Auto-calculated PCS Prices: 
+                                        Pur = Rs. <span x-text="calcPcs(cartonPurPrice)"></span>, 
+                                        Retail = Rs. <span x-text="calcPcs(cartonSalePrice)"></span>, 
+                                        Whole = Rs. <span x-text="calcPcs(cartonWholePrice)"></span>
+                                    </div>
+                                </div>
 
-                        <!-- Wholesale Sale Price -->
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">Wholesale Price [W]</label>
-                            <input type="number" step="0.01" name="wholesale_price" value="0" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-amber-400 font-bold font-mono text-xs" />
-                        </div>
+                                <!-- Hidden Inputs for Carton Mode -->
+                                <input type="hidden" name="stock_quantity" :value="stockQtyCtn">
+                                <input type="hidden" name="stock_unit" value="carton_temp">
+                                
+                                <!-- Unit 0: PCS -->
+                                <input type="hidden" name="units[0][temp_id]" value="pcs_temp">
+                                <input type="hidden" name="units[0][name]" value="PCS">
+                                <input type="hidden" name="units[0][factor]" value="1">
+                                <input type="hidden" name="units[0][is_base_unit]" value="1">
+                                <input type="hidden" name="units[0][purchase_price]" :value="calcPcs(cartonPurPrice)">
+                                <input type="hidden" name="units[0][sale_price]" :value="calcPcs(cartonSalePrice)">
+                                <input type="hidden" name="units[0][wholesale_price]" :value="calcPcs(cartonWholePrice)">
+                                <input type="hidden" name="units[0][is_default_purchase]" value="0">
+                                <input type="hidden" name="units[0][is_default_sale]" value="1">
+                                <input type="hidden" name="units[0][is_purchase_unit]" value="1">
+                                <input type="hidden" name="units[0][is_sale_unit]" value="1">
 
-                        <!-- Opening Stock -->
-                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1">Initial Stock</label>
-                            <input type="number" name="stock_quantity" value="0" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs" />
-                        </div>
+                                <!-- Unit 1: Carton -->
+                                <input type="hidden" name="units[1][temp_id]" value="carton_temp">
+                                <input type="hidden" name="units[1][name]" value="Carton">
+                                <input type="hidden" name="units[1][alias]" value="CTN">
+                                <input type="hidden" name="units[1][factor]" :value="packSize">
+                                <input type="hidden" name="units[1][is_base_unit]" value="0">
+                                <input type="hidden" name="units[1][purchase_price]" :value="cartonPurPrice">
+                                <input type="hidden" name="units[1][sale_price]" :value="cartonSalePrice">
+                                <input type="hidden" name="units[1][wholesale_price]" :value="cartonWholePrice">
+                                <input type="hidden" name="units[1][is_default_purchase]" value="1">
+                                <input type="hidden" name="units[1][is_default_sale]" value="0">
+                                <input type="hidden" name="units[1][is_purchase_unit]" value="1">
+                                <input type="hidden" name="units[1][is_sale_unit]" value="1">
+                            </div>
+                        </template>
+
+                        <!-- PCS ONLY MODE UI -->
+                        <template x-if="setupMode === 'pcs'">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-1">Initial Stock (in PCS)</label>
+                                    <input type="number" x-model.number="stockQtyPcs" min="0" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-sm" />
+                                </div>
+                                
+                                <div class="p-3 rounded-lg border border-slate-700/50 bg-slate-950/30">
+                                    <h4 class="text-xs font-bold text-slate-400 uppercase mb-3">PCS Pricing (Prices per 1 PCS)</h4>
+                                    <div class="flex gap-2">
+                                        <div class="flex-1">
+                                            <label class="block text-[10px] uppercase text-slate-400 mb-1">Pur. Price</label>
+                                            <input type="number" step="any" x-model.number="pcsPurPrice" class="w-full px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono text-xs" />
+                                        </div>
+                                        <div class="flex-1">
+                                            <label class="block text-[10px] uppercase text-emerald-400 mb-1">Retail Price</label>
+                                            <input type="number" step="any" x-model.number="pcsSalePrice" class="w-full px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-emerald-400 font-bold font-mono text-xs" />
+                                        </div>
+                                        <div class="flex-1">
+                                            <label class="block text-[10px] uppercase text-amber-400 mb-1">Whole. Price</label>
+                                            <input type="number" step="any" x-model.number="pcsWholePrice" class="w-full px-2 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-amber-400 font-bold font-mono text-xs" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Hidden Inputs for PCS Mode -->
+                                <input type="hidden" name="stock_quantity" :value="stockQtyPcs">
+                                <input type="hidden" name="stock_unit" value="pcs_temp">
+                                
+                                <input type="hidden" name="units[0][temp_id]" value="pcs_temp">
+                                <input type="hidden" name="units[0][name]" value="PCS">
+                                <input type="hidden" name="units[0][factor]" value="1">
+                                <input type="hidden" name="units[0][is_base_unit]" value="1">
+                                <input type="hidden" name="units[0][purchase_price]" :value="pcsPurPrice">
+                                <input type="hidden" name="units[0][sale_price]" :value="pcsSalePrice">
+                                <input type="hidden" name="units[0][wholesale_price]" :value="pcsWholePrice">
+                                <input type="hidden" name="units[0][is_default_purchase]" value="1">
+                                <input type="hidden" name="units[0][is_default_sale]" value="1">
+                                <input type="hidden" name="units[0][is_purchase_unit]" value="1">
+                                <input type="hidden" name="units[0][is_sale_unit]" value="1">
+                            </div>
+                        </template>
                     </div>
 
                     <div class="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
@@ -234,7 +363,39 @@
                     </div>
                 </form>
             </div>
+            </div>
         </div>
 
     </div>
 </x-app-layout>
+
+<script>
+function productManager() {
+    return {
+        search: '',
+        showAddModal: {{ $errors->any() ? 'true' : 'false' }},
+        barcodeInput: '{{ old('barcode') }}',
+        
+        setupMode: 'carton', // 'carton' or 'pcs'
+        
+        packSize: 12,
+        cartonPurPrice: 0,
+        cartonSalePrice: 0,
+        cartonWholePrice: 0,
+        stockQtyCtn: 0,
+        
+        pcsPurPrice: 0,
+        pcsSalePrice: 0,
+        pcsWholePrice: 0,
+        stockQtyPcs: 0,
+
+        generateBarcode() {
+            this.barcodeInput = '890' + Math.floor(100000000 + Math.random() * 900000000);
+        },
+        
+        calcPcs(val) {
+            return ((parseFloat(val) || 0) / (parseFloat(this.packSize) || 1)).toFixed(2);
+        }
+    };
+}
+</script>

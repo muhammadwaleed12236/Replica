@@ -26,4 +26,9 @@ class Product extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function units()
+    {
+        return $this->hasMany(ProductUnit::class);
+    }
 }

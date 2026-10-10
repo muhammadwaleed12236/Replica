@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" 
+      x-data="{ darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches) }" 
+      x-init="$watch('darkMode', val => localStorage.setItem('theme', val ? 'dark' : 'light'))" 
+      :class="{ 'dark': darkMode }">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,11 +18,9 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-[#0b0f19] text-slate-100 prowave-bg-grid min-h-screen antialiased selection:bg-cyan-500 selection:text-white">
-        <!-- Ambient Radial Background Glow -->
-        <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[50rem] h-[30rem] bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none"></div>
-
-        <div class="min-h-screen flex flex-col relative z-10">
+    <body class="antialiased selection:bg-blue-500 selection:text-white transition-colors duration-300">
+        
+        <div class="min-h-screen flex flex-col relative z-10 bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-slate-100">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
