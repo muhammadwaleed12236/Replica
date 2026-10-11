@@ -42,9 +42,21 @@
                     Node Online
                 </div>
 
-                <a href="{{ route('settings.index') }}" class="px-2.5 py-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center gap-1 transition-all">
+                <a href="{{ route('settings.index') }}" class="px-2.5 py-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-500 dark:text-amber-300 text-xs font-bold flex items-center gap-1 transition-all">
                     ⚙️ Settings
                 </a>
+
+                <!-- Theme Mode Toggle (☀️ Light / 🌙 Dark) -->
+                <button type="button" 
+                        @click="
+                            const isDark = document.documentElement.classList.toggle('dark');
+                            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                        "
+                        class="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm"
+                        title="Toggle Light / Dark Theme">
+                    <span class="dark:hidden flex items-center gap-1 text-amber-600 font-extrabold">☀️ Light</span>
+                    <span class="hidden dark:flex items-center gap-1 text-cyan-400 font-extrabold">🌙 Dark</span>
+                </button>
 
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -108,6 +120,20 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-slate-200">
                 {{ __('Main Menu Grid') }}
             </x-responsive-nav-link>
+
+            <!-- Mobile Theme Toggle -->
+            <div class="px-4 py-2">
+                <button type="button" 
+                        @click="
+                            const isDark = document.documentElement.classList.toggle('dark');
+                            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                        "
+                        class="w-full py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center justify-between shadow-sm">
+                    <span>Theme Appearance:</span>
+                    <span class="dark:hidden text-amber-600 font-extrabold">☀️ Switch to Dark</span>
+                    <span class="hidden dark:inline text-cyan-400 font-extrabold">🌙 Switch to Light</span>
+                </button>
+            </div>
         </div>
 
         <!-- Responsive Settings Options -->
