@@ -24,9 +24,8 @@
             <!-- DAWN Top Header Banner matching Reference Image -->
             <div class="bg-[#00a2e8] rounded-lg p-4 shadow-md border-2 border-[#008ecb] text-black flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <x-application-logo />
-                    <div class="h-8 w-px bg-black/20 mx-2 hidden sm:block"></div>
-                    <span class="text-sm font-black uppercase tracking-wider text-black hidden sm:inline">Main Terminal System</span>
+                    <span class="text-xl">🖥️</span>
+                    <span class="text-base font-black uppercase tracking-wider text-black">Main Terminal System</span>
                 </div>
                 <div class="flex items-center gap-2 text-xs font-bold bg-white/30 px-3 py-1.5 rounded-full border border-white/50">
                     <span>Direct Key Access:</span>

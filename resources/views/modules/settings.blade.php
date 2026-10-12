@@ -24,8 +24,6 @@
             <div class="w-full bg-[#00a2e8] select-none shadow-md rounded-lg overflow-hidden border border-[#008ecb]">
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
-                        <x-application-logo />
-                        <div class="h-7 w-px bg-black/20 mx-1 hidden sm:block"></div>
                         <div class="flex items-center gap-2 bg-[#008cc9]/70 border border-white/50 px-3 py-1.5 rounded-lg text-black">
                             <span class="text-xl">⚙️</span>
                             <h1 class="text-lg font-black tracking-normal font-sans">System Settings & Security</h1>
