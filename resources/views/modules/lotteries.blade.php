@@ -1,105 +1,142 @@
 <x-app-layout>
-    <div class="py-6" x-data="{ showModal: false }">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+    <div class="py-4" x-data="{ showModal: false }">
+        <div class="max-w-7xl mx-auto px-2 sm:px-4 space-y-3 font-sans">
 
             @if(session('success'))
-                <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    {{ session('success') }}
-                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: '{{ session('success') }}',
+                            timer: 2500,
+                            timerProgressBar: true,
+                            confirmButtonColor: '#00a2e8'
+                        });
+                    });
+                </script>
             @endif
 
             <!-- Module Navigation Bar -->
             <x-module-nav active="lotteries" />
 
-            <!-- Compact Header Toolbar -->
-            <div class="prowave-glass-card rounded-2xl border border-slate-800 p-3 flex items-center justify-between shadow-lg">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-300">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2H5z"/></svg>
+            <!-- DAWN Top Header Banner -->
+            <div class="w-full bg-[#00a2e8] select-none shadow-md rounded-lg overflow-hidden border border-[#008ecb]">
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <x-application-logo />
+                        <div class="h-7 w-px bg-black/20 mx-1 hidden sm:block"></div>
+                        <div class="flex items-center gap-2 bg-[#008cc9]/70 border border-white/50 px-3 py-1.5 rounded-lg text-black">
+                            <span class="text-xl">🎟️</span>
+                            <h1 class="text-lg font-black tracking-normal font-sans">8 Lotteries & Schemes Directory</h1>
+                        </div>
                     </div>
-                    <div>
-                        <h1 class="text-base font-extrabold text-white font-['Outfit']">8 Lotteries & Schemes Directory</h1>
-                        <p class="text-[11px] text-slate-400">Total Active Schemes: <span class="text-sky-300 font-bold font-mono">{{ count($lotteries) }}</span></p>
-                    </div>
-                </div>
 
-                <div class="flex items-center gap-3">
-                    <button type="button" @click="showModal = true" class="prowave-btn-primary px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                        <span>+ Add Lottery Scheme</span>
-                    </button>
-                    <a href="{{ route('dashboard') }}" class="prowave-btn-secondary px-3.5 py-2 rounded-xl text-xs font-bold">← Dashboard</a>
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="showModal = true" class="px-3.5 py-1.5 rounded bg-white hover:bg-[#f0f4f8] text-slate-900 text-xs font-black flex items-center gap-1.5 shadow-sm border border-white/60 transition-all">
+                            <span class="text-base leading-none text-[#007cb5] font-black">+</span>
+                            <span>Add Lottery Scheme</span>
+                        </button>
+                        <a href="{{ route('dashboard') }}" class="px-3 py-1.5 rounded bg-white/20 hover:bg-white/30 text-black text-xs font-bold border border-white/40 transition-all">
+                            ← Dashboard
+                        </a>
+                    </div>
                 </div>
             </div>
 
             <!-- Table Card -->
-            <div class="prowave-glass-card rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
-                <table class="w-full text-left text-xs text-slate-300">
-                    <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
-                        <tr>
-                            <th class="p-3.5">#</th>
-                            <th class="p-3.5">Scheme Name</th>
-                            <th class="p-3.5">Date</th>
-                            <th class="p-3.5">Status</th>
-                            <th class="p-3.5">Remarks</th>
-                            <th class="p-3.5 text-right">Amount (Rs.)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800/80">
-                        @forelse($lotteries as $index => $lottery)
-                            <tr class="hover:bg-slate-900/40 transition-colors">
-                                <td class="p-3.5 font-mono text-slate-500">{{ $index + 1 }}</td>
-                                <td class="p-3.5 font-bold text-white">{{ $lottery->scheme_name }}</td>
-                                <td class="p-3.5 font-mono text-slate-400">{{ $lottery->date ?? 'N/A' }}</td>
-                                <td class="p-3.5">
-                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase bg-sky-500/10 text-sky-400 border border-sky-500/20">
-                                        {{ $lottery->status ?? 'Active' }}
-                                    </span>
-                                </td>
-                                <td class="p-3.5 text-slate-400">{{ $lottery->remarks ?? 'N/A' }}</td>
-                                <td class="p-3.5 text-right font-mono font-bold text-emerald-400">Rs. {{ number_format($lottery->amount, 2) }}</td>
+            <div class="bg-white rounded-lg border-2 border-[#cbd8e4] p-4 shadow-md space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-[#cbd8e4]">
+                    <div>
+                        <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Active Lotteries & Pool Schemes</h3>
+                        <p class="text-xs text-slate-600 font-medium">Record and track monthly committee/lottery pool installments and payouts</p>
+                    </div>
+                    <span class="text-xs font-mono text-[#007cb5] bg-[#eaf4fa] border border-[#00a2e8] px-2.5 py-1 rounded font-bold">
+                        Total: {{ count($lotteries) }} Schemes
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto rounded border border-[#cbd8e4]">
+                    <table class="w-full text-left text-xs border border-[#cbd8e4]">
+                        <thead class="bg-[#eaf1f7] text-slate-900 uppercase font-mono font-black border-b-2 border-[#cbd8e4]">
+                            <tr>
+                                <th class="p-2.5 border-r border-[#cbd8e4] w-12 text-center">#</th>
+                                <th class="p-2.5 border-r border-[#cbd8e4]">Scheme Name</th>
+                                <th class="p-2.5 border-r border-[#cbd8e4]">Date</th>
+                                <th class="p-2.5 border-r border-[#cbd8e4]">Status</th>
+                                <th class="p-2.5 border-r border-[#cbd8e4]">Remarks</th>
+                                <th class="p-2.5 text-right font-black">Amount (Rs.)</th>
                             </tr>
-                        @empty
-                            <tr><td colspan="6" class="p-8 text-center text-slate-500">No lottery schemes recorded yet.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-[#e2ebf3]">
+                            @forelse($lotteries as $index => $lottery)
+                                <tr class="hover:bg-[#f6f9fc] transition-colors">
+                                    <td class="p-2.5 border-r border-[#e2ebf3] text-center font-mono text-slate-500">{{ $index + 1 }}</td>
+                                    <td class="p-2.5 border-r border-[#e2ebf3] font-bold text-slate-900">{{ $lottery->scheme_name }}</td>
+                                    <td class="p-2.5 border-r border-[#e2ebf3] font-mono text-slate-700 font-semibold">{{ $lottery->date ?? 'N/A' }}</td>
+                                    <td class="p-2.5 border-r border-[#e2ebf3]">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 border border-slate-300 text-slate-800">
+                                            {{ $lottery->status ?? 'Active' }}
+                                        </span>
+                                    </td>
+                                    <td class="p-2.5 border-r border-[#e2ebf3] text-slate-700">{{ $lottery->remarks ?? 'N/A' }}</td>
+                                    <td class="p-2.5 text-right font-mono font-black text-sm text-emerald-700">Rs. {{ number_format($lottery->amount, 2) }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="p-6 text-center text-slate-500">No lottery schemes recorded yet.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
 
-        <!-- Add Lottery Scheme Modal -->
-        <div x-show="showModal" x-cloak style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <div @click.away="showModal = false" class="prowave-glass-card rounded-2xl max-w-lg w-full p-6 border border-slate-700 shadow-2xl">
-                <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
-                    <h3 class="text-base font-extrabold text-white font-['Outfit']">Create New Lottery Scheme</h3>
-                    <button type="button" @click="showModal = false" class="text-slate-400 hover:text-white font-bold">✕</button>
+        <!-- Add Lottery Modal -->
+        <div x-show="showModal" x-cloak style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div @click.away="showModal = false" class="bg-white rounded-lg max-w-lg w-full border-2 border-[#0092d0] shadow-2xl overflow-hidden font-sans">
+                <div class="bg-[#00a2e8] text-white p-3.5 flex items-center justify-between">
+                    <h3 class="text-base font-extrabold font-sans">Add Lottery / Committee Scheme</h3>
+                    <button type="button" @click="showModal = false" class="text-white hover:text-slate-200 font-bold text-lg leading-none">✕</button>
                 </div>
 
-                <form method="POST" action="{{ route('lotteries.store') }}" class="space-y-4">
+                <form method="POST" action="{{ route('lotteries.store') }}" class="p-5 space-y-4 bg-[#f6f9fc]">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Scheme Name</label>
-                        <input type="text" name="scheme_name" required placeholder="e.g. Monthly Bumper Scheme" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs" />
+                        <label class="block text-xs font-black uppercase text-slate-800 mb-1">Scheme Name</label>
+                        <input type="text" name="scheme_name" required placeholder="e.g. Committee 50K Monthly" class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-bold shadow-sm" />
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Amount (Rs.)</label>
-                            <input type="number" step="0.01" name="amount" required placeholder="50000" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-mono text-emerald-400 font-bold" />
+                            <label class="block text-xs font-black uppercase text-slate-800 mb-1">Amount (Rs.)</label>
+                            <input type="number" step="0.01" name="amount" required placeholder="0.00" class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-mono font-bold text-emerald-700 shadow-sm" />
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Date</label>
-                            <input type="date" name="date" value="{{ date('Y-m-d') }}" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-mono" />
+                            <label class="block text-xs font-black uppercase text-slate-800 mb-1">Date</label>
+                            <input type="date" name="date" value="{{ date('Y-m-d') }}" class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-mono font-bold shadow-sm" />
                         </div>
                     </div>
+
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Remarks / Details</label>
-                        <input type="text" name="remarks" placeholder="Optional notes..." class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs" />
+                        <label class="block text-xs font-black uppercase text-slate-800 mb-1">Status</label>
+                        <select name="status" class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-bold shadow-sm">
+                            <option value="Active">Active</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Pending">Pending</option>
+                        </select>
                     </div>
-                    <div class="pt-3 flex justify-end gap-3">
-                        <button type="button" @click="showModal = false" class="prowave-btn-secondary px-4 py-2 rounded-xl text-xs font-bold">Cancel</button>
-                        <button type="submit" class="prowave-btn-primary px-5 py-2 rounded-xl text-xs font-bold">Save Scheme</button>
+
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-800 mb-1">Remarks</label>
+                        <textarea name="remarks" rows="2" placeholder="Notes..." class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-medium shadow-sm"></textarea>
+                    </div>
+
+                    <div class="pt-3 flex justify-end gap-2 border-t border-[#cbd8e4]">
+                        <button type="button" @click="showModal = false" class="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded text-xs font-bold">Cancel</button>
+                        <button type="submit" class="px-5 py-1.5 bg-[#00a2e8] hover:bg-[#008ecb] text-white rounded text-xs font-black shadow-sm">Save Scheme</button>
                     </div>
                 </form>
             </div>

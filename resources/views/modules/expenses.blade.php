@@ -1,87 +1,136 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="bg-gradient-to-r from-rose-600 to-indigo-700 rounded-2xl p-5 shadow-2xl flex items-center justify-between border border-rose-400/30">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white">
-                    <svg class="w-7 h-7 text-rose-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-extrabold text-white font-['Outfit']">6 Expenses Tracker</h1>
-                    <p class="text-xs text-rose-200">Record Operational Expenses & Bills</p>
-                </div>
-            </div>
-            <a href="{{ route('dashboard') }}" class="prowave-btn-secondary px-4 py-2 rounded-xl text-xs font-bold">← Dashboard</a>
-        </div>
-    </x-slot>
+    <div class="py-4" x-data="{ showModal: false }">
+        <div class="max-w-7xl mx-auto px-2 sm:px-4 space-y-3 font-sans">
 
-    <div class="py-8" x-data="{ showModal: false }">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            @if(session('success'))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: '{{ session('success') }}',
+                            timer: 2500,
+                            timerProgressBar: true,
+                            confirmButtonColor: '#00a2e8'
+                        });
+                    });
+                </script>
+            @endif
 
             <!-- Module Navigation Bar -->
             <x-module-nav active="expenses" />
 
-            <div class="flex items-center justify-between">
-                <h3 class="text-lg font-bold text-white font-['Outfit']">Expense Vouchers Log</h3>
-                <button type="button" @click="showModal = true" class="prowave-btn-primary px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2">
-                    + Record Expense
-                </button>
+            <!-- DAWN Top Header Banner -->
+            <div class="w-full bg-[#00a2e8] select-none shadow-md rounded-lg overflow-hidden border border-[#008ecb]">
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2 bg-[#008cc9]/70 border border-white/50 px-3 py-1.5 rounded-lg text-black">
+                            <span class="text-xl">🧾</span>
+                            <h1 class="text-lg font-black tracking-normal font-sans">6 Expenses Tracker</h1>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="showModal = true" class="px-3.5 py-1.5 rounded bg-white hover:bg-[#f0f4f8] text-slate-900 text-xs font-black flex items-center gap-1.5 shadow-sm border border-white/60 transition-all">
+                            <span class="text-base leading-none text-[#007cb5] font-black">+</span>
+                            <span>Record Expense</span>
+                        </button>
+                        <a href="{{ route('dashboard') }}" class="px-3 py-1.5 rounded bg-white/20 hover:bg-white/30 text-black text-xs font-bold border border-white/40 transition-all">
+                            ← Dashboard
+                        </a>
+                    </div>
+                </div>
             </div>
 
-            <div class="prowave-glass-card rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
-                <table class="w-full text-left text-xs text-slate-300">
-                    <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
-                        <tr>
-                            <th class="p-4">Date</th>
-                            <th class="p-4">Expense Title</th>
-                            <th class="p-4">Category</th>
-                            <th class="p-4">Remarks</th>
-                            <th class="p-4 text-right">Amount (Rs.)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800/80">
-                        @forelse($expenses as $exp)
-                            <tr class="hover:bg-slate-900/40">
-                                <td class="p-4 font-mono text-slate-400">{{ $exp->date }}</td>
-                                <td class="p-4 font-bold text-white">{{ $exp->title }}</td>
-                                <td class="p-4"><span class="px-2.5 py-1 rounded-full text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20 font-semibold uppercase">{{ $exp->category }}</span></td>
-                                <td class="p-4 text-slate-400">{{ $exp->remarks ?? 'N/A' }}</td>
-                                <td class="p-4 text-right font-mono font-bold text-rose-400">Rs. {{ number_format($exp->amount, 2) }}</td>
+            <!-- Table Card -->
+            <div class="bg-white rounded-lg border-2 border-[#cbd8e4] p-4 shadow-md space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-[#cbd8e4]">
+                    <div>
+                        <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">Expense Vouchers Log</h3>
+                        <p class="text-xs text-slate-600 font-medium">Record and review office and operational utility/general expenses</p>
+                    </div>
+                    <span class="text-xs font-mono text-[#007cb5] bg-[#eaf4fa] border border-[#00a2e8] px-2.5 py-1 rounded font-bold">
+                        Total: {{ count($expenses) }} Expenses
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto rounded border border-[#cbd8e4]">
+                    <table class="w-full text-left text-xs border border-[#cbd8e4]">
+                        <thead class="bg-[#eaf1f7] text-slate-900 uppercase font-mono font-black border-b-2 border-[#cbd8e4]">
+                            <tr>
+                                <th class="p-2.5 border-r border-[#cbd8e4]">Date</th>
+                                <th class="p-2.5 border-r border-[#cbd8e4]">Expense Title</th>
+                                <th class="p-2.5 border-r border-[#cbd8e4]">Category</th>
+                                <th class="p-2.5 border-r border-[#cbd8e4]">Remarks</th>
+                                <th class="p-2.5 text-right font-black">Amount (Rs.)</th>
                             </tr>
-                        @empty
-                            <tr><td colspan="5" class="p-8 text-center text-slate-500">No expenses recorded yet.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-[#e2ebf3]">
+                            @forelse($expenses as $exp)
+                                <tr class="hover:bg-[#f6f9fc] transition-colors">
+                                    <td class="p-2.5 border-r border-[#e2ebf3] font-mono text-slate-700 font-semibold">{{ $exp->date }}</td>
+                                    <td class="p-2.5 border-r border-[#e2ebf3] font-bold text-slate-900">{{ $exp->title }}</td>
+                                    <td class="p-2.5 border-r border-[#e2ebf3]">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-amber-100 border border-amber-300 text-amber-900">
+                                            {{ $exp->category }}
+                                        </span>
+                                    </td>
+                                    <td class="p-2.5 border-r border-[#e2ebf3] text-slate-700">{{ $exp->remarks ?? 'N/A' }}</td>
+                                    <td class="p-2.5 text-right font-mono font-black text-sm text-rose-700">
+                                        Rs. {{ number_format($exp->amount, 2) }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="p-6 text-center text-slate-500">No expenses recorded yet.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
 
-        <div x-show="showModal" x-cloak style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <div @click.away="showModal = false" class="prowave-glass-card rounded-2xl max-w-lg w-full p-6 border border-slate-700 shadow-2xl">
-                <h3 class="text-lg font-bold text-white font-['Outfit'] mb-4">Record New Expense</h3>
-                <form method="POST" action="{{ route('expenses.store') }}" class="space-y-4">
+        <!-- Add Expense Modal -->
+        <div x-show="showModal" x-cloak style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div @click.away="showModal = false" class="bg-white rounded-lg max-w-lg w-full border-2 border-[#0092d0] shadow-2xl overflow-hidden font-sans">
+                <div class="bg-[#00a2e8] text-white p-3.5 flex items-center justify-between">
+                    <h3 class="text-base font-extrabold font-sans">Record New Expense</h3>
+                    <button type="button" @click="showModal = false" class="text-white hover:text-slate-200 font-bold text-lg leading-none">✕</button>
+                </div>
+
+                <form method="POST" action="{{ route('expenses.store') }}" class="p-5 space-y-4 bg-[#f6f9fc]">
                     @csrf
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Expense Title</label>
-                        <input type="text" name="title" required placeholder="e.g. Office Electricity Bill" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm" />
+                        <label class="block text-xs font-black uppercase text-slate-800 mb-1">Expense Title / Description</label>
+                        <input type="text" name="title" required placeholder="e.g. Office Electricity Bill" class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-bold shadow-sm" />
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
+
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Amount (Rs.)</label>
-                            <input type="number" step="0.01" name="amount" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm font-mono" />
+                            <label class="block text-xs font-black uppercase text-slate-800 mb-1">Amount (Rs.)</label>
+                            <input type="number" step="0.01" name="amount" required placeholder="0.00" class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-mono font-black text-rose-700 shadow-sm" />
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Date</label>
-                            <input type="date" name="date" value="{{ date('Y-m-d') }}" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm font-mono" />
+                            <label class="block text-xs font-black uppercase text-slate-800 mb-1">Date</label>
+                            <input type="date" name="date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-mono font-bold shadow-sm" />
                         </div>
                     </div>
+
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Category</label>
-                        <input type="text" name="category" placeholder="Utilities, Rent, Salaries, Fuel..." class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm" />
+                        <label class="block text-xs font-black uppercase text-slate-800 mb-1">Category</label>
+                        <input type="text" name="category" placeholder="Utilities, Refreshment, Rent..." class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-bold shadow-sm" />
                     </div>
-                    <div class="pt-3 flex justify-end gap-3">
-                        <button type="button" @click="showModal = false" class="prowave-btn-secondary px-4 py-2 rounded-xl text-xs font-bold">Cancel</button>
-                        <button type="submit" class="prowave-btn-primary px-5 py-2 rounded-xl text-xs font-bold">Save Expense</button>
+
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-800 mb-1">Remarks</label>
+                        <textarea name="remarks" rows="2" placeholder="Optional notes..." class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-medium shadow-sm"></textarea>
+                    </div>
+
+                    <div class="pt-3 flex justify-end gap-2 border-t border-[#cbd8e4]">
+                        <button type="button" @click="showModal = false" class="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded text-xs font-bold">Cancel</button>
+                        <button type="submit" class="px-5 py-1.5 bg-[#00a2e8] hover:bg-[#008ecb] text-white rounded text-xs font-black shadow-sm">Save Expense</button>
                     </div>
                 </form>
             </div>

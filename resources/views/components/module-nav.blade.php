@@ -1,93 +1,91 @@
 @props(['active' => ''])
 
-<div class="bg-slate-900/90 border border-slate-800 p-2 rounded-2xl shadow-xl flex items-center gap-1.5 overflow-x-auto text-xs font-bold scrollbar-none">
+<div class="bg-white border border-[#cbd8e4] p-1.5 rounded-lg shadow-sm flex items-center gap-1 overflow-x-auto text-xs font-bold scrollbar-none select-none">
     
     <!-- 1 Parties -->
-    <a href="{{ route('parties.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'parties' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm shadow-cyan-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-mono flex items-center justify-center font-bold">1</span>
+    <a href="{{ route('parties.index') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'parties' ? 'bg-[#00a2e8] text-white shadow-sm font-extrabold' : 'text-slate-700 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span class="w-4 h-4 rounded {{ $active === 'parties' ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-800' }} text-[10px] font-mono flex items-center justify-center font-black">1</span>
         <span>Parties</span>
     </a>
 
     <!-- 2 Medical Reps -->
-    <a href="{{ route('medical_reps.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'medical_reps' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shadow-sm shadow-indigo-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-indigo-500/20 text-indigo-400 text-[10px] font-mono flex items-center justify-center font-bold">2</span>
+    <a href="{{ route('medical_reps.index') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'medical_reps' ? 'bg-[#00a2e8] text-white shadow-sm font-extrabold' : 'text-slate-700 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span class="w-4 h-4 rounded {{ $active === 'medical_reps' ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-800' }} text-[10px] font-mono flex items-center justify-center font-black">2</span>
         <span>Medical Reps</span>
     </a>
 
     <!-- 3 Companies -->
-    <a href="{{ route('companies.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'companies' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-sm shadow-purple-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-purple-500/20 text-purple-400 text-[10px] font-mono flex items-center justify-center font-bold">3</span>
+    <a href="{{ route('companies.index') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'companies' ? 'bg-[#00a2e8] text-white shadow-sm font-extrabold' : 'text-slate-700 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span class="w-4 h-4 rounded {{ $active === 'companies' ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-800' }} text-[10px] font-mono flex items-center justify-center font-black">3</span>
         <span>Companies</span>
     </a>
 
     <!-- 4 Salesmen -->
-    <a href="{{ route('salesmen.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'salesmen' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm shadow-cyan-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-cyan-500/20 text-cyan-400 text-[10px] font-mono flex items-center justify-center font-bold">4</span>
+    <a href="{{ route('salesmen.index') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'salesmen' ? 'bg-[#00a2e8] text-white shadow-sm font-extrabold' : 'text-slate-700 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span class="w-4 h-4 rounded {{ $active === 'salesmen' ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-800' }} text-[10px] font-mono flex items-center justify-center font-black">4</span>
         <span>Salesmen</span>
     </a>
 
     <!-- 5 Banks -->
-    <a href="{{ route('banks.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'banks' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm shadow-emerald-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono flex items-center justify-center font-bold">5</span>
+    <a href="{{ route('banks.index') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'banks' ? 'bg-[#00a2e8] text-white shadow-sm font-extrabold' : 'text-slate-700 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span class="w-4 h-4 rounded {{ $active === 'banks' ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-800' }} text-[10px] font-mono flex items-center justify-center font-black">5</span>
         <span>Banks</span>
     </a>
 
     <!-- 6 Expenses -->
-    <a href="{{ route('expenses.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'expenses' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm shadow-rose-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-rose-500/20 text-rose-400 text-[10px] font-mono flex items-center justify-center font-bold">6</span>
+    <a href="{{ route('expenses.index') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'expenses' ? 'bg-[#00a2e8] text-white shadow-sm font-extrabold' : 'text-slate-700 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span class="w-4 h-4 rounded {{ $active === 'expenses' ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-800' }} text-[10px] font-mono flex items-center justify-center font-black">6</span>
         <span>Expenses</span>
     </a>
 
     <!-- 7 Amanats -->
-    <a href="{{ route('amanats.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'amanats' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm shadow-amber-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-amber-500/20 text-amber-400 text-[10px] font-mono flex items-center justify-center font-bold">7</span>
+    <a href="{{ route('amanats.index') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'amanats' ? 'bg-[#00a2e8] text-white shadow-sm font-extrabold' : 'text-slate-700 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span class="w-4 h-4 rounded {{ $active === 'amanats' ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-800' }} text-[10px] font-mono flex items-center justify-center font-black">7</span>
         <span>Amanats</span>
     </a>
 
     <!-- 8 Lotteries -->
-    <a href="{{ route('lotteries.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'lotteries' ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-sm shadow-sky-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-sky-500/20 text-sky-400 text-[10px] font-mono flex items-center justify-center font-bold">8</span>
+    <a href="{{ route('lotteries.index') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'lotteries' ? 'bg-[#00a2e8] text-white shadow-sm font-extrabold' : 'text-slate-700 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span class="w-4 h-4 rounded {{ $active === 'lotteries' ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-800' }} text-[10px] font-mono flex items-center justify-center font-black">8</span>
         <span>Lotteries</span>
     </a>
 
-    <div class="h-4 w-px bg-slate-800 mx-1"></div>
+    <div class="h-4 w-px bg-slate-300 mx-0.5"></div>
 
     <!-- 9 Sales -->
-    <a href="{{ route('sales.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'sales' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm shadow-cyan-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-cyan-400 text-slate-900 text-[10px] font-mono flex items-center justify-center font-extrabold">9</span>
+    <a href="{{ route('sales.index') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'sales' ? 'bg-[#00a2e8] text-white shadow-sm font-black' : 'text-slate-800 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span class="w-4 h-4 rounded {{ $active === 'sales' ? 'bg-white text-slate-900' : 'bg-[#00a2e8] text-white' }} text-[10px] font-mono flex items-center justify-center font-black">9</span>
         <span>Sales</span>
     </a>
 
     <!-- 0 Purchases -->
-    <a href="{{ route('purchases.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'purchases' ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shadow-sm shadow-indigo-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-indigo-400 text-slate-900 text-[10px] font-mono flex items-center justify-center font-extrabold">0</span>
+    <a href="{{ route('purchases.index') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'purchases' ? 'bg-[#00a2e8] text-white shadow-sm font-black' : 'text-slate-800 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span class="w-4 h-4 rounded {{ $active === 'purchases' ? 'bg-white text-slate-900' : 'bg-[#00a2e8] text-white' }} text-[10px] font-mono flex items-center justify-center font-black">0</span>
         <span>Purchases</span>
     </a>
 
     <!-- A Receipts -->
-    <a href="{{ route('vouchers.index', 'receipt') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'vouchers_receipt' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm shadow-emerald-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-mono flex items-center justify-center font-bold">A</span>
+    <a href="{{ route('vouchers.index', 'receipt') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'vouchers_receipt' ? 'bg-[#00a2e8] text-white shadow-sm font-extrabold' : 'text-slate-700 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span class="w-4 h-4 rounded {{ $active === 'vouchers_receipt' ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-800' }} text-[10px] font-mono flex items-center justify-center font-black">A</span>
         <span>Receipts</span>
     </a>
 
     <!-- B Payments -->
-    <a href="{{ route('vouchers.index', 'payment') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'vouchers_payment' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm shadow-rose-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <span class="w-4 h-4 rounded bg-rose-500/20 text-rose-400 text-[10px] font-mono flex items-center justify-center font-bold">B</span>
+    <a href="{{ route('vouchers.index', 'payment') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'vouchers_payment' ? 'bg-[#00a2e8] text-white shadow-sm font-extrabold' : 'text-slate-700 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span class="w-4 h-4 rounded {{ $active === 'vouchers_payment' ? 'bg-white text-slate-900' : 'bg-slate-200 text-slate-800' }} text-[10px] font-mono flex items-center justify-center font-black">B</span>
         <span>Payments</span>
     </a>
 
-    <div class="h-4 w-px bg-slate-800 mx-1"></div>
+    <div class="h-4 w-px bg-slate-300 mx-0.5"></div>
 
     <!-- Reports -->
-    <a href="{{ route('reports.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'reports' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow-sm shadow-purple-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <svg class="w-3.5 h-3.5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-        <span>Reports</span>
+    <a href="{{ route('reports.index') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'reports' ? 'bg-[#00a2e8] text-white shadow-sm font-extrabold' : 'text-slate-700 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span>📊 Reports</span>
     </a>
 
     <!-- Settings -->
-    <a href="{{ route('settings.index') }}" class="px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'settings' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm shadow-amber-500/10' : 'text-slate-400 hover:text-white hover:bg-slate-800' }}">
-        <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-        <span>Settings</span>
+    <a href="{{ route('settings.index') }}" class="px-2.5 py-1 rounded flex items-center gap-1.5 transition-all whitespace-nowrap {{ $active === 'settings' ? 'bg-[#00a2e8] text-white shadow-sm font-extrabold' : 'text-slate-700 hover:bg-[#eaf4fa] hover:text-[#007cb5]' }}">
+        <span>⚙️ Settings</span>
     </a>
 
 </div>

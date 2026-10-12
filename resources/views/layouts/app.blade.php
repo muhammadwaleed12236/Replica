@@ -5,36 +5,28 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'ProWave Technologies') }} | Enterprise OS</title>
+        <title>{{ config('app.name', 'DAWN ERP') }} | Business Management System</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-        <!-- Theme Initialization (Defaults to Light Combination) -->
-        <script>
-            if (localStorage.getItem('theme') === 'dark') {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        </script>
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-[#f8fafc] dark:bg-[#0b0f19] text-slate-800 dark:text-slate-100 prowave-bg-grid min-h-screen antialiased selection:bg-cyan-500 selection:text-white transition-colors duration-200">
-        <!-- Ambient Radial Background Glow -->
-        <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[50rem] h-[30rem] bg-cyan-500/10 dark:bg-cyan-500/10 rounded-full blur-[140px] pointer-events-none"></div>
-
-        <div class="min-h-screen flex flex-col relative z-10">
+    <body class="bg-[#e7edf3] text-slate-900 min-h-screen antialiased selection:bg-[#00a2e8] selection:text-white font-sans">
+        
+        <div class="min-h-screen flex flex-col">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="prowave-glass border-b border-slate-200 dark:border-slate-800/80">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <header class="bg-white border-b border-[#cbd8e4] shadow-sm">
+                    <div class="max-w-7xl mx-auto py-3 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
@@ -45,10 +37,11 @@
                 {{ $slot }}
             </main>
 
-            <!-- Mini App Footer -->
-            <footer class="border-t border-slate-200 dark:border-slate-800/80 bg-white/80 dark:bg-[#070a12] py-6 text-center text-xs text-slate-500">
-                <div class="max-w-7xl mx-auto px-4">
-                    ProWave Technologies Platform • Laravel 12 Enterprise Engine • Active Session
+            <!-- DAWN ERP Footer -->
+            <footer class="border-t border-[#cbd8e4] bg-[#d9e3ec] py-3 text-center text-xs text-slate-700 font-medium">
+                <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-1">
+                    <span>DAWN ERP System • Commercial Enterprise Software</span>
+                    <span class="font-mono text-slate-600">Active Terminal • Fast Accounting Engine</span>
                 </div>
             </footer>
         </div>

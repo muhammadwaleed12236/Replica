@@ -1,101 +1,144 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="bg-gradient-to-r {{ $type == 'receipt' ? 'from-emerald-600 to-cyan-700' : 'from-rose-600 to-indigo-700' }} rounded-2xl p-5 shadow-2xl flex items-center justify-between border border-cyan-400/30">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                </div>
-                <div>
-                    <h1 class="text-2xl font-extrabold text-white font-['Outfit']">{{ $type == 'receipt' ? 'A Receipts Voucher' : 'B Payments Voucher' }}</h1>
-                    <p class="text-xs text-white/80">Manage Cash & Bank Financial Transactions</p>
-                </div>
-            </div>
-            <a href="{{ route('dashboard') }}" class="prowave-btn-secondary px-4 py-2 rounded-xl text-xs font-bold">← Dashboard</a>
-        </div>
-    </x-slot>
+    <div class="py-4" x-data="{ showModal: false }">
+        <div class="max-w-7xl mx-auto px-2 sm:px-4 space-y-3 font-sans">
 
-    <div class="py-8" x-data="{ showModal: false }">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            @if(session('success'))
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: '{{ session('success') }}',
+                            timer: 2500,
+                            timerProgressBar: true,
+                            confirmButtonColor: '#00a2e8'
+                        });
+                    });
+                </script>
+            @endif
 
             <!-- Module Navigation Bar -->
             <x-module-nav active="vouchers_{{ $type }}" />
 
-            <div class="flex items-center justify-between">
-                <h3 class="text-lg font-bold text-white font-['Outfit']">{{ ucfirst($type) }} Vouchers List</h3>
-                <button type="button" @click="showModal = true" class="prowave-btn-primary px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2">
-                    + Record {{ ucfirst($type) }}
-                </button>
+            <!-- DAWN Top Header Banner -->
+            <div class="w-full bg-[#00a2e8] select-none shadow-md rounded-lg overflow-hidden border border-[#008ecb]">
+                <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-2 bg-[#008cc9]/70 border border-white/50 px-3 py-1.5 rounded-lg text-black">
+                            <span class="text-xl">{{ $type == 'receipt' ? '💵' : '💳' }}</span>
+                            <h1 class="text-lg font-black tracking-normal font-sans">
+                                {{ $type == 'receipt' ? 'A Receipts Voucher (Cash In)' : 'B Payments Voucher (Cash Out)' }}
+                            </h1>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" @click="showModal = true" class="px-3.5 py-1.5 rounded bg-white hover:bg-[#f0f4f8] text-slate-900 text-xs font-black flex items-center gap-1.5 shadow-sm border border-white/60 transition-all">
+                            <span class="text-base leading-none text-[#007cb5] font-black">+</span>
+                            <span>Record {{ ucfirst($type) }}</span>
+                        </button>
+                        <a href="{{ route('dashboard') }}" class="px-3 py-1.5 rounded bg-white/20 hover:bg-white/30 text-black text-xs font-bold border border-white/40 transition-all">
+                            ← Dashboard
+                        </a>
+                    </div>
+                </div>
             </div>
 
-            <div class="prowave-glass-card rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
-                <table class="w-full text-left text-xs text-slate-300">
-                    <thead class="bg-slate-900 text-slate-400 uppercase font-mono border-b border-slate-800">
-                        <tr>
-                            <th class="p-4">Voucher #</th>
-                            <th class="p-4">Date</th>
-                            <th class="p-4">Party Name</th>
-                            <th class="p-4">Mode</th>
-                            <th class="p-4 text-right">Amount (Rs.)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800/80">
-                        @forelse($vouchers as $v)
-                            <tr class="hover:bg-slate-900/40">
-                                <td class="p-4 font-mono font-bold text-cyan-400">{{ $v->voucher_no }}</td>
-                                <td class="p-4 font-mono text-slate-400">{{ $v->date }}</td>
-                                <td class="p-4 font-bold text-white">{{ $v->party->name ?? 'N/A' }}</td>
-                                <td class="p-4"><span class="px-2.5 py-1 rounded-full text-[10px] bg-slate-800 text-cyan-300 font-mono">{{ $v->payment_mode }}</span></td>
-                                <td class="p-4 text-right font-mono font-bold {{ $type == 'receipt' ? 'text-emerald-400' : 'text-rose-400' }}">Rs. {{ number_format($v->amount, 2) }}</td>
+            <!-- Table Card -->
+            <div class="bg-white rounded-lg border-2 border-[#cbd8e4] p-4 shadow-md space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-[#cbd8e4]">
+                    <div>
+                        <h3 class="text-sm font-black text-slate-900 uppercase tracking-wide">{{ ucfirst($type) }} Vouchers Register</h3>
+                        <p class="text-xs text-slate-600 font-medium">All financial {{ $type }} entries posted to customer and supplier ledgers</p>
+                    </div>
+                    <span class="text-xs font-mono text-[#007cb5] bg-[#eaf4fa] border border-[#00a2e8] px-2.5 py-1 rounded font-bold">
+                        Total: {{ count($vouchers) }} Records
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto rounded border border-[#cbd8e4]">
+                    <table class="w-full text-left text-xs border border-[#cbd8e4]">
+                        <thead class="bg-[#eaf1f7] text-slate-900 uppercase font-mono font-black border-b-2 border-[#cbd8e4]">
+                            <tr>
+                                <th class="p-2.5 border-r border-[#cbd8e4]">Voucher #</th>
+                                <th class="p-2.5 border-r border-[#cbd8e4]">Date</th>
+                                <th class="p-2.5 border-r border-[#cbd8e4]">Party Name</th>
+                                <th class="p-2.5 border-r border-[#cbd8e4]">Payment Mode</th>
+                                <th class="p-2.5 text-right font-black">Amount (Rs.)</th>
                             </tr>
-                        @empty
-                            <tr><td colspan="5" class="p-8 text-center text-slate-500">No {{ $type }} vouchers found.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-[#e2ebf3]">
+                            @forelse($vouchers as $v)
+                                <tr class="hover:bg-[#f6f9fc] transition-colors">
+                                    <td class="p-2.5 border-r border-[#e2ebf3] font-mono font-bold text-[#007cb5]">{{ $v->voucher_no }}</td>
+                                    <td class="p-2.5 border-r border-[#e2ebf3] font-mono text-slate-700 font-semibold">{{ $v->date }}</td>
+                                    <td class="p-2.5 border-r border-[#e2ebf3] font-bold text-slate-900">{{ $v->party->name ?? 'N/A' }}</td>
+                                    <td class="p-2.5 border-r border-[#e2ebf3]">
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-slate-100 border border-slate-300 text-slate-800">
+                                            {{ $v->payment_mode }}
+                                        </span>
+                                    </td>
+                                    <td class="p-2.5 text-right font-mono font-black text-sm {{ $type == 'receipt' ? 'text-emerald-700' : 'text-rose-700' }}">
+                                        Rs. {{ number_format($v->amount, 2) }}
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="p-6 text-center text-slate-500">No {{ $type }} vouchers recorded yet.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div>
 
-        <div x-show="showModal" x-cloak style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <div @click.away="showModal = false" class="prowave-glass-card rounded-2xl max-w-lg w-full p-6 border border-slate-700 shadow-2xl">
-                <h3 class="text-lg font-bold text-white font-['Outfit'] mb-4">Record New {{ ucfirst($type) }}</h3>
-                <form method="POST" action="{{ route('vouchers.store') }}" class="space-y-4">
+        <!-- Record Modal -->
+        <div x-show="showModal" x-cloak style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+            <div @click.away="showModal = false" class="bg-white rounded-lg max-w-lg w-full border-2 border-[#0092d0] shadow-2xl overflow-hidden font-sans">
+                <div class="bg-[#00a2e8] text-white p-3.5 flex items-center justify-between">
+                    <h3 class="text-base font-extrabold font-sans">Record New {{ ucfirst($type) }} Voucher</h3>
+                    <button type="button" @click="showModal = false" class="text-white hover:text-slate-200 font-bold text-lg leading-none">✕</button>
+                </div>
+
+                <form method="POST" action="{{ route('vouchers.store') }}" class="p-5 space-y-4 bg-[#f6f9fc]">
                     @csrf
                     <input type="hidden" name="type" value="{{ $type }}" />
                     
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Party Name</label>
-                        <select name="party_id" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
-                            <option value="">-- Select Party --</option>
+                        <label class="block text-xs font-black uppercase text-slate-800 mb-1">Party / Account</label>
+                        <select name="party_id" required class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-bold shadow-sm">
+                            <option value="">-- Select Party Account --</option>
                             @foreach($parties as $p)
-                                <option value="{{ $p->id }}">{{ $p->name }}</option>
+                                <option value="{{ $p->id }}">{{ $p->name }} ({{ ucfirst($p->type) }})</option>
                             @endforeach
                         </select>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Amount (Rs.)</label>
-                            <input type="number" step="0.01" name="amount" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm font-mono" />
+                            <label class="block text-xs font-black uppercase text-slate-800 mb-1">Amount (Rs.)</label>
+                            <input type="number" step="0.01" name="amount" required placeholder="0.00" class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-mono font-black text-emerald-700 shadow-sm" />
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Date</label>
-                            <input type="date" name="date" value="{{ date('Y-m-d') }}" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm font-mono" />
+                            <label class="block text-xs font-black uppercase text-slate-800 mb-1">Date</label>
+                            <input type="date" name="date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-mono font-bold shadow-sm" />
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-300 mb-1">Payment Mode</label>
-                        <select name="payment_mode" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm">
+                        <label class="block text-xs font-black uppercase text-slate-800 mb-1">Payment Mode</label>
+                        <select name="payment_mode" class="w-full px-3 py-2 rounded bg-white border border-[#9ab3c9] focus:border-[#00a2e8] text-slate-900 text-xs font-bold shadow-sm">
                             <option value="Cash">Cash</option>
                             <option value="Bank Transfer">Bank Transfer</option>
                             <option value="Cheque">Cheque</option>
                         </select>
                     </div>
 
-                    <div class="pt-3 flex justify-end gap-3">
-                        <button type="button" @click="showModal = false" class="prowave-btn-secondary px-4 py-2 rounded-xl text-xs font-bold">Cancel</button>
-                        <button type="submit" class="prowave-btn-primary px-5 py-2 rounded-xl text-xs font-bold">Save Voucher</button>
+                    <div class="pt-3 flex justify-end gap-2 border-t border-[#cbd8e4]">
+                        <button type="button" @click="showModal = false" class="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded text-xs font-bold">Cancel</button>
+                        <button type="submit" class="px-5 py-1.5 bg-[#00a2e8] hover:bg-[#008ecb] text-white rounded text-xs font-black shadow-sm">Save Voucher</button>
                     </div>
                 </form>
             </div>

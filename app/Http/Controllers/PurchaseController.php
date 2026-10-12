@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Purchase;
-use App\Models\PurchaseItem;
 use App\Models\Party;
 use App\Models\Company;
 use Illuminate\Http\Request;
@@ -20,23 +19,31 @@ class PurchaseController extends Controller
             $currentPurchase = Purchase::with(['party', 'company', 'items'])->find($request->id);
         }
 
-        $allPurchases = Purchase::with('party')->latest()->get();
+        $products = \App\Models\PurchaseItem::select('item_name')
+            ->union(\App\Models\SaleItem::select('item_name'))
+            ->whereNotNull('item_name')
+            ->where('item_name', '!=', '')
+            ->distinct()
+            ->pluck('item_name');
+
+        $allPurchases = Purchase::with(['party', 'items'])->latest()->get();
         $nextInvoiceNo = 'PUR-' . str_pad((Purchase::max('id') + 1), 5, '0', STR_PAD_LEFT);
 
-        return view('purchases.index', compact('parties', 'companies', 'currentPurchase', 'allPurchases', 'nextInvoiceNo'));
+        return view('purchases.index', compact('parties', 'companies', 'currentPurchase', 'allPurchases', 'nextInvoiceNo', 'products'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'id' => 'nullable|exists:purchases,id',
             'date' => 'required|date',
             'party_id' => 'required|exists:parties,id',
             'company_id' => 'nullable|exists:companies,id',
             'invoice_no' => 'required|string',
+            'product_name' => 'nullable|string',
             'amount' => 'required|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
             'remarks' => 'nullable|string',
-            'items' => 'nullable|array',
         ]);
 
         // Check Date Lock
@@ -49,33 +56,49 @@ class PurchaseController extends Controller
         $discount = (float) ($request->discount ?? 0);
         $netAmount = max(0, $subtotal - $discount);
 
-        $purchase = Purchase::updateOrCreate(
-            ['invoice_no' => $request->invoice_no],
-            [
+        $oldParty = null;
+        if ($request->filled('id')) {
+            $purchase = Purchase::findOrFail($request->id);
+            $oldParty = $purchase->party;
+            $purchase->update([
                 'date' => $request->date,
                 'party_id' => $request->party_id,
                 'company_id' => $request->company_id,
+                'invoice_no' => $request->invoice_no,
                 'amount' => $subtotal,
                 'discount' => $discount,
                 'net_amount' => $netAmount,
                 'remarks' => $request->remarks,
-            ]
-        );
+            ]);
+        } else {
+            $purchase = Purchase::updateOrCreate(
+                ['invoice_no' => $request->invoice_no],
+                [
+                    'date' => $request->date,
+                    'party_id' => $request->party_id,
+                    'company_id' => $request->company_id,
+                    'amount' => $subtotal,
+                    'discount' => $discount,
+                    'net_amount' => $netAmount,
+                    'remarks' => $request->remarks,
+                ]
+            );
+        }
 
-        if (!empty($request->items)) {
+        // Save or update Product Item record
+        if ($request->filled('product_name')) {
             $purchase->items()->delete();
-            foreach ($request->items as $item) {
-                if (!empty($item['name'])) {
-                    $qty = (int) ($item['qty'] ?? 1);
-                    $rate = (float) ($item['rate'] ?? 0);
-                    $purchase->items()->create([
-                        'item_name' => $item['name'],
-                        'qty' => $qty,
-                        'rate' => $rate,
-                        'total' => $qty * $rate,
-                    ]);
-                }
-            }
+            $purchase->items()->create([
+                'item_name' => trim($request->product_name),
+                'qty' => 1,
+                'rate' => $netAmount,
+                'total' => $netAmount,
+            ]);
+        }
+
+        // Recalculate party balances
+        if ($oldParty && $oldParty->id != $purchase->party_id) {
+            $oldParty->recalculateBalance();
         }
 
         if ($purchase->party) {
@@ -83,7 +106,7 @@ class PurchaseController extends Controller
         }
 
         return redirect()->route('purchases.index', ['id' => $purchase->id])
-            ->with('success', 'Purchase Bill ' . $purchase->invoice_no . ' saved successfully!');
+            ->with('success', 'Purchase Bill ' . $purchase->invoice_no . ' saved successfully in Ledger!');
     }
 
     public function destroy($id)
@@ -98,6 +121,6 @@ class PurchaseController extends Controller
         }
 
         return redirect()->route('purchases.index')
-            ->with('success', 'Purchase Bill ' . $invoiceNo . ' deleted successfully.');
+            ->with('success', 'Purchase Bill ' . $invoiceNo . ' deleted and ledger balance reversed successfully.');
     }
 }
