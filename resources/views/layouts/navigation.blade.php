@@ -15,27 +15,11 @@
                     <span>ERP System v2.0</span>
                 </div>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-2 md:flex items-center ml-2">
-                    <a href="{{ route('dashboard') }}" class="inline-flex items-center px-3 py-1 text-xs font-extrabold rounded-md transition-all {{ request()->routeIs('dashboard') ? 'bg-white text-black shadow-sm' : 'text-slate-900 hover:bg-white/30' }}">
-                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
-                        Main Menu
-                    </a>
-
-                    <a href="{{ route('purchases.index') }}" class="inline-flex items-center px-3 py-1 text-xs font-extrabold rounded-md transition-all {{ request()->routeIs('purchases.*') ? 'bg-white text-black shadow-sm' : 'text-slate-900 hover:bg-white/30' }}">
-                        Purchases
-                    </a>
-
-                    <a href="{{ route('sales.index') }}" class="inline-flex items-center px-3 py-1 text-xs font-extrabold rounded-md transition-all {{ request()->routeIs('sales.*') ? 'bg-white text-black shadow-sm' : 'text-slate-900 hover:bg-white/30' }}">
-                        Sales
-                    </a>
-
-                    <a href="{{ route('parties.index') }}" class="inline-flex items-center px-3 py-1 text-xs font-extrabold rounded-md transition-all {{ request()->routeIs('parties.*') ? 'bg-white text-black shadow-sm' : 'text-slate-900 hover:bg-white/30' }}">
-                        Parties
-                    </a>
-
-                    <a href="{{ route('reports.index') }}" class="inline-flex items-center px-3 py-1 text-xs font-extrabold rounded-md transition-all {{ request()->routeIs('reports.*') ? 'bg-white text-black shadow-sm' : 'text-slate-900 hover:bg-white/30' }}">
-                        Reports
+                <!-- Main Menu Button -->
+                <div class="hidden md:flex items-center ml-2">
+                    <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-black rounded border border-white/40 transition-all {{ request()->routeIs('dashboard') ? 'bg-white text-slate-900 shadow-sm' : 'bg-white/20 text-slate-900 hover:bg-white/40' }}" title="Return to Main Menu (Dashboard)">
+                        <svg class="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                        <span>Main Menu</span>
                     </a>
                 </div>
             </div>
@@ -100,20 +84,52 @@
         </div>
     </div>
 
+    <!-- Docked ERP Module Ribbon Bar (Hidden on Dashboard) -->
+    @if(!request()->routeIs('dashboard'))
+        <x-module-nav />
+    @endif
+
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-[#008ecb] border-b border-[#007cb5]">
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-black font-bold">
                 {{ __('Main Menu Grid') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('purchases.index')" :active="request()->routeIs('purchases.*')" class="text-black font-bold">
-                {{ __('Purchases') }}
+            <x-responsive-nav-link :href="route('parties.index')" :active="request()->routeIs('parties.*')" class="text-black font-bold">
+                {{ __('1 Parties') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('medical_reps.index')" :active="request()->routeIs('medical_reps.*')" class="text-black font-bold">
+                {{ __('2 Medical Reps') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('companies.index')" :active="request()->routeIs('companies.*')" class="text-black font-bold">
+                {{ __('3 Companies') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('salesmen.index')" :active="request()->routeIs('salesmen.*')" class="text-black font-bold">
+                {{ __('4 Salesmen') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('banks.index')" :active="request()->routeIs('banks.*')" class="text-black font-bold">
+                {{ __('5 Banks') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('expenses.index')" :active="request()->routeIs('expenses.*')" class="text-black font-bold">
+                {{ __('6 Expenses') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('amanats.index')" :active="request()->routeIs('amanats.*')" class="text-black font-bold">
+                {{ __('7 Amanats') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('lotteries.index')" :active="request()->routeIs('lotteries.*')" class="text-black font-bold">
+                {{ __('8 Lotteries') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('sales.index')" :active="request()->routeIs('sales.*')" class="text-black font-bold">
-                {{ __('Sales') }}
+                {{ __('9 Sales') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('parties.index')" :active="request()->routeIs('parties.*')" class="text-black font-bold">
-                {{ __('Parties') }}
+            <x-responsive-nav-link :href="route('purchases.index')" :active="request()->routeIs('purchases.*')" class="text-black font-bold">
+                {{ __('0 Purchases') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('vouchers.index', 'receipt')" :active="request()->routeIs('vouchers.*') && request()->route('type') === 'receipt'" class="text-black font-bold">
+                {{ __('A Receipts') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('vouchers.index', 'payment')" :active="request()->routeIs('vouchers.*') && request()->route('type') === 'payment'" class="text-black font-bold">
+                {{ __('B Payments') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('reports.index')" :active="request()->routeIs('reports.*')" class="text-black font-bold">
                 {{ __('Reports') }}

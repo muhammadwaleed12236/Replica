@@ -14,22 +14,10 @@
         partyOpen: false,
         highlightedIndex: 0,
 
-        // Products Combobox
-        productList: [
-            @foreach($products as $prod)
-                '{{ addslashes($prod) }}',
-            @endforeach
-        ],
-        productSearchText: '{{ $currentPurchase && $currentPurchase->items->count() > 0 ? addslashes($currentPurchase->items->first()->item_name) : '' }}',
-        productFilterQuery: '',
-        productOpen: false,
-        highlightedProductIndex: 0,
-
         form: {
             id: '{{ $currentPurchase->id ?? '' }}',
             date: '{{ old('date', $currentPurchase ? $currentPurchase->date : date('Y-m-d')) }}',
             party_id: '{{ old('party_id', $currentPurchase ? $currentPurchase->party_id : '') }}',
-            product_name: '{{ old('product_name', $currentPurchase && $currentPurchase->items->count() > 0 ? addslashes($currentPurchase->items->first()->item_name) : '') }}',
             invoice_no: '{{ old('invoice_no', $currentPurchase ? $currentPurchase->invoice_no : $nextInvoiceNo) }}',
             amount: '{{ old('amount', $currentPurchase ? $currentPurchase->amount : 0) }}',
             remarks: '{{ old('remarks', $currentPurchase ? $currentPurchase->remarks : '') }}'
@@ -41,14 +29,6 @@
             }
             const q = this.partyFilterQuery.toLowerCase();
             return this.partiesList.filter(p => p.name.toLowerCase().includes(q) || p.type.toLowerCase().includes(q));
-        },
-
-        get filteredProducts() {
-            if (!this.productFilterQuery || this.productFilterQuery.trim() === '') {
-                return this.productList;
-            }
-            const q = this.productFilterQuery.toLowerCase();
-            return this.productList.filter(p => p.toLowerCase().includes(q));
         },
 
         openPartyDropdown() {
@@ -75,7 +55,7 @@
             this.partyFilterQuery = '';
             this.partyOpen = false;
             this.$nextTick(() => {
-                this.focusProduct();
+                this.focusNext('field-invoice-no');
             });
         },
 
@@ -87,7 +67,7 @@
                 this.openPartyDropdown();
             } else {
                 this.partyOpen = false;
-                this.focusProduct();
+                this.focusNext('field-invoice-no');
             }
         },
 
@@ -114,68 +94,6 @@
             });
         },
 
-        // Product Dropdown Methods
-        openProductDropdown() {
-            if (this.mode === 'view') return;
-            this.productOpen = true;
-            this.productFilterQuery = '';
-            const idx = this.productList.findIndex(p => p.toLowerCase() === (this.form.product_name || '').toLowerCase());
-            this.highlightedProductIndex = idx >= 0 ? idx : 0;
-            this.scrollHighlightedProduct();
-        },
-
-        focusProduct() {
-            const el = document.getElementById('field-product-input');
-            if (el) {
-                el.focus();
-                if (el.select) el.select();
-            }
-        },
-
-        selectProduct(prodName) {
-            this.form.product_name = prodName;
-            this.productSearchText = prodName;
-            this.productFilterQuery = '';
-            this.productOpen = false;
-            this.$nextTick(() => {
-                this.focusNext('field-invoice-no');
-            });
-        },
-
-        onProductEnter() {
-            if (this.productOpen && this.filteredProducts.length > 0) {
-                const selected = this.filteredProducts[this.highlightedProductIndex] || this.filteredProducts[0];
-                this.selectProduct(selected);
-            } else {
-                this.form.product_name = this.productSearchText;
-                this.productOpen = false;
-                this.focusNext('field-invoice-no');
-            }
-        },
-
-        onProductArrowDown() {
-            if (!this.productOpen) {
-                this.openProductDropdown();
-            } else if (this.highlightedProductIndex < this.filteredProducts.length - 1) {
-                this.highlightedProductIndex++;
-                this.scrollHighlightedProduct();
-            }
-        },
-
-        onProductArrowUp() {
-            if (this.highlightedProductIndex > 0) {
-                this.highlightedProductIndex--;
-                this.scrollHighlightedProduct();
-            }
-        },
-
-        scrollHighlightedProduct() {
-            this.$nextTick(() => {
-                const el = document.getElementById('product-opt-' + this.highlightedProductIndex);
-                if (el) el.scrollIntoView({ block: 'nearest' });
-            });
-        },
-
         startNew() {
             this.mode = 'new';
             this.hasRecord = false;
@@ -185,10 +103,6 @@
             this.partySearchText = '';
             this.partyFilterQuery = '';
             this.partyOpen = false;
-            this.form.product_name = '';
-            this.productSearchText = '';
-            this.productFilterQuery = '';
-            this.productOpen = false;
             this.form.invoice_no = '{{ $nextInvoiceNo }}';
             this.form.amount = 0;
             this.form.remarks = '';
@@ -289,8 +203,6 @@
             } else if (e.key === 'Escape') {
                 if (this.partyOpen) {
                     this.partyOpen = false;
-                } else if (this.productOpen) {
-                    this.productOpen = false;
                 } else if (this.showFindModal) {
                     this.showFindModal = false;
                 }
@@ -328,9 +240,6 @@
                 </script>
             @endif
 
-            <!-- Module Navigation Bar -->
-            <x-module-nav active="purchases" />
-
             <!-- Main ERP Form Window Card matching Reference Image -->
             <div class="bg-white border-2 border-[#0092d0] rounded-lg shadow-xl overflow-hidden font-sans">
                 
@@ -352,12 +261,12 @@
                     <div class="space-y-4 max-w-xl">
                         
                         <!-- 1. Date // (Enter -> Party) -->
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                            <label class="w-28 text-sm font-bold text-slate-900 flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <label class="w-40 shrink-0 text-sm font-black text-slate-900 flex items-center justify-between">
                                 <span>Date</span>
-                                <span class="text-[#00a2e8] font-mono font-bold text-base mr-2">//</span>
+                                <span class="text-[#00a2e8] font-mono font-black text-base mr-3">//</span>
                             </label>
-                            <div class="flex-1 max-w-xs">
+                            <div class="w-full max-w-md">
                                 <input type="date" 
                                        name="date" 
                                        id="field-date"
@@ -366,16 +275,16 @@
                                        :class="mode === 'view' ? 'bg-[#f0f4f8] text-slate-700 cursor-not-allowed' : 'bg-white text-slate-900'"
                                        @keydown.enter.prevent="focusParty()"
                                        required 
-                                       class="w-full px-3 py-1.5 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-sm font-semibold shadow-sm font-mono" />
+                                       class="w-full h-[38px] px-3 py-1.5 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-sm font-semibold shadow-sm font-mono" />
                             </div>
                         </div>
 
-                        <!-- 2. Party (Enter opens dropdown or moves to Product) -->
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 relative" @click.away="partyOpen = false">
-                            <label class="w-28 text-sm font-bold text-slate-900">
+                        <!-- 2. Party (Enter opens dropdown or moves to Invoice#) -->
+                        <div class="flex items-center gap-4 relative" @click.away="partyOpen = false">
+                            <label class="w-40 shrink-0 text-sm font-black text-slate-900">
                                 Party
                             </label>
-                            <div class="flex-1 max-w-md relative">
+                            <div class="w-full max-w-md relative">
                                 <input type="hidden" name="party_id" :value="form.party_id" required />
 
                                 <div class="relative">
@@ -392,12 +301,12 @@
                                            @keydown.arrow-down.prevent="onPartyArrowDown()"
                                            @keydown.arrow-up.prevent="onPartyArrowUp()"
                                            @keydown.escape="partyOpen = false"
-                                           class="w-full px-3 py-1.5 pr-8 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-sm font-semibold shadow-sm" />
+                                           class="w-full h-[38px] px-3 py-1.5 pr-8 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-sm font-semibold shadow-sm" />
                                     
                                     <button type="button" 
                                             @click="if(mode !== 'view') { if(!partyOpen) { openPartyDropdown(); } else { partyOpen = false; } }"
                                             tabindex="-1"
-                                            class="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700">
+                                            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                     </button>
                                 </div>
@@ -426,65 +335,12 @@
                             </div>
                         </div>
 
-                        <!-- 3. Product (Enter opens dropdown or moves to Invoice#) -->
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 relative" @click.away="productOpen = false">
-                            <label class="w-28 text-sm font-bold text-slate-900">
-                                Product
-                            </label>
-                            <div class="flex-1 max-w-md relative">
-                                <input type="hidden" name="product_name" :value="form.product_name" />
-
-                                <div class="relative">
-                                    <input type="text"
-                                           id="field-product-input"
-                                           x-model="productSearchText"
-                                           :readonly="mode === 'view'"
-                                           :class="mode === 'view' ? 'bg-[#f0f4f8] text-slate-700 cursor-not-allowed' : 'bg-white text-slate-900'"
-                                           placeholder="-- Type or Select Product (Optional) --"
-                                           autocomplete="off"
-                                           @input="form.product_name = productSearchText; productFilterQuery = productSearchText; productOpen = true; highlightedProductIndex = 0;"
-                                           @click="if(mode !== 'view') openProductDropdown()"
-                                           @keydown.enter.prevent="onProductEnter()"
-                                           @keydown.arrow-down.prevent="onProductArrowDown()"
-                                           @keydown.arrow-up.prevent="onProductArrowUp()"
-                                           @keydown.escape="productOpen = false"
-                                           class="w-full px-3 py-1.5 pr-8 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-sm font-semibold shadow-sm" />
-                                    
-                                    <button type="button" 
-                                            @click="if(mode !== 'view') { if(!productOpen) { openProductDropdown(); } else { productOpen = false; } }"
-                                            tabindex="-1"
-                                            class="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-700">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                                    </button>
-                                </div>
-
-                                <!-- Custom Searchable Product Dropdown List -->
-                                <div x-show="productOpen && mode !== 'view'" 
-                                     x-cloak 
-                                     style="display: none;"
-                                     class="absolute left-0 top-full mt-1 w-full bg-white border border-[#9ab3c9] rounded shadow-2xl z-50 max-h-56 overflow-y-auto">
-                                    <template x-for="(prod, idx) in filteredProducts" :key="idx">
-                                        <div :id="'product-opt-' + idx"
-                                             @click="selectProduct(prod)"
-                                             :class="highlightedProductIndex === idx ? 'bg-[#00a2e8] text-white' : 'hover:bg-[#eaf4fa] text-slate-900'"
-                                             class="px-3 py-2 cursor-pointer text-xs flex items-center justify-between border-b border-slate-100 last:border-b-0">
-                                            <span class="font-bold" x-text="prod"></span>
-                                            <span class="text-[10px] opacity-75 font-mono">Select</span>
-                                        </div>
-                                    </template>
-                                    <div x-show="filteredProducts.length === 0" class="p-3 text-center text-xs text-slate-400">
-                                        <span>Press <kbd class="font-bold text-slate-600">Enter</kbd> to use "</span><span class="font-semibold text-slate-700" x-text="productSearchText || 'None'"></span><span>"</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- 3. Invoice# (Enter -> Amount) -->
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                            <label class="w-28 text-sm font-bold text-slate-900">
+                        <div class="flex items-center gap-4">
+                            <label class="w-40 shrink-0 text-sm font-black text-slate-900">
                                 Invoice#
                             </label>
-                            <div class="flex-1 max-w-xs">
+                            <div class="w-full max-w-md">
                                 <input type="text" 
                                        name="invoice_no" 
                                        id="field-invoice-no"
@@ -493,16 +349,16 @@
                                        :class="mode === 'view' ? 'bg-[#f0f4f8] text-slate-700 cursor-not-allowed' : 'bg-white text-slate-900'"
                                        @keydown.enter.prevent="focusNext('field-amount')"
                                        required 
-                                       class="w-full px-3 py-1.5 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-sm font-bold shadow-sm font-mono" />
+                                       class="w-full h-[38px] px-3 py-1.5 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-sm font-bold shadow-sm font-mono" />
                             </div>
                         </div>
 
                         <!-- 4. Amount 0 (Enter -> Remarks / Save) -->
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                            <label class="w-28 text-sm font-bold text-slate-900">
+                        <div class="flex items-center gap-4">
+                            <label class="w-40 shrink-0 text-sm font-black text-slate-900">
                                 Amount
                             </label>
-                            <div class="flex-1 max-w-xs">
+                            <div class="w-full max-w-md">
                                 <input type="number" 
                                        step="0.01" 
                                        min="0"
@@ -513,16 +369,16 @@
                                        :class="mode === 'view' ? 'bg-[#f0f4f8] text-slate-700 cursor-not-allowed' : 'bg-white text-[#007cb5] font-black'"
                                        @keydown.enter.prevent="focusNext('field-remarks')"
                                        required 
-                                       class="w-full px-3 py-1.5 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-base shadow-sm font-mono" />
+                                       class="w-full h-[38px] px-3 py-1.5 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-base shadow-sm font-mono" />
                             </div>
                         </div>
 
                         <!-- Remarks (Enter -> Save) -->
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 pt-1">
-                            <label class="w-28 text-xs font-semibold text-slate-600">
+                        <div class="flex items-center gap-4">
+                            <label class="w-40 shrink-0 text-sm font-black text-slate-900">
                                 Narration
                             </label>
-                            <div class="flex-1 max-w-md">
+                            <div class="w-full max-w-md">
                                 <input type="text" 
                                        name="remarks" 
                                        id="field-remarks"
@@ -531,7 +387,7 @@
                                        :class="mode === 'view' ? 'bg-[#f0f4f8] text-slate-700 cursor-not-allowed' : 'bg-white text-slate-900'"
                                        @keydown.enter.prevent="saveVoucher()"
                                        placeholder="Optional voucher remarks / bill note (Press Enter to Save)"
-                                       class="w-full px-3 py-1 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-xs shadow-sm" />
+                                       class="w-full h-[38px] px-3 py-1.5 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-xs shadow-sm" />
                             </div>
                         </div>
 
@@ -603,15 +459,12 @@
                 <!-- Invoices List -->
                 <div class="p-3 overflow-y-auto flex-grow space-y-2 bg-[#f4f7fa]">
                     @forelse($allPurchases as $purchase)
-                        <div x-show="!searchQuery || '{{ strtolower($purchase->invoice_no . ' ' . ($purchase->party->name ?? '') . ' ' . ($purchase->items->first()?->item_name ?? '') . ' ' . $purchase->date . ' ' . $purchase->amount) }}'.includes(searchQuery.toLowerCase())">
+                        <div x-show="!searchQuery || '{{ strtolower($purchase->invoice_no . ' ' . ($purchase->party->name ?? '') . ' ' . $purchase->date . ' ' . $purchase->amount) }}'.includes(searchQuery.toLowerCase())">
                             <a href="{{ route('purchases.index', ['id' => $purchase->id]) }}" 
                                class="flex items-center justify-between p-3 rounded bg-white border border-[#cbd8e4] hover:border-[#00a2e8] hover:bg-[#eaf4fa] transition-all shadow-sm group">
                                 <div>
                                     <div class="flex items-center gap-2">
                                         <span class="font-mono font-bold text-[#007cb5] text-sm group-hover:underline">{{ $purchase->invoice_no }}</span>
-                                        @if($purchase->items->first())
-                                            <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">📦 {{ $purchase->items->first()->item_name }}</span>
-                                        @endif
                                     </div>
                                     <span class="text-xs text-slate-700 font-semibold">{{ $purchase->party->name ?? 'N/A' }}</span>
                                     <span class="text-[11px] text-slate-500 ml-2 font-mono">• Date: {{ $purchase->date }}</span>

@@ -11,182 +11,539 @@ use App\Models\Company;
 use App\Models\MedicalRep;
 use App\Models\Amanat;
 use App\Models\Lottery;
+use App\Models\Purchase;
+use App\Models\Sale;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class PartyController extends Controller
 {
     // Parties Management
-    public function partiesIndex()
+    public function partiesIndex(Request $request)
     {
-        $parties = Party::latest()->get();
-        return view('modules.parties', compact('parties'));
+        $parties = Party::orderBy('name')->get();
+        $currentParty = null;
+        if ($request->has('id')) {
+            $currentParty = Party::find($request->id);
+        }
+
+        // Generate next Party Code (e.g. P-1004)
+        $maxId = Party::max('id') ?? 0;
+        $counter = 1001 + $maxId;
+        $existingCodes = Party::pluck('code')->toArray();
+        while (in_array('P-' . $counter, $existingCodes)) {
+            $counter++;
+        }
+        $nextCode = 'P-' . $counter;
+
+        return view('modules.parties', compact('parties', 'currentParty', 'nextCode'));
     }
 
     public function partiesStore(Request $request)
     {
         $request->validate([
+            'id' => 'nullable|exists:parties,id',
+            'code' => 'required|string|max:50',
             'name' => 'required|string|max:255',
             'type' => 'required|in:customer,supplier,both',
-            'phone' => 'nullable|string',
-            'city' => 'nullable|string',
+            'phone' => 'nullable|string|max:50',
+            'city' => 'nullable|string|max:100',
             'opening_balance' => 'nullable|numeric',
-            'credit_limit' => 'nullable|numeric',
-            'credit_days_limit' => 'nullable|integer',
+            'credit_limit' => 'nullable|numeric|min:0',
+            'credit_days_limit' => 'nullable|integer|min:0',
         ]);
 
-        Party::create([
-            'code' => 'P-' . rand(1000, 9999),
-            'name' => $request->name,
-            'type' => $request->type,
-            'phone' => $request->phone,
-            'city' => $request->city,
-            'opening_balance' => $request->opening_balance ?? 0,
-            'current_balance' => $request->opening_balance ?? 0,
-            'credit_limit' => $request->credit_limit ?? 0,
-            'credit_days_limit' => $request->credit_days_limit ?? 30,
-        ]);
+        if ($request->filled('id')) {
+            $party = Party::findOrFail($request->id);
+            $party->update([
+                'code' => $request->code,
+                'name' => $request->name,
+                'type' => $request->type,
+                'phone' => $request->phone,
+                'city' => $request->city,
+                'opening_balance' => $request->opening_balance ?? 0,
+                'credit_limit' => $request->credit_limit ?? 0,
+                'credit_days_limit' => $request->credit_days_limit ?? 30,
+            ]);
+            $party->recalculateBalance();
 
-        return redirect()->back()->with('success', 'Party created successfully!');
+            return redirect()->route('parties.index', ['id' => $party->id])
+                ->with('success', "Party '{$party->name}' updated successfully in Ledger!");
+        } else {
+            $party = Party::create([
+                'code' => $request->code,
+                'name' => $request->name,
+                'type' => $request->type,
+                'phone' => $request->phone,
+                'city' => $request->city,
+                'opening_balance' => $request->opening_balance ?? 0,
+                'current_balance' => $request->opening_balance ?? 0,
+                'credit_limit' => $request->credit_limit ?? 0,
+                'credit_days_limit' => $request->credit_days_limit ?? 30,
+            ]);
+
+            return redirect()->route('parties.index', ['id' => $party->id])
+                ->with('success', "Party '{$party->name}' registered successfully!");
+        }
+    }
+
+    public function partiesDestroy($id)
+    {
+        $party = Party::findOrFail($id);
+
+        $hasSales = $party->sales()->exists();
+        $hasPurchases = $party->purchases()->exists();
+        $hasVouchers = $party->vouchers()->exists();
+
+        if ($hasSales || $hasPurchases || $hasVouchers) {
+            return redirect()->route('parties.index', ['id' => $party->id])
+                ->withErrors(['delete' => "Cannot delete party '{$party->name}' because transactions (Sales, Purchases, or Vouchers) are linked to this ledger account."]);
+        }
+
+        $name = $party->name;
+        $party->delete();
+
+        return redirect()->route('parties.index')
+            ->with('success', "Party '{$name}' deleted successfully.");
     }
 
     // Medical Reps Management
-    public function medicalRepsIndex()
+    public function medicalRepsIndex(Request $request)
     {
         $medicalReps = MedicalRep::latest()->get();
-        return view('modules.medical_reps', compact('medicalReps'));
+        $currentMedicalRep = null;
+        if ($request->has('id')) {
+            $currentMedicalRep = MedicalRep::find($request->id);
+        }
+        return view('modules.medical_reps', compact('medicalReps', 'currentMedicalRep'));
     }
 
     public function medicalRepsStore(Request $request)
     {
-        $request->validate(['name' => 'required|string']);
-        MedicalRep::create($request->only(['name', 'phone', 'company_name']));
-        return redirect()->back()->with('success', 'Medical Rep created successfully!');
+        $request->validate([
+            'id' => 'nullable|exists:medical_reps,id',
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'company_name' => 'nullable|string|max:255',
+        ]);
+
+        if ($request->filled('id')) {
+            $medicalRep = MedicalRep::findOrFail($request->id);
+            $medicalRep->update($request->only(['name', 'phone', 'company_name']));
+            $msg = "Medical Rep '{$medicalRep->name}' updated successfully!";
+        } else {
+            $medicalRep = MedicalRep::create($request->only(['name', 'phone', 'company_name']));
+            $msg = "Medical Rep '{$medicalRep->name}' created successfully!";
+        }
+
+        return redirect()->route('medical_reps.index', ['id' => $medicalRep->id])->with('success', $msg);
+    }
+
+    public function medicalRepsDestroy($id)
+    {
+        $medicalRep = MedicalRep::findOrFail($id);
+        $name = $medicalRep->name;
+        $medicalRep->delete();
+
+        return redirect()->route('medical_reps.index')->with('success', "Medical Rep '{$name}' deleted successfully!");
     }
 
     // Companies Management
-    public function companiesIndex()
+    public function companiesIndex(Request $request)
     {
         $companies = Company::latest()->get();
-        return view('modules.companies', compact('companies'));
+        $currentCompany = null;
+        if ($request->has('id')) {
+            $currentCompany = Company::find($request->id);
+        }
+        return view('modules.companies', compact('companies', 'currentCompany'));
     }
 
     public function companiesStore(Request $request)
     {
-        $request->validate(['name' => 'required|string']);
-        Company::create($request->only(['name', 'phone', 'city']));
-        return redirect()->back()->with('success', 'Company created successfully!');
+        $request->validate([
+            'id' => 'nullable|exists:companies,id',
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'city' => 'nullable|string|max:100',
+        ]);
+
+        if ($request->filled('id')) {
+            $company = Company::findOrFail($request->id);
+            $company->update($request->only(['name', 'phone', 'city']));
+            $msg = "Company '{$company->name}' updated successfully!";
+        } else {
+            $company = Company::create($request->only(['name', 'phone', 'city']));
+            $msg = "Company '{$company->name}' created successfully!";
+        }
+
+        return redirect()->route('companies.index', ['id' => $company->id])->with('success', $msg);
+    }
+
+    public function companiesDestroy($id)
+    {
+        $company = Company::findOrFail($id);
+        if (Purchase::where('company_id', $id)->exists()) {
+            return redirect()->back()->withErrors(['error' => "Cannot delete Company '{$company->name}' because it is linked to existing purchase invoices."]);
+        }
+        $name = $company->name;
+        $company->delete();
+
+        return redirect()->route('companies.index')->with('success', "Company '{$name}' deleted successfully!");
     }
 
     // Salesmen Management
-    public function salesmenIndex()
+    public function salesmenIndex(Request $request)
     {
         $salesmen = Salesman::latest()->get();
-        return view('modules.salesmen', compact('salesmen'));
+        $currentSalesman = null;
+        if ($request->has('id')) {
+            $currentSalesman = Salesman::find($request->id);
+        }
+        return view('modules.salesmen', compact('salesmen', 'currentSalesman'));
     }
 
     public function salesmenStore(Request $request)
     {
-        $request->validate(['name' => 'required|string']);
-        Salesman::create($request->only(['name', 'phone', 'commission_rate']));
-        return redirect()->back()->with('success', 'Salesman created successfully!');
+        $request->validate([
+            'id' => 'nullable|exists:salesmen,id',
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'commission_rate' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        $data = $request->only(['name', 'phone', 'commission_rate']);
+        $data['commission_rate'] = $data['commission_rate'] ?? 0;
+
+        if ($request->filled('id')) {
+            $salesman = Salesman::findOrFail($request->id);
+            $salesman->update($data);
+            $msg = "Salesman '{$salesman->name}' updated successfully!";
+        } else {
+            $salesman = Salesman::create($data);
+            $msg = "Salesman '{$salesman->name}' created successfully!";
+        }
+
+        return redirect()->route('salesmen.index', ['id' => $salesman->id])->with('success', $msg);
+    }
+
+    public function salesmenDestroy($id)
+    {
+        $salesman = Salesman::findOrFail($id);
+        if (Sale::where('salesman_id', $id)->exists()) {
+            return redirect()->back()->withErrors(['error' => "Cannot delete Salesman '{$salesman->name}' because they are linked to existing sales invoices."]);
+        }
+        $name = $salesman->name;
+        $salesman->delete();
+
+        return redirect()->route('salesmen.index')->with('success', "Salesman '{$name}' deleted successfully!");
     }
 
     // Banks Management
-    public function banksIndex()
+    public function banksIndex(Request $request)
     {
         $banks = Bank::latest()->get();
-        return view('modules.banks', compact('banks'));
+        $currentBank = null;
+        if ($request->has('id')) {
+            $currentBank = Bank::find($request->id);
+        }
+        return view('modules.banks', compact('banks', 'currentBank'));
     }
 
     public function banksStore(Request $request)
     {
-        $request->validate(['bank_name' => 'required|string', 'account_number' => 'required|string']);
-        Bank::create($request->only(['bank_name', 'account_title', 'account_number', 'balance']));
-        return redirect()->back()->with('success', 'Bank account created successfully!');
+        $request->validate([
+            'id' => 'nullable|exists:banks,id',
+            'bank_name' => 'required|string|max:255',
+            'account_title' => 'required|string|max:255',
+            'account_number' => 'required|string|max:255',
+            'balance' => 'nullable|numeric',
+        ]);
+
+        $data = $request->only(['bank_name', 'account_title', 'account_number', 'balance']);
+        $data['balance'] = $data['balance'] ?? 0;
+
+        if ($request->filled('id')) {
+            $bank = Bank::findOrFail($request->id);
+            $bank->update($data);
+            $msg = "Bank Account '{$bank->bank_name} - {$bank->account_number}' updated successfully!";
+        } else {
+            $bank = Bank::create($data);
+            $msg = "Bank Account '{$bank->bank_name} - {$bank->account_number}' created successfully!";
+        }
+
+        return redirect()->route('banks.index', ['id' => $bank->id])->with('success', $msg);
+    }
+
+    public function banksDestroy($id)
+    {
+        $bank = Bank::findOrFail($id);
+        $title = "{$bank->bank_name} ({$bank->account_number})";
+        $bank->delete();
+
+        return redirect()->route('banks.index')->with('success', "Bank Account '{$title}' deleted successfully!");
     }
 
     // Amanats Management
-    public function amanatsIndex()
+    public function amanatsIndex(Request $request)
     {
         $amanats = Amanat::with('party')->latest()->get();
         $parties = Party::orderBy('name')->get();
-        return view('modules.amanats', compact('amanats', 'parties'));
+        $currentAmanat = null;
+        if ($request->has('id')) {
+            $currentAmanat = Amanat::with('party')->find($request->id);
+        }
+        return view('modules.amanats', compact('amanats', 'parties', 'currentAmanat'));
     }
 
     public function amanatsStore(Request $request)
     {
-        $request->validate(['amount' => 'required|numeric|min:0', 'date' => 'required|date']);
-        Amanat::create($request->only(['party_id', 'depositor_name', 'amount', 'date', 'details']));
-        return redirect()->back()->with('success', 'Amanat deposit recorded successfully!');
+        $request->validate([
+            'id' => 'nullable|exists:amanats,id',
+            'party_id' => 'nullable|exists:parties,id',
+            'depositor_name' => 'nullable|string|max:255',
+            'amount' => 'required|numeric|min:0.01',
+            'date' => 'required|date',
+            'details' => 'nullable|string',
+        ]);
+
+        $data = $request->only(['party_id', 'depositor_name', 'amount', 'date', 'details']);
+
+        if ($request->filled('id')) {
+            $amanat = Amanat::findOrFail($request->id);
+            $amanat->update($data);
+            $msg = "Amanat deposit record updated successfully!";
+        } else {
+            $amanat = Amanat::create($data);
+            $msg = "Amanat deposit of Rs. " . number_format($amanat->amount, 2) . " recorded successfully!";
+        }
+
+        return redirect()->route('amanats.index', ['id' => $amanat->id])->with('success', $msg);
+    }
+
+    public function amanatsDestroy($id)
+    {
+        $amanat = Amanat::findOrFail($id);
+        $amanat->delete();
+
+        return redirect()->route('amanats.index')->with('success', "Amanat record deleted successfully!");
     }
 
     // Lotteries Management
-    public function lotteriesIndex()
+    public function lotteriesIndex(Request $request)
     {
         $lotteries = Lottery::latest()->get();
-        return view('modules.lotteries', compact('lotteries'));
+        $currentLottery = null;
+        if ($request->has('id')) {
+            $currentLottery = Lottery::find($request->id);
+        }
+        return view('modules.lotteries', compact('lotteries', 'currentLottery'));
     }
 
     public function lotteriesStore(Request $request)
     {
-        $request->validate(['scheme_name' => 'required|string', 'amount' => 'required|numeric|min:0']);
-        Lottery::create($request->only(['scheme_name', 'amount', 'date', 'status', 'remarks']));
-        return redirect()->back()->with('success', 'Lottery scheme recorded successfully!');
+        $request->validate([
+            'id' => 'nullable|exists:lotteries,id',
+            'scheme_name' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0.01',
+            'date' => 'required|date',
+            'status' => 'nullable|string|max:50',
+            'remarks' => 'nullable|string',
+        ]);
+
+        $data = $request->only(['scheme_name', 'amount', 'date', 'status', 'remarks']);
+        $data['status'] = $data['status'] ?: 'Pending';
+
+        if ($request->filled('id')) {
+            $lottery = Lottery::findOrFail($request->id);
+            $lottery->update($data);
+            $msg = "Lottery scheme '{$lottery->scheme_name}' updated successfully!";
+        } else {
+            $lottery = Lottery::create($data);
+            $msg = "Lottery scheme '{$lottery->scheme_name}' created successfully!";
+        }
+
+        return redirect()->route('lotteries.index', ['id' => $lottery->id])->with('success', $msg);
+    }
+
+    public function lotteriesDestroy($id)
+    {
+        $lottery = Lottery::findOrFail($id);
+        $name = $lottery->scheme_name;
+        $lottery->delete();
+
+        return redirect()->route('lotteries.index')->with('success', "Lottery scheme '{$name}' deleted successfully!");
     }
 
     // Expenses Management
-    public function expensesIndex()
+    public function expensesIndex(Request $request)
     {
         $expenses = Expense::latest()->get();
-        return view('modules.expenses', compact('expenses'));
+        $currentExpense = null;
+        if ($request->has('id')) {
+            $currentExpense = Expense::find($request->id);
+        }
+        $lockedDate = Setting::get('date_lock_date');
+        return view('modules.expenses', compact('expenses', 'currentExpense', 'lockedDate'));
     }
 
     public function expensesStore(Request $request)
     {
         $request->validate([
-            'title' => 'required|string',
-            'amount' => 'required|numeric|min:0',
+            'id' => 'nullable|exists:expenses,id',
+            'title' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0.01',
             'date' => 'required|date',
+            'category' => 'nullable|string|max:100',
+            'remarks' => 'nullable|string',
         ]);
 
-        Expense::create($request->only(['title', 'amount', 'date', 'category', 'remarks']));
-        return redirect()->back()->with('success', 'Expense recorded successfully!');
+        // Date Lock Validation
+        $dateLockDate = Setting::get('date_lock_date');
+        if ($dateLockDate && $request->date <= $dateLockDate && !$request->has('admin_override')) {
+            return redirect()->back()->withErrors(['date' => 'Date Lock is active for dates on or before ' . $dateLockDate . '. Entry blocked!']);
+        }
+
+        $data = $request->only(['title', 'amount', 'date', 'category', 'remarks']);
+        $data['category'] = $data['category'] ?: 'General';
+
+        if ($request->filled('id')) {
+            $expense = Expense::findOrFail($request->id);
+            $expense->update($data);
+            $msg = "Expense '{$expense->title}' updated successfully!";
+        } else {
+            $expense = Expense::create($data);
+            $msg = "Expense '{$expense->title}' recorded successfully!";
+        }
+
+        return redirect()->route('expenses.index', ['id' => $expense->id])->with('success', $msg);
+    }
+
+    public function expensesDestroy($id)
+    {
+        $expense = Expense::findOrFail($id);
+        // Check date lock
+        $dateLockDate = Setting::get('date_lock_date');
+        if ($dateLockDate && $expense->date <= $dateLockDate) {
+            return redirect()->back()->withErrors(['error' => 'Cannot delete locked expense record prior to ' . $dateLockDate]);
+        }
+        $title = $expense->title;
+        $expense->delete();
+
+        return redirect()->route('expenses.index')->with('success', "Expense '{$title}' deleted successfully!");
     }
 
     // Receipts & Payments Vouchers
-    public function vouchersIndex($type)
+    public function vouchersIndex(Request $request, $type)
     {
-        $vouchers = Voucher::with('party')->where('type', $type)->latest()->get();
+        if (!in_array($type, ['receipt', 'payment'])) {
+            abort(404);
+        }
+
         $parties = Party::orderBy('name')->get();
-        return view('modules.vouchers', compact('vouchers', 'parties', 'type'));
+        
+        $currentVoucher = null;
+        if ($request->has('id')) {
+            $currentVoucher = Voucher::with('party')->where('type', $type)->find($request->id);
+        }
+
+        $allVouchers = Voucher::with('party')->where('type', $type)->latest()->get();
+        $vouchers = $allVouchers;
+
+        // Systematic voucher numbering (e.g. RCT-00001, PMT-00001)
+        $prefix = $type === 'receipt' ? 'RCT-' : 'PMT-';
+        $maxId = Voucher::where('type', $type)->max('id') ?? 0;
+        $nextVoucherNo = $prefix . str_pad($maxId + 1, 5, '0', STR_PAD_LEFT);
+
+        return view('modules.vouchers', compact('vouchers', 'allVouchers', 'parties', 'type', 'currentVoucher', 'nextVoucherNo'));
     }
 
     public function vouchersStore(Request $request)
     {
         $request->validate([
+            'id' => 'nullable|exists:vouchers,id',
             'type' => 'required|in:receipt,payment',
             'date' => 'required|date',
             'party_id' => 'required|exists:parties,id',
-            'amount' => 'required|numeric|min:0',
+            'voucher_no' => 'required|string',
+            'amount' => 'required|numeric|min:0.01',
+            'payment_mode' => 'nullable|string',
+            'reference_no' => 'nullable|string',
+            'remarks' => 'nullable|string',
         ]);
 
-        $voucher = Voucher::create([
-            'voucher_no' => strtoupper(substr($request->type, 0, 3)) . '-' . time(),
-            'type' => $request->type,
-            'date' => $request->date,
-            'party_id' => $request->party_id,
-            'amount' => $request->amount,
-            'payment_mode' => $request->payment_mode ?? 'Cash',
-            'reference_no' => $request->reference_no,
-            'remarks' => $request->remarks,
-        ]);
-
-        // Recalculate Party Balance
-        if ($voucher->party) {
-            $voucher->party->recalculateBalance();
+        // Check Date Lock
+        $dateLockDate = \App\Models\Setting::get('date_lock_date');
+        if ($dateLockDate && $request->date <= $dateLockDate && !$request->has('admin_override')) {
+            return redirect()->back()->withErrors(['date' => 'Date Lock is active for dates on or before ' . $dateLockDate . '. Entry blocked!']);
         }
 
-        return redirect()->back()->with('success', ucfirst($request->type) . ' voucher saved & party balance updated!');
+        $oldParty = null;
+        if ($request->filled('id')) {
+            $voucher = Voucher::findOrFail($request->id);
+            $oldParty = $voucher->party;
+            $voucher->update([
+                'type' => $request->type,
+                'date' => $request->date,
+                'party_id' => $request->party_id,
+                'voucher_no' => $request->voucher_no,
+                'amount' => $request->amount,
+                'payment_mode' => $request->payment_mode ?? 'Cash',
+                'reference_no' => $request->reference_no,
+                'remarks' => $request->remarks,
+            ]);
+
+            if ($oldParty) {
+                $oldParty->recalculateBalance();
+            }
+            if ($voucher->party && $voucher->party_id != $oldParty?->id) {
+                $voucher->party->recalculateBalance();
+            }
+
+            return redirect()->route('vouchers.index', ['type' => $voucher->type, 'id' => $voucher->id])
+                ->with('success', ucfirst($voucher->type) . ' voucher (' . $voucher->voucher_no . ') updated successfully!');
+        } else {
+            $voucherNo = $request->voucher_no;
+            if (Voucher::where('voucher_no', $voucherNo)->exists()) {
+                $prefix = $request->type === 'receipt' ? 'RCT-' : 'PMT-';
+                $maxId = Voucher::where('type', $request->type)->max('id') ?? 0;
+                $voucherNo = $prefix . str_pad($maxId + 1, 5, '0', STR_PAD_LEFT);
+            }
+
+            $voucher = Voucher::create([
+                'voucher_no' => $voucherNo,
+                'type' => $request->type,
+                'date' => $request->date,
+                'party_id' => $request->party_id,
+                'amount' => $request->amount,
+                'payment_mode' => $request->payment_mode ?? 'Cash',
+                'reference_no' => $request->reference_no,
+                'remarks' => $request->remarks,
+            ]);
+
+            if ($voucher->party) {
+                $voucher->party->recalculateBalance();
+            }
+
+            return redirect()->route('vouchers.index', ['type' => $voucher->type, 'id' => $voucher->id])
+                ->with('success', ucfirst($voucher->type) . ' voucher (' . $voucher->voucher_no . ') recorded successfully!');
+        }
+    }
+
+    public function vouchersDestroy($id)
+    {
+        $voucher = Voucher::findOrFail($id);
+        $type = $voucher->type;
+        $party = $voucher->party;
+        $voucherNo = $voucher->voucher_no;
+        $voucher->delete();
+
+        if ($party) {
+            $party->recalculateBalance();
+        }
+
+        return redirect()->route('vouchers.index', $type)
+            ->with('success', ucfirst($type) . ' voucher (' . $voucherNo . ') deleted & party ledger balance recalculated!');
     }
 
     // Comprehensive Reports & Detailed Ledgers

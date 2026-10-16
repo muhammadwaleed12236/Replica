@@ -30,30 +30,39 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Master Modules
     Route::get('/parties', [PartyController::class, 'partiesIndex'])->name('parties.index');
     Route::post('/parties', [PartyController::class, 'partiesStore'])->name('parties.store');
+    Route::delete('/parties/{id}', [PartyController::class, 'partiesDestroy'])->name('parties.destroy');
 
     Route::get('/medical-reps', [PartyController::class, 'medicalRepsIndex'])->name('medical_reps.index');
     Route::post('/medical-reps', [PartyController::class, 'medicalRepsStore'])->name('medical_reps.store');
+    Route::delete('/medical-reps/{id}', [PartyController::class, 'medicalRepsDestroy'])->name('medical_reps.destroy');
 
     Route::get('/companies', [PartyController::class, 'companiesIndex'])->name('companies.index');
     Route::post('/companies', [PartyController::class, 'companiesStore'])->name('companies.store');
+    Route::delete('/companies/{id}', [PartyController::class, 'companiesDestroy'])->name('companies.destroy');
 
     Route::get('/salesmen', [PartyController::class, 'salesmenIndex'])->name('salesmen.index');
     Route::post('/salesmen', [PartyController::class, 'salesmenStore'])->name('salesmen.store');
+    Route::delete('/salesmen/{id}', [PartyController::class, 'salesmenDestroy'])->name('salesmen.destroy');
 
     Route::get('/banks', [PartyController::class, 'banksIndex'])->name('banks.index');
     Route::post('/banks', [PartyController::class, 'banksStore'])->name('banks.store');
+    Route::delete('/banks/{id}', [PartyController::class, 'banksDestroy'])->name('banks.destroy');
 
     Route::get('/amanats', [PartyController::class, 'amanatsIndex'])->name('amanats.index');
     Route::post('/amanats', [PartyController::class, 'amanatsStore'])->name('amanats.store');
+    Route::delete('/amanats/{id}', [PartyController::class, 'amanatsDestroy'])->name('amanats.destroy');
 
     Route::get('/lotteries', [PartyController::class, 'lotteriesIndex'])->name('lotteries.index');
     Route::post('/lotteries', [PartyController::class, 'lotteriesStore'])->name('lotteries.store');
+    Route::delete('/lotteries/{id}', [PartyController::class, 'lotteriesDestroy'])->name('lotteries.destroy');
 
     Route::get('/expenses', [PartyController::class, 'expensesIndex'])->name('expenses.index');
     Route::post('/expenses', [PartyController::class, 'expensesStore'])->name('expenses.store');
+    Route::delete('/expenses/{id}', [PartyController::class, 'expensesDestroy'])->name('expenses.destroy');
 
     Route::get('/vouchers/{type}', [PartyController::class, 'vouchersIndex'])->name('vouchers.index');
     Route::post('/vouchers', [PartyController::class, 'vouchersStore'])->name('vouchers.store');
+    Route::delete('/vouchers/{id}', [PartyController::class, 'vouchersDestroy'])->name('vouchers.destroy');
 
     Route::get('/reports', [PartyController::class, 'reportsIndex'])->name('reports.index');
 

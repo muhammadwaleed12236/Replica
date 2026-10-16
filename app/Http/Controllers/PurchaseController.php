@@ -16,20 +16,13 @@ class PurchaseController extends Controller
         
         $currentPurchase = null;
         if ($request->has('id')) {
-            $currentPurchase = Purchase::with(['party', 'company', 'items'])->find($request->id);
+            $currentPurchase = Purchase::with(['party', 'company'])->find($request->id);
         }
 
-        $products = \App\Models\PurchaseItem::select('item_name')
-            ->union(\App\Models\SaleItem::select('item_name'))
-            ->whereNotNull('item_name')
-            ->where('item_name', '!=', '')
-            ->distinct()
-            ->pluck('item_name');
-
-        $allPurchases = Purchase::with(['party', 'items'])->latest()->get();
+        $allPurchases = Purchase::with('party')->latest()->get();
         $nextInvoiceNo = 'PUR-' . str_pad((Purchase::max('id') + 1), 5, '0', STR_PAD_LEFT);
 
-        return view('purchases.index', compact('parties', 'companies', 'currentPurchase', 'allPurchases', 'nextInvoiceNo', 'products'));
+        return view('purchases.index', compact('parties', 'companies', 'currentPurchase', 'allPurchases', 'nextInvoiceNo'));
     }
 
     public function store(Request $request)
@@ -40,7 +33,6 @@ class PurchaseController extends Controller
             'party_id' => 'required|exists:parties,id',
             'company_id' => 'nullable|exists:companies,id',
             'invoice_no' => 'required|string',
-            'product_name' => 'nullable|string',
             'amount' => 'required|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
             'remarks' => 'nullable|string',
@@ -83,17 +75,6 @@ class PurchaseController extends Controller
                     'remarks' => $request->remarks,
                 ]
             );
-        }
-
-        // Save or update Product Item record
-        if ($request->filled('product_name')) {
-            $purchase->items()->delete();
-            $purchase->items()->create([
-                'item_name' => trim($request->product_name),
-                'qty' => 1,
-                'rate' => $netAmount,
-                'total' => $netAmount,
-            ]);
         }
 
         // Recalculate party balances

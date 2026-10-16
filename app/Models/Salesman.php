@@ -8,4 +8,9 @@ class Salesman extends Model
 {
     protected $table = 'salesmen';
     protected $fillable = ['name', 'phone', 'commission_rate'];
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
 }

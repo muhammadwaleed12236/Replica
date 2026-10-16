@@ -1,4 +1,4 @@
-@import 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap';
 
 @tailwind base;
 @tailwind components;
@@ -9,48 +9,68 @@
         display: none !important;
     }
 
+    html {
+        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+
     body {
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
         background-color: #e7edf3;
         color: #0f172a;
         overflow-x: hidden;
+        letter-spacing: -0.01em;
     }
 
     h1, h2, h3, h4, h5, h6 {
-        font-family: 'Outfit', sans-serif;
+        font-family: 'Poppins', sans-serif !important;
+        letter-spacing: -0.02em;
+    }
+
+    input, select, textarea, button {
+        font-family: 'Poppins', sans-serif;
     }
 }
 
-/* DAWN ERP Theme Colors & Utilities */
+/* DAWN ERP Theme Colors & Design System */
 :root {
     --dawn-cyan: #00a2e8;
     --dawn-cyan-dark: #008ecb;
     --dawn-cyan-light: #e8f4fa;
     --dawn-bg: #e7edf3;
     --dawn-panel: #f5f8fb;
+    --dawn-border: #0092d0;
 }
 
-/* Classic ERP Form Inputs */
+/* Modern ERP Form Inputs & Controls */
 input:not([type="checkbox"]):not([type="radio"]),
 select,
 textarea {
     background-color: #ffffff;
     border-color: #9ab3c9;
     color: #0f172a;
+    transition: all 0.15s ease-in-out;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
     border-color: #00a2e8 !important;
-    box-shadow: 0 0 0 2px rgba(0, 162, 232, 0.25) !important;
+    box-shadow: 0 0 0 3px rgba(0, 162, 232, 0.22) !important;
     outline: none !important;
+}
+
+/* Monospace font for amounts, voucher numbers, and dates */
+.font-mono {
+    font-family: 'JetBrains Mono', Consolas, monospace !important;
 }
 
 /* Custom Scrollbars */
 ::-webkit-scrollbar {
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -58,8 +78,8 @@ textarea:focus {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #9ab3c9;
-    border-radius: 4px;
+    background: #a9bece;
+    border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {

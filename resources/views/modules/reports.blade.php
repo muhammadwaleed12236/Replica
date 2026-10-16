@@ -2,14 +2,11 @@
     <div class="py-4">
         <div class="max-w-7xl mx-auto px-2 sm:px-4 space-y-4">
 
-            <!-- Module Navigation Bar -->
-            <x-module-nav active="reports" />
-
             <!-- DAWN Top Header Banner for Reports -->
             <div class="w-full bg-[#00a2e8] select-none shadow-md rounded-lg overflow-hidden border border-[#008ecb]">
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
-                        <div class="flex items-center gap-2 bg-[#008cc9]/70 border border-white/50 px-3 py-1.5 rounded-lg text-black">
+                        <div class="flex items-center gap-2 bg-[#008cc9]/70 border border-white/50 px-3 py-1.5 rounded-lg text-white">
                             <span class="text-xl">📊</span>
                             <h1 class="text-lg font-black tracking-normal font-sans">Financial & Ledger Reports</h1>
                         </div>
@@ -20,7 +17,7 @@
                             <svg class="w-4 h-4 text-[#007cb5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                             <span>Print Report</span>
                         </button>
-                        <a href="{{ route('dashboard') }}" class="px-3 py-1.5 rounded bg-white/20 hover:bg-white/30 text-black text-xs font-bold border border-white/40 transition-all">
+                        <a href="{{ route('dashboard') }}" class="px-3 py-1.5 rounded bg-white/20 hover:bg-white/30 text-white text-xs font-bold border border-white/40 transition-all">
                             ← Dashboard
                         </a>
                     </div>
@@ -146,7 +143,7 @@
                                     <tr class="hover:bg-[#f6f9fc] transition-colors">
                                         <td class="p-2.5 border-r border-[#e2ebf3] font-mono text-slate-700 font-semibold">{{ $entry['date'] }}</td>
                                         <td class="p-2.5 border-r border-[#e2ebf3] font-mono font-bold text-[#007cb5]">{{ $entry['ref'] }}</td>
-                                        <td class="p-2.5 border-r border-[#e2ebf3] text-slate-900 font-medium">{{ $entry['details'] }}</td>
+                                        <td class="p-2.5 border-r border-[#e2ebf3] text-slate-900 font-medium">{{ $entry['description'] ?? $entry['details'] ?? '-' }}</td>
                                         <td class="p-2.5 border-r border-[#e2ebf3] text-right font-mono text-rose-700 font-bold">
                                             {{ $entry['debit'] > 0 ? 'Rs. ' . number_format($entry['debit'], 2) : '-' }}
                                         </td>

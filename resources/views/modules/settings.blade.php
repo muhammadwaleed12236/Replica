@@ -17,9 +17,6 @@
                 </script>
             @endif
 
-            <!-- Module Navigation Bar -->
-            <x-module-nav active="settings" />
-
             <!-- DAWN Top Header Banner -->
             <div class="w-full bg-[#00a2e8] select-none shadow-md rounded-lg overflow-hidden border border-[#008ecb]">
                 <div class="px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">

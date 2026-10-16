@@ -16,23 +16,16 @@ class SaleController extends Controller
         
         $currentSale = null;
         if ($request->has('id')) {
-            $currentSale = Sale::with(['party', 'salesman', 'items'])->find($request->id);
+            $currentSale = Sale::with(['party', 'salesman'])->find($request->id);
         }
 
-        $products = \App\Models\SaleItem::select('item_name')
-            ->union(\App\Models\PurchaseItem::select('item_name'))
-            ->whereNotNull('item_name')
-            ->where('item_name', '!=', '')
-            ->distinct()
-            ->pluck('item_name');
-
-        $allSales = Sale::with(['party', 'items'])->latest()->get();
+        $allSales = Sale::with('party')->latest()->get();
         $nextInvoiceNo = 'INV-' . str_pad((Sale::max('id') + 1), 5, '0', STR_PAD_LEFT);
 
         $dateLockDate = \App\Models\Setting::get('date_lock_date');
         $minDate = $dateLockDate ? \Carbon\Carbon::parse($dateLockDate)->addDay()->format('Y-m-d') : null;
 
-        return view('sales.index', compact('parties', 'salesmen', 'currentSale', 'allSales', 'nextInvoiceNo', 'dateLockDate', 'minDate', 'products'));
+        return view('sales.index', compact('parties', 'salesmen', 'currentSale', 'allSales', 'nextInvoiceNo', 'dateLockDate', 'minDate'));
     }
 
     public function store(Request $request)
@@ -43,7 +36,6 @@ class SaleController extends Controller
             'party_id' => 'required|exists:parties,id',
             'salesman_id' => 'nullable|exists:salesmen,id',
             'invoice_no' => 'required|string',
-            'product_name' => 'nullable|string',
             'amount' => 'required|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
             'remarks' => 'nullable|string',
@@ -101,17 +93,6 @@ class SaleController extends Controller
                     'remarks' => $request->remarks,
                 ]
             );
-        }
-
-        // Save or update Product Item record
-        if ($request->filled('product_name')) {
-            $sale->items()->delete();
-            $sale->items()->create([
-                'item_name' => trim($request->product_name),
-                'qty' => 1,
-                'rate' => $netAmount,
-                'total' => $netAmount,
-            ]);
         }
 
         // Recalculate Party Balance
