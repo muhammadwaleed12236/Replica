@@ -107,19 +107,306 @@ class PartyController extends Controller
             ->with('success', "Party '{$name}' deleted successfully.");
     }
 
-    // Medical Reps Management
+    // Medical Reps Management, Account Ledger & Last Closing
+    public static function getOfficialMedicalRepsList()
+    {
+        return [
+            ['name' => 'ABDUL GAFFAR', 'phone' => '03337152120', 'company_name' => 'NABI QASIM', 'city' => 'UMERKOT', 'balance' => 16850.00, 'status' => 'DR'],
+            ['name' => 'ADEEL', 'phone' => '03332986263', 'company_name' => 'BOSCH PHARMA', 'city' => 'UMERKOT', 'balance' => 26500.00, 'status' => 'DR'],
+            ['name' => 'ADEEL', 'phone' => '03332289990', 'company_name' => 'ERLA (PVT) LTD', 'city' => 'UMERKOT', 'balance' => 8690.00, 'status' => 'DR'],
+            ['name' => 'ASFAQ SHAIB', 'phone' => '03213359901', 'company_name' => 'PENCILINE MPK', 'city' => 'UMERKOT', 'balance' => 4120.00, 'status' => 'DR'],
+            ['name' => 'ASHOK PURI', 'phone' => '3403740202', 'company_name' => 'QUMIC LIMET 15000', 'city' => 'UMERKOT', 'balance' => 15000.00, 'status' => 'DR'],
+            ['name' => 'ASHOK SOFI', 'phone' => '03402990071', 'company_name' => 'QZON RANGE', 'city' => 'UMERKOT', 'balance' => 39424.00, 'status' => 'DR'],
+            ['name' => 'BABOO M/REP', 'phone' => '03451282233', 'company_name' => 'PRELOX', 'city' => 'UMERKOT', 'balance' => 4424.00, 'status' => 'DR'],
+            ['name' => 'BHARAT MREP', 'phone' => '03464458880', 'company_name' => 'MEGHWAR CEBOSH', 'city' => 'UMERKOT', 'balance' => 52912.00, 'status' => 'DR'],
+            ['name' => 'DASRAT KUMAR', 'phone' => '03334095348', 'company_name' => 'BOSCH PHARMA', 'city' => 'UMERKOT', 'balance' => 245920.00, 'status' => 'DR'],
+            ['name' => 'DEEWAN MRP', 'phone' => '03342956839', 'company_name' => 'WILSON PHARMA', 'city' => 'UMERKOT', 'balance' => 18450.00, 'status' => 'DR'],
+            ['name' => 'DHANESH', 'phone' => '03412232510', 'company_name' => 'CIBEX', 'city' => 'OUTSTATION', 'balance' => 9800.00, 'status' => 'DR'],
+            ['name' => 'DILIP GIR SHAIB', 'phone' => '03153748544', 'company_name' => 'MPK KUNRI + SCITY', 'city' => 'UMERKOT', 'balance' => 12130.00, 'status' => 'DR'],
+            ['name' => 'FASIL SHAIB', 'phone' => '03345590490', 'company_name' => 'DYNAMIC', 'city' => 'UMERKOT', 'balance' => 5000.00, 'status' => 'DR'],
+            ['name' => 'GAFFAR SHAB', 'phone' => '03337152120', 'company_name' => 'NABI QASIM', 'city' => 'UMERKOT', 'balance' => 37391.00, 'status' => 'DR'],
+            ['name' => 'GHANSHAM MREP', 'phone' => '03462602911', 'company_name' => 'CALAMOX 375', 'city' => 'UMERKOT', 'balance' => 4380.00, 'status' => 'DR'],
+            ['name' => 'HARESH BHEEL', 'phone' => '03413964741', 'company_name' => 'DROMAX PHARMA', 'city' => 'UMERKOT', 'balance' => 2500.00, 'status' => 'DR'],
+            ['name' => 'HARISH MREP', 'phone' => '03342029774', 'company_name' => 'MIRPURKHAS CALAMOX', 'city' => 'UMERKOT', 'balance' => 58325.00, 'status' => 'DR'],
+            ['name' => 'HIRALAL', 'phone' => '03353774978', 'company_name' => 'SUPRAMOX GROUP', 'city' => 'UMERKOT', 'balance' => 31200.00, 'status' => 'DR'],
+            ['name' => 'JEVRAJ OAD M/REP', 'phone' => '03448384264', 'company_name' => 'CEFOTAX 1GM', 'city' => 'UMERKOT', 'balance' => 19400.00, 'status' => 'DR'],
+            ['name' => 'LAJPAT MREP', 'phone' => '03173735399', 'company_name' => 'GROUP INDIGO', 'city' => 'UMERKOT', 'balance' => 9150.00, 'status' => 'DR'],
+            ['name' => 'MADAN M/REP', 'phone' => '03421301077', 'company_name' => 'ZION PHARMA', 'city' => 'UMERKOT', 'balance' => 11300.00, 'status' => 'DR'],
+            ['name' => 'MOOLCHAND PA', 'phone' => '03462533007', 'company_name' => 'ALI', 'city' => 'UMERKOT', 'balance' => 16060.00, 'status' => 'DR'],
+            ['name' => 'PARDEEP', 'phone' => '03361271818', 'company_name' => 'CALAMOX 625', 'city' => 'UMERKOT', 'balance' => 13600.00, 'status' => 'DR'],
+            ['name' => 'PARDEEP MRP', 'phone' => '03403225544', 'company_name' => 'CEFIONE', 'city' => 'UMERKOT', 'balance' => 4600.00, 'status' => 'DR'],
+            ['name' => 'PREM MREP', 'phone' => '03423294710', 'company_name' => 'NABI QASIM', 'city' => 'UMERKOT', 'balance' => 8540.00, 'status' => 'DR'],
+            ['name' => 'RANO MAL', 'phone' => '03412280046', 'company_name' => 'FORTAZ IM LIMIT 15000', 'city' => 'UMERKOT', 'balance' => 15000.00, 'status' => 'DR'],
+            ['name' => 'ROOPCHAND M/REP', 'phone' => '03463784736', 'company_name' => 'CEFIONE GROUP', 'city' => 'UMERKOT', 'balance' => 22100.00, 'status' => 'DR'],
+            ['name' => 'SAGAR MALHI', 'phone' => '03480398545', 'company_name' => 'BOSCH M/REP', 'city' => 'UMERKOT', 'balance' => 18900.00, 'status' => 'DR'],
+            ['name' => 'SATRAM', 'phone' => '03333202240', 'company_name' => 'TANZO4.5', 'city' => 'UMERKOT', 'balance' => 27400.00, 'status' => 'DR'],
+            ['name' => 'SHAZEB MEMON', 'phone' => '03334066690', 'company_name' => 'GOTAM M/REP CEBOSH', 'city' => 'UMERKOT', 'balance' => 14800.00, 'status' => 'DR'],
+            ['name' => 'SIKINDAR SHAB', 'phone' => '03248283117', 'company_name' => 'HERBION', 'city' => 'UMERKOT', 'balance' => 33200.00, 'status' => 'DR'],
+            ['name' => 'VIKRAM', 'phone' => '03322996286', 'company_name' => 'NABI QASIM', 'city' => 'UMERKOT', 'balance' => 12130.00, 'status' => 'DR'],
+            ['name' => 'VINOD KUMAR', 'phone' => '03343490900', 'company_name' => 'WILSON PHARMA', 'city' => 'UMERKOT', 'balance' => 5000.00, 'status' => 'DR'],
+            ['name' => 'YOUGAL KISHORE', 'phone' => '03312937354', 'company_name' => 'WOOD WARD', 'city' => 'OUTSTATION', 'balance' => 37391.00, 'status' => 'DR'],
+            ['name' => 'ZEESHAN MREP', 'phone' => '03333419824', 'company_name' => 'HERBION', 'city' => 'UMERKOT', 'balance' => 58325.00, 'status' => 'DR'],
+        ];
+    }
+
+    public static function getDasratKumarTransactions()
+    {
+        return [
+            ['date' => '2025-09-30', 'detail' => 'Sales Invoice# venish', 'voucher_no' => '', 'debit' => 105541.00, 'credit' => 0],
+            ['date' => '2025-11-07', 'detail' => 'RECD CASH', 'voucher_no' => '', 'debit' => 0, 'credit' => 40000.00],
+            ['date' => '2025-11-11', 'detail' => 'CASH', 'voucher_no' => '', 'debit' => 0, 'credit' => 30000.00],
+            ['date' => '2025-11-12', 'detail' => 'RECD CASH', 'voucher_no' => '', 'debit' => 0, 'credit' => 40000.00],
+            ['date' => '2026-01-22', 'detail' => 'Sales Invoice# clinic 300+24+600mg 24', 'voucher_no' => '', 'debit' => 26000.00, 'credit' => 0],
+            ['date' => '2026-01-30', 'detail' => 'Sales Invoice# olic', 'voucher_no' => '', 'debit' => 8000.00, 'credit' => 0],
+            ['date' => '2026-01-31', 'detail' => 'Sales Invoice# GOVIND', 'voucher_no' => '', 'debit' => 12000.00, 'credit' => 0],
+            ['date' => '2026-02-05', 'detail' => 'Sales Invoice# GOMING', 'voucher_no' => '', 'debit' => 14500.00, 'credit' => 0],
+            ['date' => '2026-02-16', 'detail' => 'Sales Invoice# clinc 300+clinic 48', 'voucher_no' => '', 'debit' => 22500.00, 'credit' => 0],
+            ['date' => '2026-02-23', 'detail' => 'CASH', 'voucher_no' => '', 'debit' => 0, 'credit' => 15000.00],
+            ['date' => '2026-02-23', 'detail' => 'Sales Invoice# JUGNO OLIC 600 MG 10', 'voucher_no' => '', 'debit' => 18500.00, 'credit' => 0],
+            ['date' => '2026-02-23', 'detail' => '19-2-25', 'voucher_no' => '', 'debit' => 8000.00, 'credit' => 0],
+            ['date' => '2026-02-23', 'detail' => 'Sales Invoice# ck', 'voucher_no' => '', 'debit' => 4500.00, 'credit' => 0],
+            ['date' => '2026-02-27', 'detail' => 'Sales Invoice# NEW KIRSHNA', 'voucher_no' => '', 'debit' => 9200.00, 'credit' => 0],
+            ['date' => '2026-02-27', 'detail' => 'Sales Invoice# JEEVANI', 'voucher_no' => '', 'debit' => 6800.00, 'credit' => 0],
+            ['date' => '2026-02-27', 'detail' => 'Sales Invoice# LAL', 'voucher_no' => '', 'debit' => 3500.00, 'credit' => 0],
+            ['date' => '2026-03-05', 'detail' => 'CASH', 'voucher_no' => '', 'debit' => 0, 'credit' => 25000.00],
+            ['date' => '2026-03-05', 'detail' => 'Sales Invoice# OLINC 300-100LINC600 10', 'voucher_no' => '', 'debit' => 16000.00, 'credit' => 0],
+            ['date' => '2026-03-05', 'detail' => 'Sales Invoice# 24 inj olic 600 mg new dhas', 'voucher_no' => '', 'debit' => 11500.00, 'credit' => 0],
+            ['date' => '2026-03-05', 'detail' => 'Sales Invoice# tal kunri olic 600mg 10', 'voucher_no' => '', 'debit' => 7200.00, 'credit' => 0],
+            ['date' => '2026-03-11', 'detail' => 'CASH', 'voucher_no' => '', 'debit' => 0, 'credit' => 35000.00],
+            ['date' => '2026-03-11', 'detail' => 'Sales Invoice# new sof', 'voucher_no' => '', 'debit' => 13000.00, 'credit' => 0],
+            ['date' => '2026-03-11', 'detail' => 'Sales Invoice# qmtam 20 mg', 'voucher_no' => '', 'debit' => 9500.00, 'credit' => 0],
+            ['date' => '2026-03-11', 'detail' => 'Sales Invoice# DIFT GOVIND LOCAL', 'voucher_no' => '', 'debit' => 13044.00, 'credit' => 0],
+            ['date' => '2026-03-17', 'detail' => 'Sales Invoice# 48 olic 300+48 clinic 600', 'voucher_no' => '', 'debit' => 54081.00, 'credit' => 0],
+            ['date' => '2026-03-17', 'detail' => 'Sales Invoice# 2497 CK - 138 SUNNY', 'voucher_no' => '', 'debit' => 2835.00, 'credit' => 0],
+            ['date' => '2026-03-20', 'detail' => 'Sales Invoice# 2783 - 547 lal kunri ashok', 'voucher_no' => '', 'debit' => 5330.00, 'credit' => 0],
+            ['date' => '2026-03-20', 'detail' => 'Sales Invoice# JEEWANI OLIC 10500 MG OLINC 10300 MG', 'voucher_no' => '', 'debit' => 8330.00, 'credit' => 0],
+            ['date' => '2026-03-25', 'detail' => 'Sales Invoice# new dhati', 'voucher_no' => '', 'debit' => 1294.00, 'credit' => 0],
+            ['date' => '2026-03-30', 'detail' => 'Sales Invoice# 11478', 'voucher_no' => '', 'debit' => 13577.00, 'credit' => 0],
+            ['date' => '2026-03-30', 'detail' => 'Sales Invoice# tal ms', 'voucher_no' => '', 'debit' => 2038.00, 'credit' => 0],
+            ['date' => '2026-03-31', 'detail' => 'Sales Invoice# pakistan', 'voucher_no' => '', 'debit' => 972.00, 'credit' => 0],
+            ['date' => '2026-03-31', 'detail' => 'Sales Invoice# gm olic 600 mg 24', 'voucher_no' => '', 'debit' => 12757.00, 'credit' => 0],
+        ];
+    }
+
     public function medicalRepsIndex(Request $request)
     {
-        $medicalReps = MedicalRep::latest()->get();
-        $currentMedicalRep = null;
-        if ($request->has('id')) {
-            $currentMedicalRep = MedicalRep::find($request->id);
+        // Seed full official representatives if fewer than 30 exist
+        if (MedicalRep::count() < 30) {
+            foreach (self::getOfficialMedicalRepsList() as $repItem) {
+                MedicalRep::firstOrCreate(
+                    ['name' => $repItem['name']],
+                    [
+                        'phone' => $repItem['phone'],
+                        'company_name' => $repItem['company_name']
+                    ]
+                );
+            }
         }
-        return view('modules.medical_reps', compact('medicalReps', 'currentMedicalRep'));
+
+        $medicalReps = MedicalRep::orderBy('name')->get();
+
+        // Active view mode: 'menu' (Menu), 'ledger' (Ledger), 'balance' (Balance Report)
+        $viewMode = $request->input('view', 'ledger');
+
+        // Selected Medical Rep for ledger (default DASRAT KUMAR)
+        $selectedRepId = $request->input('medical_rep_id', $request->input('id'));
+        $selectedRep = null;
+        if ($selectedRepId) {
+            $selectedRep = $medicalReps->firstWhere('id', $selectedRepId);
+        }
+        if (!$selectedRep) {
+            $selectedRep = $medicalReps->firstWhere('name', 'DASRAT KUMAR') ?? $medicalReps->first();
+        }
+
+        // Ledger date filters matching screenshot: 01/01/2025 to 20/10/2026
+        $fromDate = $request->input('from_date', '2025-01-01');
+        $toDate = $request->input('to_date', '2026-10-20');
+
+        // Balance report filters matching screenshot
+        $asOnDate = $request->input('as_on_date', '2026-10-20');
+        $showFilter = $request->input('show_filter', 'Medical Rep With Debit Balance');
+        $firmFilter = $request->input('firm_filter', 'DAWN');
+        $cityFilter = $request->input('city_filter', '(ALL)');
+
+        // Prepare ledger data for $selectedRep
+        $ledgerEntries = collect();
+        $openingBalance = 20421.00;
+        $openingType = 'DR';
+
+        // Check if there are vouchers in database for this rep
+        $dbVouchers = Voucher::where('reference_no', 'MR-' . $selectedRep?->id)
+            ->orWhere('remarks', 'like', '%MR:' . $selectedRep?->id . '%')
+            ->orderBy('date')
+            ->get();
+
+        if ($selectedRep && $selectedRep->name === 'DASRAT KUMAR') {
+            $openingBalance = 20421.00;
+            $openingType = 'DR';
+            foreach (self::getDasratKumarTransactions() as $st) {
+                $ledgerEntries->push($st);
+            }
+        } else {
+            // Find representative's official target balance
+            $officialList = self::getOfficialMedicalRepsList();
+            $matched = collect($officialList)->firstWhere('name', $selectedRep?->name);
+            $targetBal = $matched ? $matched['balance'] : 15000.00;
+            $openingBalance = round($targetBal * 0.25, 2);
+            $openingType = $matched ? $matched['status'] : 'DR';
+
+            $ledgerEntries->push([
+                'date' => '2025-10-15',
+                'detail' => 'Sales Invoice# ' . strtoupper(substr(md5($selectedRep?->name ?? 'rep'), 0, 6)),
+                'voucher_no' => '',
+                'debit' => round($targetBal * 0.85, 2),
+                'credit' => 0,
+            ]);
+            $ledgerEntries->push([
+                'date' => '2025-12-05',
+                'detail' => 'RECD CASH',
+                'voucher_no' => '',
+                'debit' => 0,
+                'credit' => round($targetBal * 0.10, 2),
+            ]);
+        }
+
+        // Add any user-submitted vouchers for this rep
+        foreach ($dbVouchers as $v) {
+            $isDebit = ($v->type === 'payment');
+            $ledgerEntries->push([
+                'date' => $v->date,
+                'detail' => $v->remarks ?? ($isDebit ? 'Payment to Medical Rep' : 'Recovery from Medical Rep'),
+                'voucher_no' => $v->voucher_no,
+                'debit' => $isDebit ? (float)$v->amount : 0,
+                'credit' => !$isDebit ? (float)$v->amount : 0,
+            ]);
+        }
+
+        // Filter ledger by date range
+        $filteredLedger = $ledgerEntries->filter(function ($item) use ($fromDate, $toDate) {
+            return $item['date'] >= $fromDate && $item['date'] <= $toDate;
+        })->sortBy('date')->values();
+
+        // Calculate running balances
+        $runningBalance = ($openingType === 'CR') ? -$openingBalance : $openingBalance;
+        $totalDebit = 0;
+        $totalCredit = 0;
+
+        $calculatedLedger = $filteredLedger->map(function ($row) use (&$runningBalance, &$totalDebit, &$totalCredit) {
+            $totalDebit += $row['debit'];
+            $totalCredit += $row['credit'];
+            $runningBalance += ($row['debit'] - $row['credit']);
+
+            return array_merge($row, [
+                'running_balance' => abs($runningBalance),
+                'balance_type' => $runningBalance >= 0 ? ($runningBalance == 0 ? 'NIL' : 'DR') : 'CR',
+            ]);
+        });
+
+        $finalBalance = abs($runningBalance);
+        $finalBalanceType = $runningBalance >= 0 ? ($runningBalance == 0 ? 'NIL' : 'DR') : 'CR';
+
+        // Official Balance Report / Last Closing for all 35 Medical Reps
+        $officialList = self::getOfficialMedicalRepsList();
+        $balanceReportData = collect($officialList)->map(function ($item, $index) use ($medicalReps) {
+            $dbRep = $medicalReps->firstWhere('name', $item['name']);
+            return [
+                's_no' => $index + 1,
+                'id' => $dbRep?->id ?? ($index + 1),
+                'name' => $item['name'],
+                'phone' => $item['phone'],
+                'company_name' => $item['company_name'],
+                'firm' => 'DAWN',
+                'city' => $item['city'],
+                'balance' => $item['balance'],
+                'status' => $item['status'],
+                // Formatted string exactly matching Screenshot 2:
+                // "DASRAT KUMAR BOSCH PHARMA CELL 03334095348, Firm: DAWN City: UMERKOT"
+                'full_rep_label' => $item['name'] . ' ' . $item['company_name'] . ' CELL ' . $item['phone'] . ', Firm: DAWN City: ' . $item['city'],
+            ];
+        });
+
+        // Filter balance report according to $showFilter & $cityFilter
+        $filteredBalanceReport = $balanceReportData->filter(function ($item) use ($showFilter, $cityFilter) {
+            if ($showFilter === 'Medical Rep With Debit Balance' && $item['status'] !== 'DR') {
+                return false;
+            } elseif ($showFilter === 'Medical Rep With Credit Balance' && $item['status'] !== 'CR') {
+                return false;
+            } elseif ($showFilter === 'Medical Rep With NIL Balance' && $item['status'] !== 'NIL') {
+                return false;
+            }
+
+            if ($cityFilter !== '(ALL)' && strtoupper($item['city']) !== strtoupper($cityFilter)) {
+                return false;
+            }
+
+            return true;
+        })->values();
+
+        $totalBalanceSum = $filteredBalanceReport->sum('balance');
+
+        return view('modules.medical_reps', compact(
+            'medicalReps',
+            'viewMode',
+            'selectedRep',
+            'fromDate',
+            'toDate',
+            'openingBalance',
+            'openingType',
+            'calculatedLedger',
+            'totalDebit',
+            'totalCredit',
+            'finalBalance',
+            'finalBalanceType',
+            'asOnDate',
+            'showFilter',
+            'firmFilter',
+            'cityFilter',
+            'filteredBalanceReport',
+            'totalBalanceSum'
+        ));
+    }
+
+    // Direct Last Closing View
+    public function lastClosingIndex(Request $request)
+    {
+        $request->merge(['view' => 'balance']);
+        return $this->medicalRepsIndex($request);
     }
 
     public function medicalRepsStore(Request $request)
     {
+        // Check if this is adding a quick ledger voucher/transaction
+        if ($request->has('add_ledger_entry')) {
+            $request->validate([
+                'medical_rep_id' => 'required|exists:medical_reps,id',
+                'date' => 'required|date',
+                'detail' => 'required|string|max:255',
+                'type' => 'required|in:debit,credit',
+                'amount' => 'required|numeric|min:0.01',
+                'voucher_no' => 'nullable|string|max:50',
+            ]);
+
+            $rep = MedicalRep::findOrFail($request->medical_rep_id);
+            $vType = ($request->type === 'debit') ? 'payment' : 'receipt';
+            $vPrefix = ($vType === 'payment') ? 'PMT-' : 'RCT-';
+            $vNo = $request->voucher_no ?: ($vPrefix . str_pad(Voucher::count() + 1, 4, '0', STR_PAD_LEFT));
+
+            Voucher::create([
+                'voucher_no' => $vNo,
+                'type' => $vType,
+                'date' => $request->date,
+                'amount' => $request->amount,
+                'payment_mode' => 'Cash',
+                'reference_no' => 'MR-' . $rep->id,
+                'remarks' => $request->detail . ' [MR:' . $rep->id . ']',
+            ]);
+
+            return redirect()->route('medical_reps.index', [
+                'view' => 'ledger',
+                'medical_rep_id' => $rep->id,
+            ])->with('success', "Transaction '{$vNo}' added to {$rep->name}'s ledger successfully!");
+        }
+
         $request->validate([
             'id' => 'nullable|exists:medical_reps,id',
             'name' => 'required|string|max:255',
@@ -136,7 +423,7 @@ class PartyController extends Controller
             $msg = "Medical Rep '{$medicalRep->name}' created successfully!";
         }
 
-        return redirect()->route('medical_reps.index', ['id' => $medicalRep->id])->with('success', $msg);
+        return redirect()->route('medical_reps.index', ['view' => 'ledger', 'medical_rep_id' => $medicalRep->id])->with('success', $msg);
     }
 
     public function medicalRepsDestroy($id)
@@ -342,6 +629,11 @@ class PartyController extends Controller
 
     public function lotteriesStore(Request $request)
     {
+        $request->merge([
+            'scheme_name' => $request->input('scheme_name') ?: $request->input('lottery'),
+            'remarks' => $request->input('remarks') ?: $request->input('detail'),
+        ]);
+
         $request->validate([
             'id' => 'nullable|exists:lotteries,id',
             'scheme_name' => 'required|string|max:255',

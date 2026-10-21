@@ -12,21 +12,24 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+        <!-- Tailwind CSS CDN for instant, reliable design rendering -->
+        <script src="https://cdn.tailwindcss.com"></script>
+
         <!-- SweetAlert2 -->
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-[#e7edf3] text-slate-900 min-h-screen antialiased selection:bg-[#00a2e8] selection:text-white font-sans">
+    <body class="bg-[#e9eff6] text-slate-900 min-h-screen antialiased selection:bg-[#0f4c81] selection:text-white font-sans">
         
-        <div class="min-h-screen flex flex-col">
+        <div class="min-h-screen flex flex-col justify-between">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-white border-b border-[#cbd8e4] shadow-sm">
-                    <div class="max-w-7xl mx-auto py-3 px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-[1400px] mx-auto py-3 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
@@ -34,14 +37,15 @@
 
             <!-- Page Content -->
             <main class="flex-grow">
-                {{ $slot }}
+                {{ $slot ?? '' }}
+                @yield('content')
             </main>
 
             <!-- DAWN ERP Footer -->
-            <footer class="border-t border-[#cbd8e4] bg-[#d9e3ec] py-3 text-center text-xs text-slate-700 font-medium">
-                <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-1">
-                    <span>DAWN ERP System • Commercial Enterprise Software</span>
-                    <span class="font-mono text-slate-600">Active Terminal • Fast Accounting Engine</span>
+            <footer class="border-t border-[#cbd7e6] bg-[#dbe5f2] py-2 text-center text-xs text-slate-600 font-medium select-none">
+                <div class="max-w-[1400px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-1">
+                    <span>DevoAccounts ERP System • Licensed to <strong class="text-slate-800 font-bold">DAWN</strong></span>
+                    <span class="font-mono text-slate-500">Active Terminal • Fast Accounting Engine</span>
                 </div>
             </footer>
         </div>
