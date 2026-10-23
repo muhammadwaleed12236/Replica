@@ -1,30 +1,30 @@
 <x-app-layout>
-    <div class="py-5 px-3 sm:px-6 lg:px-8" x-data="erpDashboard()" @keydown.window="handleKey($event)">
+    <div class="h-full py-1 sm:py-1.5 lg:py-2 px-2 sm:px-4 lg:px-6 flex-grow flex flex-col justify-center overflow-hidden" x-data="erpDashboard()" @keydown.window="handleKey($event)">
 
         <!-- Hidden Logout Form for Exit button -->
         <form id="logout-form" method="POST" action="{{ route('logout') }}" style="display: none;">
             @csrf
         </form>
 
-        <div class="max-w-[1360px] mx-auto space-y-4 font-sans">
+        <div class="w-full max-w-[1360px] mx-auto font-sans">
             
             <!-- MAIN DESKTOP CANVAS: 1:1 Accurate Layout Cloned from Reference Screenshot -->
-            <div class="bg-[#f0f4f9] rounded-xl border border-[#c6d7e8] shadow-md p-6 sm:p-10 lg:p-12 flex flex-col justify-between min-h-[660px]">
+            <div class="bg-[#f0f4f9] rounded-xl border border-[#c6d7e8] shadow-sm p-2 sm:p-3 lg:p-4 flex flex-col justify-between flex-grow overflow-hidden">
                 
                 <!-- 4 Columns of Desktop Icons with exact Horizontal & Vertical Alignment -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-y-9 sm:gap-y-11 gap-x-6 sm:gap-x-10 lg:gap-x-16 items-start">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-y-1 sm:gap-y-1.5 gap-x-4 sm:gap-x-8 lg:gap-x-12 items-start">
                     
                     <!-- ========================================================= -->
                     <!-- COLUMN 1: Masters (1 Parties, 2 Medical Reps, 3 Companies, 4 Salesmen, 5 Banks) -->
                     <!-- ========================================================= -->
-                    <div class="flex flex-col space-y-9 sm:space-y-11 items-center w-full">
+                    <div class="flex flex-col space-y-0.5 sm:space-y-1 lg:space-y-1.5 items-center w-full">
                         
                         <!-- 1 Parties -->
                         <a href="{{ route('parties.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: 1] Parties Ledger Accounts">
-                            <div class="w-12 h-12 flex items-center justify-center">
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <!-- Center Circle & Person Silhouette -->
                                     <circle cx="32" cy="32" r="10.5" fill="#e2edfa" stroke="#1e293b" stroke-width="2.2" />
                                     <circle cx="32" cy="27" r="3.2" fill="#1e293b" />
@@ -44,17 +44,17 @@
                                     <line x1="15.5" y1="23" x2="22.5" y2="27.5" stroke="#1e293b" stroke-width="1.8" />
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 <span class="underline decoration-2 underline-offset-2">1</span> Parties
                             </span>
                         </a>
 
                         <!-- 2 Medical Reps -->
                         <a href="{{ route('medical_reps.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: 2] Medical Representatives">
-                            <div class="w-12 h-12 flex items-center justify-center">
-                                <svg class="w-12 h-12 text-slate-900 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-900 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64">
                                     <!-- Head Silhouette -->
                                     <circle cx="32" cy="18" r="9" fill="#1e293b" />
                                     <!-- Suit Shoulders & Jacket -->
@@ -72,10 +72,10 @@
 
                         <!-- 3 Companies -->
                         <a href="{{ route('companies.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: 3] Companies">
-                            <div class="w-12 h-12 flex items-center justify-center">
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <!-- Office Building Outline -->
                                     <rect x="18" y="10" width="28" height="46" rx="1.5" fill="#ffffff" stroke="#1e293b" stroke-width="2.2" />
                                     <!-- Grid of Windows: 3 columns x 4 rows -->
@@ -99,35 +99,35 @@
                                     <rect x="29" y="48" width="6" height="8" fill="#1e293b" />
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 <span class="underline decoration-2 underline-offset-2">3</span> Companies
                             </span>
                         </a>
 
                         <!-- 4 Salesmen -->
                         <a href="{{ route('salesmen.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: 4] Salesmen">
-                            <div class="w-12 h-12 flex items-center justify-center">
-                                <svg class="w-12 h-12 text-slate-900 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-900 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64">
                                     <!-- Person Silhouette -->
                                     <circle cx="32" cy="18" r="9" fill="#1e293b" />
                                     <path d="M14 50c0-9 8-15 18-15s18 6 18 15v4H14v-4z" fill="#1e293b" />
                                     <polygon points="32,35 27,43 32,41 37,43" fill="#ffffff" />
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 <span class="underline decoration-2 underline-offset-2">4</span> Salesmen
                             </span>
                         </a>
 
                         <!-- 5 Banks -->
                         <a href="{{ route('banks.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: 5] Bank Accounts & Ledgers">
-                            <div class="w-12 h-12 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
                                 <!-- Accounting Document with Pie Chart, Bar Chart & Calculator matching Screenshot -->
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <!-- Document with folded corner -->
                                     <path d="M14 8h24l12 12v36H14z" fill="#ffffff" stroke="#1e293b" stroke-width="2.2"/>
                                     <path d="M38 8v12h12" fill="#e2edfa" stroke="#1e293b" stroke-width="2"/>
@@ -152,7 +152,7 @@
                                     <rect x="42" y="43" width="3.5" height="3" fill="#1e293b"/>
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 <span class="underline decoration-2 underline-offset-2">5</span> Banks
                             </span>
                         </a>
@@ -162,15 +162,15 @@
                     <!-- ========================================================= -->
                     <!-- COLUMN 2: Registers & Vouchers (6 Expenses, 7 Amanats, 8 Lotteries, 9 Sales, 0 Purchases) -->
                     <!-- ========================================================= -->
-                    <div class="flex flex-col space-y-9 sm:space-y-11 items-center w-full">
+                    <div class="flex flex-col space-y-0.5 sm:space-y-1 lg:space-y-1.5 items-center w-full">
                         
                         <!-- 6 Expenses -->
                         <a href="{{ route('expenses.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: 6] Expenses">
-                            <div class="w-12 h-12 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
                                 <!-- Accounting Document with Pie Chart, Bar Chart & Calculator -->
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M14 8h24l12 12v36H14z" fill="#ffffff" stroke="#1e293b" stroke-width="2.2"/>
                                     <path d="M38 8v12h12" fill="#e2edfa" stroke="#1e293b" stroke-width="2"/>
                                     <circle cx="25" cy="22" r="6.5" stroke="#1e293b" stroke-width="1.8" fill="#f8fafc"/>
@@ -191,18 +191,18 @@
                                     <rect x="42" y="43" width="3.5" height="3" fill="#1e293b"/>
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 <span class="underline decoration-2 underline-offset-2">6</span> Expenses
                             </span>
                         </a>
 
                         <!-- 7 Amanats -->
                         <a href="{{ route('amanats.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: 7] Amanats">
-                            <div class="w-12 h-12 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
                                 <!-- Accounting Document with Pie Chart, Bar Chart & Calculator -->
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M14 8h24l12 12v36H14z" fill="#ffffff" stroke="#1e293b" stroke-width="2.2"/>
                                     <path d="M38 8v12h12" fill="#e2edfa" stroke="#1e293b" stroke-width="2"/>
                                     <circle cx="25" cy="22" r="6.5" stroke="#1e293b" stroke-width="1.8" fill="#f8fafc"/>
@@ -223,18 +223,18 @@
                                     <rect x="42" y="43" width="3.5" height="3" fill="#1e293b"/>
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 <span class="underline decoration-2 underline-offset-2">7</span> Amanats
                             </span>
                         </a>
 
                         <!-- 8 Lotteries (Shows thin highlight border box as seen in Reference Screenshot) -->
                         <a href="{{ route('payments-to-lotteries.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg bg-sky-50/60 border border-sky-400/80 shadow-sm hover:bg-blue-50/95 hover:border-sky-500 active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg bg-sky-50/60 border border-sky-400/80 shadow-sm hover:bg-blue-50/95 hover:border-sky-500 active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer" 
                            title="[HotKey: 8] Lotteries & Schemes">
-                            <div class="w-12 h-12 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
                                 <!-- Accounting Document with Pie Chart, Bar Chart & Calculator -->
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M14 8h24l12 12v36H14z" fill="#ffffff" stroke="#1e293b" stroke-width="2.2"/>
                                     <path d="M38 8v12h12" fill="#e2edfa" stroke="#1e293b" stroke-width="2"/>
                                     <circle cx="25" cy="22" r="6.5" stroke="#1e293b" stroke-width="1.8" fill="#f8fafc"/>
@@ -255,18 +255,18 @@
                                     <rect x="42" y="43" width="3.5" height="3" fill="#1e293b"/>
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 <span class="underline decoration-2 underline-offset-2">8</span> Lotteries
                             </span>
                         </a>
 
                         <!-- 9 Sales -->
                         <a href="{{ route('sales.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: 9] Sales Invoices">
-                            <div class="w-12 h-12 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
                                 <!-- Shopping Cart with curved upward arrow matching screenshot -->
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M12 16h8l7 24h23l6-18H23" stroke="#1e293b" stroke-width="2.5" fill="none" />
                                     <circle cx="28" cy="47" r="3.5" fill="#1e293b" stroke="#1e293b" />
                                     <circle cx="48" cy="47" r="3.5" fill="#1e293b" stroke="#1e293b" />
@@ -275,18 +275,18 @@
                                     <path d="M39 17h6v6" stroke="#1e293b" stroke-width="2.8" />
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 <span class="underline decoration-2 underline-offset-2">9</span> Sales
                             </span>
                         </a>
 
                         <!-- 0 Purchases -->
                         <a href="{{ route('purchases.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: 0] Purchases">
-                            <div class="w-12 h-12 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
                                 <!-- Delivery Box Truck matching screenshot -->
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="10" y="20" width="28" height="24" rx="2" fill="#ffffff" stroke="#1e293b" stroke-width="2.2" />
                                     <path d="M38 27h9l7 8v9h-16z" fill="#ffffff" stroke="#1e293b" stroke-width="2.2" />
                                     <path d="M40 30h6l4 5h-10z" fill="#f1f5f9" stroke="#1e293b" stroke-width="1.8" />
@@ -295,7 +295,7 @@
                                     <line x1="8" y1="53" x2="56" y2="53" stroke="#1e293b" stroke-width="1.8" />
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 <span class="underline decoration-2 underline-offset-2">0</span> Purchases
                             </span>
                         </a>
@@ -305,15 +305,15 @@
                     <!-- ========================================================= -->
                     <!-- COLUMN 3: Cash Flow (A Receipts, B Payments) -->
                     <!-- ========================================================= -->
-                    <div class="flex flex-col space-y-9 sm:space-y-11 items-center w-full">
+                    <div class="flex flex-col space-y-0.5 sm:space-y-1 lg:space-y-1.5 items-center w-full">
                         
                         <!-- A Receipts -->
                         <a href="{{ route('receipts.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: A] Receipts">
-                            <div class="w-12 h-12 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
                                 <!-- Banknote / Cash Currency matching screenshot -->
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="10" y="20" width="44" height="26" rx="2.5" fill="#ffffff" stroke="#1e293b" stroke-width="2.2" />
                                     <rect x="14" y="23.5" width="36" height="19" rx="1.5" stroke="#1e293b" stroke-width="1.4" />
                                     <circle cx="17.5" cy="27" r="1.5" fill="#1e293b" />
@@ -323,18 +323,18 @@
                                     <ellipse cx="32" cy="33" rx="7" ry="5.5" stroke="#1e293b" stroke-width="1.8" fill="#f8fafc" />
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 <span class="underline decoration-2 underline-offset-2">A</span> Receipts
                             </span>
                         </a>
 
                         <!-- B Payments -->
                         <a href="{{ route('payments.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: B] Payments">
-                            <div class="w-12 h-12 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
                                 <!-- Cash note with outgoing right-facing arrow matching screenshot -->
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="8" y="20" width="38" height="26" rx="2.5" fill="#ffffff" stroke="#1e293b" stroke-width="2.2" />
                                     <rect x="11.5" y="23.5" width="31" height="19" rx="1.5" stroke="#1e293b" stroke-width="1.4" />
                                     <circle cx="14.5" cy="27" r="1.5" fill="#1e293b" />
@@ -344,30 +344,30 @@
                                     <path d="M34 33h20m0 0l-6-6m6 6l-6 6" stroke="#1e293b" stroke-width="2.8" />
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 <span class="underline decoration-2 underline-offset-2">B</span> Payments
                             </span>
                         </a>
 
                         <!-- Empty space for rows 3, 4, 5 (keeps exact alignment matching screenshot) -->
-                        <div class="w-36 h-[96px] hidden md:block"></div>
-                        <div class="w-36 h-[96px] hidden md:block"></div>
-                        <div class="w-36 h-[96px] hidden md:block"></div>
+                        <div class="w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] hidden md:block"></div>
+                        <div class="w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] hidden md:block"></div>
+                        <div class="w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] hidden md:block"></div>
 
                     </div>
 
                     <!-- ========================================================= -->
                     <!-- COLUMN 4: System & Actions Sidebar (Reports, Settings & Others, Change Firm, Exit) -->
                     <!-- ========================================================= -->
-                    <div class="flex flex-col space-y-9 sm:space-y-11 items-center w-full">
+                    <div class="flex flex-col space-y-0.5 sm:space-y-1 lg:space-y-1.5 items-center w-full">
                         
                         <!-- Reports -->
                         <a href="{{ route('reports.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: R] Financial & Party Reports">
-                            <div class="w-12 h-12 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
                                 <!-- Document with horizontal checklist lines matching screenshot -->
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="16" y="10" width="32" height="44" rx="2" fill="#ffffff" stroke="#1e293b" stroke-width="2.2" />
                                     <!-- Checklist Lines -->
                                     <line x1="22" y1="21" x2="26" y2="21" stroke="#1e293b" stroke-width="2.5" />
@@ -380,18 +380,18 @@
                                     <line x1="29" y1="45" x2="38" y2="45" stroke="#1e293b" stroke-width="2" />
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 Reports
                             </span>
                         </a>
 
                         <!-- Settings & Others -->
                         <a href="{{ route('settings.index') }}" 
-                           class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                           class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                            title="[HotKey: S] System Settings">
-                            <div class="w-12 h-12 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
                                 <!-- Gear with secondary gear / checkmark badge matching screenshot -->
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="29" cy="29" r="8" fill="#ffffff" stroke="#1e293b" stroke-width="2.2" />
                                     <path d="M29 14v4M29 40v4M14 29h4M40 29h4M18.4 18.4l2.8 2.8M36.8 36.8l2.8 2.8M18.4 39.6l2.8-2.8M36.8 21.2l2.8-2.8" stroke="#1e293b" stroke-width="3" />
                                     <!-- Secondary gear badge -->
@@ -399,18 +399,18 @@
                                     <path d="M40 43l2.5 2.5 4-4" stroke="#1e293b" stroke-width="2" />
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 Settings & Others
                             </span>
                         </a>
 
                         <!-- Change Firm -->
                         <button type="button" @click="changeFirm()" 
-                                class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                                class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                                 title="Change Firm">
-                            <div class="w-12 h-12 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
                                 <!-- Document with Pie Chart, Bar Chart & Calculator matching screenshot -->
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M14 8h24l12 12v36H14z" fill="#ffffff" stroke="#1e293b" stroke-width="2.2"/>
                                     <path d="M38 8v12h12" fill="#e2edfa" stroke="#1e293b" stroke-width="2"/>
                                     <circle cx="25" cy="22" r="6.5" stroke="#1e293b" stroke-width="1.8" fill="#f8fafc"/>
@@ -431,42 +431,45 @@
                                     <rect x="42" y="43" width="3.5" height="3" fill="#1e293b"/>
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-[#0f3868] tracking-tight whitespace-nowrap leading-tight">
                                 Change Firm
                             </span>
                         </button>
 
                         <!-- Exit -->
                         <button type="button" @click="confirmExit()" 
-                                class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-rose-50/90 hover:border-rose-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                                class="group flex flex-col items-center justify-center text-center p-1 sm:p-1.5 rounded-lg hover:bg-rose-50/90 hover:border-rose-300 hover:shadow-sm active:scale-95 transition-all select-none w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] cursor-pointer border border-transparent" 
                                 title="[HotKey: Esc] Exit Session">
-                            <div class="w-12 h-12 flex items-center justify-center">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center shrink-0">
                                 <!-- Square Doorway with bold outward arrow matching screenshot -->
-                                <svg class="w-12 h-12 text-slate-800 group-hover:text-rose-600 transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-slate-800 group-hover:text-rose-600 transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M34 14H16v36h18" stroke="#1e293b" stroke-width="2.6" />
                                     <path d="M25 32h25m0 0l-7-7m7 7l-7 7" stroke="#1e293b" stroke-width="2.8" />
                                 </svg>
                             </div>
-                            <span class="mt-2 text-[13px] sm:text-[14px] font-bold text-slate-900 group-hover:text-rose-600 tracking-tight">
+                            <span class="mt-0.5 sm:mt-1 text-xs sm:text-[13px] font-bold text-slate-900 group-hover:text-rose-600 tracking-tight whitespace-nowrap leading-tight">
                                 Exit
                             </span>
                         </button>
+
+                        <!-- Empty space for row 5 (keeps exact alignment matching screenshot) -->
+                        <div class="w-32 sm:w-36 h-[76px] sm:h-[82px] lg:h-[88px] hidden md:block"></div>
 
                     </div>
 
                 </div>
 
                 <!-- Bottom Helper Hints & Non-commercial Status matching Screenshot Watermark -->
-                <div class="mt-14 pt-4 border-t border-[#d5e2f0] flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 gap-3 select-none">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="px-2 py-0.5 rounded bg-white border border-[#c6d7e8] font-mono font-bold text-[#0f4c81] text-[11px] shadow-2xs">
+                <div class="mt-1.5 sm:mt-2 pt-1.5 border-t border-[#d5e2f0] flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 gap-1 select-none">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="px-1.5 py-0.5 rounded bg-white border border-[#c6d7e8] font-mono font-bold text-[#0f4c81] text-[10px] sm:text-[11px] shadow-2xs">
                             DIRECT KEY ACCESS
                         </span>
-                        <span class="text-slate-600 text-xs">
-                            Press hotkeys (<kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold text-slate-800">1</kbd>-<kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold text-slate-800">0</kbd>, <kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold text-slate-800">A</kbd>, <kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold text-slate-800">B</kbd>, <kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold text-slate-800">Esc</kbd>) to open instantly
+                        <span class="text-slate-600 text-[11px] sm:text-xs">
+                            Press hotkeys (<kbd class="px-1 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold text-slate-800 text-[10px] sm:text-[11px]">1</kbd>-<kbd class="px-1 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold text-slate-800 text-[10px] sm:text-[11px]">0</kbd>, <kbd class="px-1 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold text-slate-800 text-[10px] sm:text-[11px]">A</kbd>, <kbd class="px-1 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold text-slate-800 text-[10px] sm:text-[11px]">B</kbd>, <kbd class="px-1 py-0.5 bg-white border border-slate-300 rounded font-mono font-bold text-slate-800 text-[10px] sm:text-[11px]">Esc</kbd>) to open instantly
                         </span>
                     </div>
-                    <div class="text-[11px] font-mono text-slate-500 font-medium">
+                    <div class="text-[10px] sm:text-[11px] font-mono text-slate-500 font-medium">
                         This is a non-commercial version • DAWN ERP
                     </div>
                 </div>

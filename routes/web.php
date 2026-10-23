@@ -58,7 +58,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // =========================================================
 
     // 1 - Parties
-    Route::view('/parties', 'receipts.from-parties')
+    Route::get('/parties', [PartyController::class, 'partiesIndex'])
         ->name('parties.index');
 
     Route::post('/parties', [PartyController::class, 'partiesStore'])

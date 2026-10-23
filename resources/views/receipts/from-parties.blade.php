@@ -1,4 +1,6 @@
 @php
+    $currentReceipt = $currentReceipt ?? null;
+    $receipts = $receipts ?? collect();
     $initId = $currentReceipt ? $currentReceipt->id : '';
     $initDate = $currentReceipt ? ($currentReceipt->date ?? date('Y-m-d')) : date('Y-m-d');
     $initParty = $currentReceipt ? ($currentReceipt->party ?? '') : '';

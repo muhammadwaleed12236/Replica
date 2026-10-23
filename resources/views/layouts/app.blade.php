@@ -21,9 +21,9 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-[#e9eff6] text-slate-900 min-h-screen antialiased selection:bg-[#0f4c81] selection:text-white font-sans">
+    <body class="bg-[#e9eff6] text-slate-900 min-h-screen antialiased selection:bg-[#0f4c81] selection:text-white font-sans {{ request()->routeIs('dashboard') || request()->routeIs('reports.index') ? 'overflow-hidden h-screen max-h-screen' : '' }}">
         
-        <div class="min-h-screen flex flex-col justify-between">
+        <div class="{{ request()->routeIs('dashboard') || request()->routeIs('reports.index') ? 'h-screen max-h-screen' : 'min-h-screen' }} flex flex-col justify-between overflow-hidden">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
@@ -36,13 +36,13 @@
             @endisset
 
             <!-- Page Content -->
-            <main class="flex-grow">
+            <main class="flex-grow flex flex-col">
                 {{ $slot ?? '' }}
                 @yield('content')
             </main>
 
             <!-- DAWN ERP Footer -->
-            <footer class="border-t border-[#cbd7e6] bg-[#dbe5f2] py-2 text-center text-xs text-slate-600 font-medium select-none">
+            <footer class="border-t border-[#cbd7e6] bg-[#dbe5f2] py-1.5 text-center text-xs text-slate-600 font-medium select-none shrink-0">
                 <div class="max-w-[1400px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-1">
                     <span>DevoAccounts ERP System • Licensed to <strong class="text-slate-800 font-bold">DAWN</strong></span>
                     <span class="font-mono text-slate-500">Active Terminal • Fast Accounting Engine</span>

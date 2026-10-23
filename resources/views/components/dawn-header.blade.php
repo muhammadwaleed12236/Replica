@@ -29,12 +29,25 @@
                             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                         </svg>
                     @elseif($icon === 'users')
-                        <!-- Parties / Accounts Icon -->
-                        <svg class="w-8 h-8 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                            <circle cx="9" cy="7" r="4" />
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        <!-- Parties / Accounts Network Hub Icon -->
+                        <svg class="w-8 h-8 text-black" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <!-- Center Circle & Person Silhouette -->
+                            <circle cx="32" cy="32" r="11" fill="#e2edfa" stroke="currentColor" stroke-width="2.5" />
+                            <circle cx="32" cy="27" r="3.2" fill="currentColor" />
+                            <path d="M25.5 38c0-3.3 2.9-5.4 6.5-5.4s6.5 2.1 6.5 5.4" fill="currentColor" />
+                            <!-- 6 Surrounding Connector Nodes -->
+                            <circle cx="32" cy="9" r="4" fill="#ffffff" stroke="currentColor" stroke-width="2.2" />
+                            <line x1="32" y1="13.2" x2="32" y2="21" stroke="currentColor" stroke-width="2" />
+                            <circle cx="52" cy="20.5" r="4" fill="#ffffff" stroke="currentColor" stroke-width="2.2" />
+                            <line x1="48.5" y1="22.5" x2="41.5" y2="26.5" stroke="currentColor" stroke-width="2" />
+                            <circle cx="52" cy="43.5" r="4" fill="#ffffff" stroke="currentColor" stroke-width="2.2" />
+                            <line x1="48.5" y1="41.5" x2="41.5" y2="37.5" stroke="currentColor" stroke-width="2" />
+                            <circle cx="32" cy="55" r="4" fill="#ffffff" stroke="currentColor" stroke-width="2.2" />
+                            <line x1="32" y1="50.8" x2="32" y2="43" stroke="currentColor" stroke-width="2" />
+                            <circle cx="12" cy="43.5" r="4" fill="#ffffff" stroke="currentColor" stroke-width="2.2" />
+                            <line x1="15.5" y1="41.5" x2="22.5" y2="37.5" stroke="currentColor" stroke-width="2" />
+                            <circle cx="12" cy="20.5" r="4" fill="#ffffff" stroke="currentColor" stroke-width="2.2" />
+                            <line x1="15.5" y1="22.5" x2="22.5" y2="26.5" stroke="currentColor" stroke-width="2" />
                         </svg>
                     @elseif($icon === 'cash')
                         <!-- Cash / Receipts / Payments Icon -->

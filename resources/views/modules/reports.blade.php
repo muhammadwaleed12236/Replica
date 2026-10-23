@@ -1,19 +1,19 @@
 <x-app-layout>
-    <div class="py-5 px-3 sm:px-6 lg:px-8 font-sans" 
+    <div class="py-2 px-3 sm:px-6 lg:px-8 font-sans flex-grow flex flex-col overflow-hidden" 
          x-data="reportsMenu({ 
              activeReport: '{{ request('report', (request('party_id') || request('from_date')) ? 'parties' : '') }}',
              focusedItem: 'parties'
          })" 
          @keydown.window="handleKey($event)">
 
-        <div class="max-w-[1360px] mx-auto space-y-4">
+        <div class="max-w-[1360px] mx-auto flex flex-col flex-grow overflow-hidden">
             
             <!-- MAIN CANVAS: Exact Visual Clone of Reports Reference Screenshot -->
-            <div class="bg-[#f0f4f9] rounded-xl border border-[#c6d7e8] shadow-md p-6 sm:p-10 lg:p-12 flex flex-col justify-between min-h-[640px]">
+            <div class="bg-[#f0f4f9] rounded-xl border border-[#c6d7e8] shadow-md p-3 sm:p-5 lg:p-6 flex flex-col justify-between flex-grow overflow-hidden">
                 
                 <div>
                     <!-- Subheader Ribbon Banner: Document Checklist Icon + Bold "Reports" Title -->
-                    <div class="bg-gradient-to-r from-[#0c2f55] via-[#0f4c81] to-[#144b84] rounded-lg p-3 sm:px-5 sm:py-3.5 shadow-sm border border-[#0a2747] flex items-center justify-between mb-8 select-none">
+                    <div class="bg-gradient-to-r from-[#0c2f55] via-[#0f4c81] to-[#144b84] rounded-lg p-3 sm:px-5 sm:py-3.5 shadow-sm border border-[#0a2747] flex items-center justify-between mb-4 select-none">
                         <div class="flex items-center gap-3">
                             <!-- Document Checklist Icon matching Screenshot -->
                             <div class="w-9 h-9 rounded bg-white/10 border border-white/20 flex items-center justify-center p-1 shrink-0">
@@ -44,7 +44,7 @@
                     <!-- Row 3: 3 Companies    | 8 Lotteries  | C Cash & Others -->
                     <!-- Row 4: 4 Salesmen     | 9 Sales      | [empty] -->
                     <!-- Row 5: 5 Banks        | 0 Purchases  | [empty] -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-9 sm:gap-y-11 gap-x-8 sm:gap-x-14 lg:gap-x-20 max-w-2xl items-start">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-3 sm:gap-y-4 gap-x-8 sm:gap-x-14 lg:gap-x-20 max-w-2xl items-start">
                         
                         <!-- ========================================== -->
                         <!-- ROW 1 -->
@@ -54,7 +54,7 @@
                             <button type="button"
                                     @click="openReport('parties')"
                                     :class="focusedItem === 'parties' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: 1] Parties Ledger & Statement">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -86,7 +86,7 @@
                             <button type="button"
                                     @click="openReport('expenses')"
                                     :class="focusedItem === 'expenses' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: 6] Expenses Summary">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <!-- Accounting Document with Pie Chart, Bar Chart & Calculator -->
@@ -123,7 +123,7 @@
                             <button type="button"
                                     @click="openReport('receipts')"
                                     :class="focusedItem === 'receipts' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: A] Receipts Register">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <!-- Banknote Cash Icon matching Screenshot -->
@@ -151,7 +151,7 @@
                             <button type="button"
                                     @click="openReport('medical_reps')"
                                     :class="focusedItem === 'medical_reps' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: 2] Medical Representatives Statement">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-slate-900 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64">
@@ -172,7 +172,7 @@
                             <button type="button"
                                     @click="openReport('amanats')"
                                     :class="focusedItem === 'amanats' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: 7] Amanats Ledger">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <!-- Accounting Document with Pie Chart, Bar Chart & Calculator -->
@@ -204,7 +204,7 @@
                             <button type="button"
                                     @click="openReport('payments')"
                                     :class="focusedItem === 'payments' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: B] Payments Register">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <!-- Banknote with Outgoing Right Arrow Icon matching Screenshot -->
@@ -234,7 +234,7 @@
                             <button type="button"
                                     @click="openReport('companies')"
                                     :class="focusedItem === 'companies' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: 3] Companies Statement">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <!-- Office Skyscraper with 12 Windows matching Screenshot -->
@@ -271,7 +271,7 @@
                             <button type="button"
                                     @click="openReport('lotteries')"
                                     :class="focusedItem === 'lotteries' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: 8] Lotteries Register">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <!-- Accounting Document with Pie Chart, Bar Chart & Calculator -->
@@ -303,7 +303,7 @@
                             <button type="button"
                                     @click="openReport('cash')"
                                     :class="focusedItem === 'cash' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: C] Daily Cash Book & Matrix">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <!-- Banknote Cash Icon matching Screenshot -->
@@ -331,7 +331,7 @@
                             <button type="button"
                                     @click="openReport('salesmen')"
                                     :class="focusedItem === 'salesmen' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: 4] Salesmen Statement">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-slate-900 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64">
@@ -352,7 +352,7 @@
                             <button type="button"
                                     @click="openReport('sales')"
                                     :class="focusedItem === 'sales' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: 9] Sales Register">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <!-- Shopping Cart with Upward Curve Arrow matching Screenshot -->
@@ -383,7 +383,7 @@
                             <button type="button"
                                     @click="openReport('banks')"
                                     :class="focusedItem === 'banks' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: 5] Bank Accounts Ledger">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <!-- Accounting Document with Pie Chart, Bar Chart & Calculator -->
@@ -415,7 +415,7 @@
                             <button type="button"
                                     @click="openReport('purchases')"
                                     :class="focusedItem === 'purchases' ? 'border-2 border-[#0092d0] bg-sky-50/80 shadow-sm' : 'border border-transparent hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm'"
-                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                                    class="group flex flex-col items-center justify-center text-center p-2 rounded-lg active:scale-95 transition-all select-none w-36 h-[78px] cursor-pointer" 
                                     title="[HotKey: 0] Purchases Register">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <!-- Delivery Truck matching Screenshot -->
@@ -446,7 +446,7 @@
                 </div>
 
                 <!-- Footer Status Bar -->
-                <div class="mt-8 pt-4 border-t border-[#cbd8e4] flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 font-sans gap-2 select-none">
+                <div class="mt-3 pt-2 border-t border-[#cbd8e4] flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 font-sans gap-1 select-none">
                     <div class="flex items-center gap-3">
                         <span class="inline-flex items-center gap-1 font-bold text-slate-800">
                             <kbd class="px-2 py-0.5 rounded bg-white border border-slate-300 shadow-xs font-mono text-[11px]">1 - 0</kbd>
