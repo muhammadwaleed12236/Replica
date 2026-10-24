@@ -20,7 +20,7 @@ class SaleController extends Controller
         }
 
         $allSales = Sale::with('party')->latest()->get();
-        $nextInvoiceNo = 'INV-' . str_pad((Sale::max('id') + 1), 5, '0', STR_PAD_LEFT);
+        $nextInvoiceNo = '';
 
         $dateLockDate = \App\Models\Setting::get('date_lock_date');
         $minDate = $dateLockDate ? \Carbon\Carbon::parse($dateLockDate)->addDay()->format('Y-m-d') : null;
@@ -35,7 +35,7 @@ class SaleController extends Controller
             'date' => 'required|date',
             'party_id' => 'required|exists:parties,id',
             'salesman_id' => 'nullable|exists:salesmen,id',
-            'invoice_no' => 'required|string',
+            'invoice_no' => 'nullable|string',
             'amount' => 'required|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
             'remarks' => 'nullable|string',
@@ -50,6 +50,7 @@ class SaleController extends Controller
         $subtotal = (float) $request->amount;
         $discount = (float) ($request->discount ?? 0);
         $netAmount = max(0, $subtotal - $discount);
+        $invoiceNo = !empty(trim($request->invoice_no ?? '')) ? trim($request->invoice_no) : null;
 
         // Check Party Credit Limit
         $party = Party::find($request->party_id);
@@ -74,25 +75,23 @@ class SaleController extends Controller
                 'date' => $request->date,
                 'party_id' => $request->party_id,
                 'salesman_id' => $request->salesman_id,
-                'invoice_no' => $request->invoice_no,
+                'invoice_no' => $invoiceNo,
                 'amount' => $subtotal,
                 'discount' => $discount,
                 'net_amount' => $netAmount,
                 'remarks' => $request->remarks,
             ]);
         } else {
-            $sale = Sale::updateOrCreate(
-                ['invoice_no' => $request->invoice_no],
-                [
-                    'date' => $request->date,
-                    'party_id' => $request->party_id,
-                    'salesman_id' => $request->salesman_id,
-                    'amount' => $subtotal,
-                    'discount' => $discount,
-                    'net_amount' => $netAmount,
-                    'remarks' => $request->remarks,
-                ]
-            );
+            $sale = Sale::create([
+                'date' => $request->date,
+                'party_id' => $request->party_id,
+                'salesman_id' => $request->salesman_id,
+                'invoice_no' => $invoiceNo,
+                'amount' => $subtotal,
+                'discount' => $discount,
+                'net_amount' => $netAmount,
+                'remarks' => $request->remarks,
+            ]);
         }
 
         // Recalculate Party Balance
@@ -108,15 +107,16 @@ class SaleController extends Controller
                 $tmpl = \App\Models\Setting::get('whatsapp_template', 'Dear {customer_name}, Invoice #{invoice_no} total amount is Rs. {amount}. Date: {date}.');
                 $msg = str_replace(
                     ['{customer_name}', '{invoice_no}', '{amount}', '{date}'],
-                    [$sale->party->name, $sale->invoice_no, number_format($sale->net_amount, 2), $sale->date],
+                    [$sale->party->name, $sale->invoice_no ?? ('#' . $sale->id), number_format($sale->net_amount, 2), $sale->date],
                     $tmpl
                 );
                 \App\Services\WhatsAppService::sendDirectMessage($sale->party->phone, $msg);
             }
         }
 
+        $invDisplay = $sale->invoice_no ? ('Invoice ' . $sale->invoice_no) : ('#' . $sale->id);
         return redirect()->route('sales.index', ['id' => $sale->id])
-            ->with('success', 'Sale Invoice ' . $sale->invoice_no . ' saved successfully in Ledger!');
+            ->with('success', 'Sale ' . $invDisplay . ' saved successfully in Ledger!');
     }
 
     public function destroy($id)
@@ -129,7 +129,7 @@ class SaleController extends Controller
             return redirect()->back()->withErrors(['date' => 'Date Lock is active for dates on or before ' . $dateLockDate . '. Deletion blocked!']);
         }
 
-        $invoiceNo = $sale->invoice_no;
+        $invDisplay = $sale->invoice_no ? ('Invoice ' . $sale->invoice_no) : ('#' . $sale->id);
         $party = $sale->party;
         $sale->delete();
 
@@ -138,6 +138,6 @@ class SaleController extends Controller
         }
 
         return redirect()->route('sales.index')
-            ->with('success', 'Sale Invoice ' . $invoiceNo . ' deleted and ledger balance reversed successfully.');
+            ->with('success', 'Sale ' . $invDisplay . ' deleted and ledger balance reversed successfully.');
     }
 }

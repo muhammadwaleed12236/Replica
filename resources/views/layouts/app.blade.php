@@ -21,9 +21,9 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-[#e9eff6] text-slate-900 min-h-screen antialiased selection:bg-[#0f4c81] selection:text-white font-sans {{ request()->routeIs('dashboard') || request()->routeIs('reports.index') ? 'overflow-hidden h-screen max-h-screen' : '' }}">
+    <body class="bg-[#e9eff6] text-slate-900 min-h-screen antialiased selection:bg-[#0f4c81] selection:text-white font-sans {{ request()->routeIs('dashboard') || request()->routeIs('reports.index') || request()->routeIs('receipts.index') || request()->routeIs('payments.index') ? 'overflow-hidden h-screen max-h-screen' : '' }}">
         
-        <div class="{{ request()->routeIs('dashboard') || request()->routeIs('reports.index') ? 'h-screen max-h-screen' : 'min-h-screen' }} flex flex-col justify-between overflow-hidden">
+        <div class="{{ request()->routeIs('dashboard') || request()->routeIs('reports.index') || request()->routeIs('receipts.index') || request()->routeIs('payments.index') ? 'h-screen max-h-screen' : 'min-h-screen' }} flex flex-col justify-between overflow-hidden">
             @include('layouts.navigation')
 
             <!-- Page Heading -->

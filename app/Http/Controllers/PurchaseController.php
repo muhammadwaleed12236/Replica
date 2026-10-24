@@ -20,7 +20,7 @@ class PurchaseController extends Controller
         }
 
         $allPurchases = Purchase::with('party')->latest()->get();
-        $nextInvoiceNo = 'PUR-' . str_pad((Purchase::max('id') + 1), 5, '0', STR_PAD_LEFT);
+        $nextInvoiceNo = '';
 
         return view('purchases.index', compact('parties', 'companies', 'currentPurchase', 'allPurchases', 'nextInvoiceNo'));
     }
@@ -32,7 +32,7 @@ class PurchaseController extends Controller
             'date' => 'required|date',
             'party_id' => 'required|exists:parties,id',
             'company_id' => 'nullable|exists:companies,id',
-            'invoice_no' => 'required|string',
+            'invoice_no' => 'nullable|string',
             'amount' => 'required|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
             'remarks' => 'nullable|string',
@@ -47,6 +47,7 @@ class PurchaseController extends Controller
         $subtotal = (float) $request->amount;
         $discount = (float) ($request->discount ?? 0);
         $netAmount = max(0, $subtotal - $discount);
+        $invoiceNo = !empty(trim($request->invoice_no ?? '')) ? trim($request->invoice_no) : null;
 
         $oldParty = null;
         if ($request->filled('id')) {
@@ -56,25 +57,23 @@ class PurchaseController extends Controller
                 'date' => $request->date,
                 'party_id' => $request->party_id,
                 'company_id' => $request->company_id,
-                'invoice_no' => $request->invoice_no,
+                'invoice_no' => $invoiceNo,
                 'amount' => $subtotal,
                 'discount' => $discount,
                 'net_amount' => $netAmount,
                 'remarks' => $request->remarks,
             ]);
         } else {
-            $purchase = Purchase::updateOrCreate(
-                ['invoice_no' => $request->invoice_no],
-                [
-                    'date' => $request->date,
-                    'party_id' => $request->party_id,
-                    'company_id' => $request->company_id,
-                    'amount' => $subtotal,
-                    'discount' => $discount,
-                    'net_amount' => $netAmount,
-                    'remarks' => $request->remarks,
-                ]
-            );
+            $purchase = Purchase::create([
+                'date' => $request->date,
+                'party_id' => $request->party_id,
+                'company_id' => $request->company_id,
+                'invoice_no' => $invoiceNo,
+                'amount' => $subtotal,
+                'discount' => $discount,
+                'net_amount' => $netAmount,
+                'remarks' => $request->remarks,
+            ]);
         }
 
         // Recalculate party balances
@@ -86,14 +85,15 @@ class PurchaseController extends Controller
             $purchase->party->recalculateBalance();
         }
 
+        $invDisplay = $purchase->invoice_no ? ('Bill ' . $purchase->invoice_no) : ('#' . $purchase->id);
         return redirect()->route('purchases.index', ['id' => $purchase->id])
-            ->with('success', 'Purchase Bill ' . $purchase->invoice_no . ' saved successfully in Ledger!');
+            ->with('success', 'Purchase ' . $invDisplay . ' saved successfully in Ledger!');
     }
 
     public function destroy($id)
     {
         $purchase = Purchase::findOrFail($id);
-        $invoiceNo = $purchase->invoice_no;
+        $invDisplay = $purchase->invoice_no ? ('Bill ' . $purchase->invoice_no) : ('#' . $purchase->id);
         $party = $purchase->party;
         $purchase->delete();
 
@@ -102,6 +102,6 @@ class PurchaseController extends Controller
         }
 
         return redirect()->route('purchases.index')
-            ->with('success', 'Purchase Bill ' . $invoiceNo . ' deleted and ledger balance reversed successfully.');
+            ->with('success', 'Purchase ' . $invDisplay . ' deleted and ledger balance reversed successfully.');
     }
 }

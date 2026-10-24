@@ -1,14 +1,14 @@
 <x-app-layout>
-    <div class="py-5 px-3 sm:px-6 lg:px-8 font-sans" x-data="paymentsMenu()" @keydown.window="handleKey($event)">
+    <div class="py-2 px-3 sm:px-6 lg:px-8 font-sans flex-grow flex flex-col overflow-hidden" x-data="paymentsMenu()" @keydown.window="handleKey($event)">
 
-        <div class="max-w-[1360px] mx-auto space-y-4">
+        <div class="max-w-[1360px] mx-auto flex flex-col flex-grow overflow-hidden w-full">
             
             <!-- MAIN CANVAS: Recreated directly from Payments Reference Screenshot -->
-            <div class="bg-[#f0f4f9] rounded-xl border border-[#c6d7e8] shadow-md p-6 sm:p-10 lg:p-12 flex flex-col justify-between min-h-[640px]">
+            <div class="bg-[#f0f4f9] rounded-xl border border-[#c6d7e8] shadow-md p-3 sm:p-5 lg:p-6 flex flex-col justify-between flex-grow overflow-hidden">
                 
                 <div>
                     <!-- Subheader Ribbon Banner: Cash Note with Outgoing Arrow + Payments -->
-                    <div class="bg-gradient-to-r from-[#0c2f55] via-[#0f4c81] to-[#144b84] rounded-lg p-3 sm:px-5 sm:py-3.5 shadow-sm border border-[#0a2747] flex items-center justify-between mb-8 select-none">
+                    <div class="bg-gradient-to-r from-[#0c2f55] via-[#0f4c81] to-[#144b84] rounded-lg p-2.5 sm:px-4 sm:py-2.5 shadow-sm border border-[#0a2747] flex items-center justify-between mb-4 select-none">
                         <div class="flex items-center gap-3">
                             <!-- Cash with Outgoing Right Arrow Icon matching Screenshot -->
                             <div class="w-9 h-9 rounded bg-white/10 border border-white/20 flex items-center justify-center p-1 shrink-0">
@@ -26,24 +26,35 @@
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded bg-white/15 hover:bg-white/25 text-white border border-white/30 transition-all" title="Return to Main Menu">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                                <span>Main Menu</span>
+                            <a href="{{ route('dashboard') }}" 
+                               onclick="if(window.history.length > 1 && document.referrer.includes(window.location.host)) { event.preventDefault(); window.history.back(); } else { window.location.href='{{ route('dashboard') }}'; }" 
+                               class="group flex flex-col items-center justify-center min-w-[54px] h-[48px] px-2.5 py-1 rounded-md bg-white hover:bg-slate-100 hover:border-red-400 text-slate-800 border border-white/80 shadow-md transition-all select-none cursor-pointer active:scale-95" 
+                               title="Exit [Esc]">
+                                <div class="text-slate-800 group-hover:text-red-600 transition-colors">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                        <polyline points="16 17 21 12 16 7" />
+                                        <line x1="21" y1="12" x2="9" y2="12" />
+                                    </svg>
+                                </div>
+                                <span class="text-[11px] font-bold text-slate-900 group-hover:text-red-600 leading-tight mt-0.5">
+                                    <span class="underline">E</span>xit
+                                </span>
                             </a>
                         </div>
                     </div>
 
                     <!-- 2-Column Desktop Icons Grid matching Screenshot Layout & Alignment -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-9 sm:gap-y-11 gap-x-12 sm:gap-x-20 max-w-xl items-start">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-2 sm:gap-y-3 gap-x-12 sm:gap-x-20 max-w-xl items-start">
                         
                         <!-- ========================================================= -->
                         <!-- COLUMN 1: Left Stack (1 Parties, 2 Medical Reps, 3 Companies, 4 Salesmen, 5 Banks) -->
                         <!-- ========================================================= -->
-                        <div class="flex flex-col space-y-9 sm:space-y-11 items-center w-full">
+                        <div class="flex flex-col space-y-1 sm:space-y-1.5 items-center w-full">
                             
                             <!-- 1 Parties -->
                             <a href="{{ route('parties.index') }}" 
-                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[72px] cursor-pointer border border-transparent" 
                                title="[HotKey: 1] Parties">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -71,7 +82,7 @@
 
                             <!-- 2 Medical Reps (Active / Hovered state with soft focus card matching screenshot) -->
                             <a href="{{ route('medical_reps.index') }}" 
-                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg bg-sky-50/70 border border-sky-300 shadow-sm hover:bg-sky-100/80 hover:border-sky-400 active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg bg-sky-50/70 border border-sky-300 shadow-sm hover:bg-sky-100/80 hover:border-sky-400 active:scale-95 transition-all select-none w-36 h-[72px] cursor-pointer" 
                                title="[HotKey: 2] Medical Representatives">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-slate-900 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64">
@@ -88,7 +99,7 @@
 
                             <!-- 3 Companies -->
                             <a href="{{ route('companies.index') }}" 
-                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[72px] cursor-pointer border border-transparent" 
                                title="[HotKey: 3] Companies">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -115,7 +126,7 @@
 
                             <!-- 4 Salesmen -->
                             <a href="{{ route('salesmen.index') }}" 
-                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[72px] cursor-pointer border border-transparent" 
                                title="[HotKey: 4] Salesmen">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-slate-900 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64">
@@ -131,7 +142,7 @@
 
                             <!-- 5 Banks -->
                             <a href="{{ route('banks.index') }}" 
-                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[72px] cursor-pointer border border-transparent" 
                                title="[HotKey: 5] Bank Accounts">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -165,11 +176,11 @@
                         <!-- ========================================================= -->
                         <!-- COLUMN 2: Right Stack (6 Expenses, 7 Amanats, 8 Lotteries) -->
                         <!-- ========================================================= -->
-                        <div class="flex flex-col space-y-9 sm:space-y-11 items-center w-full">
+                        <div class="flex flex-col space-y-1 sm:space-y-1.5 items-center w-full">
                             
                             <!-- 6 Expenses -->
                             <a href="{{ route('expenses.index') }}" 
-                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[72px] cursor-pointer border border-transparent" 
                                title="[HotKey: 6] Expenses">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -200,7 +211,7 @@
 
                             <!-- 7 Amanats -->
                             <a href="{{ route('amanats.index') }}" 
-                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer border border-transparent" 
+                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg hover:bg-blue-50/90 hover:border-sky-300 hover:shadow-sm active:scale-95 transition-all select-none w-36 h-[72px] cursor-pointer border border-transparent" 
                                title="[HotKey: 7] Amanats">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -231,7 +242,7 @@
 
                             <!-- 8 Lotteries: Selected Card with Outline Focus Box matching Screenshot -->
                             <a href="{{ route('payments-to-lotteries.index') }}" 
-                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg bg-sky-50/70 border border-sky-400/90 shadow-sm hover:bg-sky-100 hover:border-sky-500 active:scale-95 transition-all select-none w-36 h-[96px] cursor-pointer" 
+                               class="group flex flex-col items-center justify-center text-center p-2 rounded-lg bg-sky-50/70 border border-sky-400/90 shadow-sm hover:bg-sky-100 hover:border-sky-500 active:scale-95 transition-all select-none w-36 h-[72px] cursor-pointer" 
                                title="[HotKey: 8] Payments to Lotteries">
                                 <div class="w-12 h-12 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-slate-800 group-hover:text-[#0f3868] transition-colors" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -261,8 +272,8 @@
                             </a>
 
                             <!-- Empty slots for rows 4 & 5 to preserve exact alignment -->
-                            <div class="w-36 h-[96px] hidden sm:block"></div>
-                            <div class="w-36 h-[96px] hidden sm:block"></div>
+                            <div class="w-36 h-[72px] hidden sm:block"></div>
+                            <div class="w-36 h-[72px] hidden sm:block"></div>
 
                         </div>
 
@@ -270,7 +281,7 @@
                 </div>
 
                 <!-- Bottom Helper Hints & Key Access -->
-                <div class="mt-14 pt-4 border-t border-[#d5e2f0] flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 gap-3 select-none">
+                <div class="mt-2 pt-2 border-t border-[#d5e2f0] flex flex-col sm:flex-row items-center justify-between text-xs text-slate-600 gap-1.5 select-none">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="px-2 py-0.5 rounded bg-white border border-[#c6d7e8] font-mono font-bold text-[#0f4c81] text-[11px] shadow-2xs">
                             PAYMENTS SHORTCUTS

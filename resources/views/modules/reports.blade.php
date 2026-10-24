@@ -31,9 +31,20 @@
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded bg-white/15 hover:bg-white/25 text-white border border-white/30 transition-all" title="Return to Main Menu [Esc]">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                                <span>Main Menu</span>
+                            <a href="{{ route('dashboard') }}" 
+                               onclick="if(window.history.length > 1 && document.referrer.includes(window.location.host)) { event.preventDefault(); window.history.back(); } else { window.location.href='{{ route('dashboard') }}'; }" 
+                               class="group flex flex-col items-center justify-center min-w-[54px] h-[48px] px-2.5 py-1 rounded-md bg-white hover:bg-slate-100 hover:border-red-400 text-slate-800 border border-white/80 shadow-md transition-all select-none cursor-pointer active:scale-95" 
+                               title="Exit [Esc]">
+                                <div class="text-slate-800 group-hover:text-red-600 transition-colors">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                        <polyline points="16 17 21 12 16 7" />
+                                        <line x1="21" y1="12" x2="9" y2="12" />
+                                    </svg>
+                                </div>
+                                <span class="text-[11px] font-bold text-slate-900 group-hover:text-red-600 leading-tight mt-0.5">
+                                    <span class="underline">E</span>xit
+                                </span>
                             </a>
                         </div>
                     </div>
@@ -456,7 +467,7 @@
                         <span class="text-slate-300">|</span>
                         <span class="inline-flex items-center gap-1">
                             <kbd class="px-1.5 py-0.5 rounded bg-white border border-slate-300 shadow-xs font-mono text-[11px]">Esc</kbd>
-                            <span>Main Menu</span>
+                            <span>Exit</span>
                         </span>
                     </div>
                     <div class="font-medium text-slate-500">
@@ -1045,12 +1056,16 @@
 
                     const key = e.key.toUpperCase();
 
-                    // ESC key closes modal or returns to main menu
+                    // ESC key closes modal or exits back
                     if (e.key === 'Escape') {
                         if (this.activeReport !== '') {
                             this.closeReport();
                         } else {
-                            window.location.href = "{{ route('dashboard') }}";
+                            if (window.history.length > 1 && document.referrer.includes(window.location.host)) {
+                                window.history.back();
+                            } else {
+                                window.location.href = "{{ route('dashboard') }}";
+                            }
                         }
                         return;
                     }

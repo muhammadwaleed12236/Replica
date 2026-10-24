@@ -40,7 +40,7 @@ return new class extends Migration
 
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
-            $table->string('invoice_no')->unique();
+            $table->string('invoice_no')->nullable();
             $table->date('date');
             $table->foreignId('party_id')->constrained('parties')->onDelete('cascade');
             $table->foreignId('salesman_id')->nullable()->constrained('salesmen')->onDelete('set null');
@@ -63,7 +63,7 @@ return new class extends Migration
 
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-            $table->string('invoice_no')->unique();
+            $table->string('invoice_no')->default('0');
             $table->date('date');
             $table->foreignId('party_id')->constrained('parties')->onDelete('cascade');
             $table->foreignId('company_id')->nullable()->constrained('companies')->onDelete('set null');

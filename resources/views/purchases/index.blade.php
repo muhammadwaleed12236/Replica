@@ -18,7 +18,7 @@
             id: '{{ $currentPurchase->id ?? '' }}',
             date: '{{ old('date', $currentPurchase ? $currentPurchase->date : date('Y-m-d')) }}',
             party_id: '{{ old('party_id', $currentPurchase ? $currentPurchase->party_id : '') }}',
-            invoice_no: '{{ old('invoice_no', $currentPurchase ? $currentPurchase->invoice_no : $nextInvoiceNo) }}',
+            invoice_no: '{{ old('invoice_no', $currentPurchase ? $currentPurchase->invoice_no : '') }}',
             amount: '{{ old('amount', $currentPurchase ? $currentPurchase->amount : 0) }}',
             remarks: '{{ old('remarks', $currentPurchase ? $currentPurchase->remarks : '') }}'
         },
@@ -103,7 +103,7 @@
             this.partySearchText = '';
             this.partyFilterQuery = '';
             this.partyOpen = false;
-            this.form.invoice_no = '{{ $nextInvoiceNo }}';
+            this.form.invoice_no = '';
             this.form.amount = 0;
             this.form.remarks = '';
             this.$nextTick(() => {
@@ -167,7 +167,7 @@
             if (!this.hasRecord) return;
             Swal.fire({
                 title: 'Delete Purchase Bill?',
-                html: `Are you sure you want to delete <b>${this.form.invoice_no}</b> for <b style='color:#007cb5'>Rs. ${parseFloat(this.form.amount || 0).toLocaleString()}</b>?<br><span style='color:#dc2626; font-size:12px;'>This will reverse the vendor ledger balance.</span>`,
+                html: `Are you sure you want to delete <b>${this.form.invoice_no || ('#' + this.form.id)}</b> for <b style='color:#007cb5'>Rs. ${parseFloat(this.form.amount || 0).toLocaleString()}</b>?<br><span style='color:#dc2626; font-size:12px;'>This will reverse the vendor ledger balance.</span>`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc2626',
@@ -348,7 +348,6 @@
                                        :readonly="mode === 'view'"
                                        :class="mode === 'view' ? 'bg-[#f0f4f8] text-slate-700 cursor-not-allowed' : 'bg-white text-slate-900'"
                                        @keydown.enter.prevent="focusNext('field-amount')"
-                                       required 
                                        class="w-full h-[38px] px-3 py-1.5 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-sm font-bold shadow-sm font-mono" />
                             </div>
                         </div>
@@ -459,12 +458,12 @@
                 <!-- Invoices List -->
                 <div class="p-3 overflow-y-auto flex-grow space-y-2 bg-[#f4f7fa]">
                     @forelse($allPurchases as $purchase)
-                        <div x-show="!searchQuery || '{{ strtolower($purchase->invoice_no . ' ' . ($purchase->party->name ?? '') . ' ' . $purchase->date . ' ' . $purchase->amount) }}'.includes(searchQuery.toLowerCase())">
+                        <div x-show="!searchQuery || '{{ strtolower(($purchase->invoice_no ?? ('#' . $purchase->id)) . ' ' . ($purchase->party->name ?? '') . ' ' . $purchase->date . ' ' . $purchase->amount) }}'.includes(searchQuery.toLowerCase())">
                             <a href="{{ route('purchases.index', ['id' => $purchase->id]) }}" 
                                class="flex items-center justify-between p-3 rounded bg-white border border-[#cbd8e4] hover:border-[#00a2e8] hover:bg-[#eaf4fa] transition-all shadow-sm group">
                                 <div>
                                     <div class="flex items-center gap-2">
-                                        <span class="font-mono font-bold text-[#007cb5] text-sm group-hover:underline">{{ $purchase->invoice_no }}</span>
+                                        <span class="font-mono font-bold text-[#007cb5] text-sm group-hover:underline">{{ $purchase->invoice_no ?: ('#' . $purchase->id) }}</span>
                                     </div>
                                     <span class="text-xs text-slate-700 font-semibold">{{ $purchase->party->name ?? 'N/A' }}</span>
                                     <span class="text-[11px] text-slate-500 ml-2 font-mono">• Date: {{ $purchase->date }}</span>

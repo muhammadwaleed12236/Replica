@@ -4,7 +4,7 @@
     'title' => 'Payments To Lotteries',
     'storeRoute' => 'payments-to-lotteries.store',
     'deleteRouteBase' => 'payments-to-lotteries.destroy',
-    'exitRoute' => 'payments.index',
+    'exitRoute' => 'dashboard',
 ])
 
 @php

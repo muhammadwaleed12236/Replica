@@ -20,7 +20,7 @@
             id: '{{ $currentSale->id ?? '' }}',
             date: '{{ old('date', $currentSale ? $currentSale->date : date('Y-m-d')) }}',
             party_id: '{{ old('party_id', $currentSale ? $currentSale->party_id : '') }}',
-            invoice_no: '{{ old('invoice_no', $currentSale ? $currentSale->invoice_no : $nextInvoiceNo) }}',
+            invoice_no: '{{ old('invoice_no', $currentSale ? $currentSale->invoice_no : '') }}',
             amount: '{{ old('amount', $currentSale ? $currentSale->amount : 0) }}',
             remarks: '{{ old('remarks', $currentSale ? $currentSale->remarks : '') }}'
         },
@@ -105,7 +105,7 @@
             this.partySearchText = '';
             this.partyFilterQuery = '';
             this.partyOpen = false;
-            this.form.invoice_no = '{{ $nextInvoiceNo }}';
+            this.form.invoice_no = '';
             this.form.amount = 0;
             this.form.remarks = '';
             this.$nextTick(() => {
@@ -173,7 +173,7 @@
             if (!this.hasRecord) return;
             Swal.fire({
                 title: 'Delete Sale Invoice?',
-                html: `Are you sure you want to delete <b>${this.form.invoice_no}</b> for <b style='color:#007cb5'>Rs. ${parseFloat(this.form.amount || 0).toLocaleString()}</b>?<br><span style='color:#dc2626; font-size:12px;'>This will reverse the customer ledger balance.</span>`,
+                html: `Are you sure you want to delete <b>${this.form.invoice_no || ('#' + this.form.id)}</b> for <b style='color:#007cb5'>Rs. ${parseFloat(this.form.amount || 0).toLocaleString()}</b>?<br><span style='color:#dc2626; font-size:12px;'>This will reverse the customer ledger balance.</span>`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc2626',
@@ -377,7 +377,6 @@
                                        :readonly="mode === 'view'"
                                        :class="mode === 'view' ? 'bg-[#f0f4f8] text-slate-700 cursor-not-allowed' : 'bg-white text-slate-900'"
                                        @keydown.enter.prevent="focusNext('field-amount')"
-                                       required 
                                        class="w-full h-[38px] px-3 py-1.5 border border-[#9ab3c9] focus:border-[#00a2e8] focus:ring-1 focus:ring-[#00a2e8] rounded text-sm font-bold shadow-sm font-mono" />
                             </div>
                         </div>
@@ -436,7 +435,7 @@
                                     $tmpl = \App\Models\Setting::get('whatsapp_template', 'Invoice #{invoice_no} amount Rs. {amount}');
                                     $msg = str_replace(
                                         ['{customer_name}', '{invoice_no}', '{amount}', '{date}'],
-                                        [$currentSale->party->name, $currentSale->invoice_no, number_format($currentSale->net_amount, 2), $currentSale->date],
+                                        [$currentSale->party->name, $currentSale->invoice_no ?: ('#' . $currentSale->id), number_format($currentSale->net_amount, 2), $currentSale->date],
                                         $tmpl
                                     );
                                 @endphp
@@ -505,11 +504,11 @@
                 <!-- Invoices List -->
                 <div class="p-3 overflow-y-auto flex-grow space-y-2 bg-[#f4f7fa]">
                     @forelse($allSales as $sale)
-                        <div x-show="!searchQuery || '{{ strtolower($sale->invoice_no . ' ' . ($sale->party->name ?? '') . ' ' . $sale->date . ' ' . $sale->amount) }}'.includes(searchQuery.toLowerCase())">
+                        <div x-show="!searchQuery || '{{ strtolower(($sale->invoice_no ?? ('#' . $sale->id)) . ' ' . ($sale->party->name ?? '') . ' ' . $sale->date . ' ' . $sale->amount) }}'.includes(searchQuery.toLowerCase())">
                             <a href="{{ route('sales.index', ['id' => $sale->id]) }}" 
                                class="flex items-center justify-between p-3 rounded bg-white border border-[#cbd8e4] hover:border-[#00a2e8] hover:bg-[#eaf4fa] transition-all shadow-sm group">
                                 <div>
-                                    <span class="font-mono font-bold text-[#007cb5] text-sm block group-hover:underline">{{ $sale->invoice_no }}</span>
+                                    <span class="font-mono font-bold text-[#007cb5] text-sm block group-hover:underline">{{ $sale->invoice_no ?: ('#' . $sale->id) }}</span>
                                     <span class="text-xs text-slate-700 font-semibold">{{ $sale->party->name ?? 'N/A' }}</span>
                                     <span class="text-[11px] text-slate-500 ml-2 font-mono">• Date: {{ $sale->date }}</span>
                                 </div>
